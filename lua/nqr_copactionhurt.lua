@@ -187,7 +187,7 @@ function CopActionHurt:_upd_bleedout(t)
 		end
 	end
 
-	if Network:is_server() then
+	if Network:is_server() and self._unit:character_damage() and self._unit:character_damage().damage_simple then
     	local action_data = { damage = 0.25*TimerManager:game():delta_time(), }
     	self._unit:character_damage():damage_simple(action_data)
 	end
