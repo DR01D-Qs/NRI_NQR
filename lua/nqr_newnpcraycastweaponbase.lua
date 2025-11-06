@@ -36,6 +36,10 @@ end
 
 
 
+local mvec_to = Vector3()
+local mvec_spread = Vector3()
+local mvec1 = Vector3()
+
 function NewNPCRaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul, shoot_player, shoot_through_data)
 	local result = {}
 	local hit_unit = nil
