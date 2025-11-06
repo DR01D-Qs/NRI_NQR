@@ -40,3 +40,7 @@ Hooks:PostHook( BlackMarketTweakData, "_init_melee_weapons", "nqr_projectilestwe
 
 	self.melee_weapons.spoon_gold.fire_dot_data = nil
 end)
+
+Hooks:PostHook( BlackMarketTweakData, "_init_weapon_skins", "nqr_BlackMarketTweakData:_init_weapon_skins", function(self)
+	for i, k in pairs(self.weapon_skins) do k.default_blueprint = nil end
+end )
