@@ -10,7 +10,7 @@ Hooks:PostHook( GuiTweakData, "init", "nqr_guitweakdata", function(self)
 			{"shotgun"},
 			{"smg"},
 			{"machine_pistol"},
-			{"akimbo","machine_pistol"},
+			--{"akimbo","machine_pistol"},
 			{"wpn_special"},
 		},
 		secondaries = {
