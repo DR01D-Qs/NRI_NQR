@@ -1,0 +1,10 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_tng/weapons/wpn_fps_upg_o_spot/wpn_fps_upg_o_spot" orientation_object="rp_wpn_fps_upg_o_spot" />
+	<graphics>
+		<object name="g_spot" enabled="true" />
+
+		<object enabled="true" name="g_display" />
+		<object enabled="true" name="g_display_upper" />
+		<object enabled="true" name="g_illum" />
+	</graphics>
+</dynamic_object>

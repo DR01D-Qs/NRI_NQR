@@ -1,0 +1,17 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_pxp2/weapons/wpn_fps_sho_sko12_pts/wpn_fps_sho_sko12_mag_stick" orientation_object="rp_wpn_fps_sho_sko12_mag_stick" />
+	<graphics>
+		<object name="g_mag_stick" enabled="true" />
+		<object name="g_shell_1" enabled="true" />
+		<object name="g_shell_2" enabled="true" />
+	</graphics>
+	<animations>
+		<animation_group name="reload" >
+			<object name="anim_mag_reload" enabled="true" />
+		</animation_group>
+		<animation_group name="reload_not_empty" >
+			<object name="anim_mag_reload_not_empty" enabled="true" />
+		</animation_group>
+	</animations>
+	<lights />
+</dynamic_object>

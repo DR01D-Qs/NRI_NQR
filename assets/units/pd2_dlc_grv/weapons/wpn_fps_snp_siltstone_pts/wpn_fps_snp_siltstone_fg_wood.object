@@ -1,0 +1,7 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_grv/weapons/wpn_fps_snp_siltstone_pts/wpn_fps_snp_siltstone_fg_wood" orientation_object="rp_wpn_fps_snp_siltstone_fg_wood" />
+	<graphics>
+		<object name="g_sight" enabled="true" />
+		<object name="g_foregrip" enabled="true" />
+	</graphics>
+</dynamic_object>

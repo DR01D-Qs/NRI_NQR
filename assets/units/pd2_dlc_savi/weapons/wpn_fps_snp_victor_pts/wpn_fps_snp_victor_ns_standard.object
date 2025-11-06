@@ -1,0 +1,7 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_savi/weapons/wpn_fps_snp_victor_pts/wpn_fps_snp_victor_ns_standard" orientation_object="rp_wpn_fps_snp_victor_ns_standard" />
+	<graphics>
+		<object name="g_nozzle" enabled="true" />
+	</graphics>
+	<lights />
+</dynamic_object>

@@ -1,0 +1,17 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_tng/weapons/wpn_fps_upg_o_spot/wpn_fps_upg_o_spot" orientation_object="rp_wpn_fps_upg_o_spot" />
+	<graphics>
+		<object name="g_spot" enabled="true" />
+		
+        <object enabled="true" name="g_gfx_lens_3" />
+        <object enabled="true" name="g_gfx_lens_2" />
+        <object enabled="true" name="g_gfx_lens" />
+        <object enabled="true" name="g_reddot" />
+        <object enabled="true" name="g_inside" />
+		<object enabled="true" name="g_mullplan" />
+		<object enabled="false" name="g_screen" />
+		<object enabled="false" name="g_vr_lens" />
+		<object enabled="false" name="g_vr_phong" />
+		<object enabled="false" name="g_vr_spot" />
+	</graphics>
+</dynamic_object>

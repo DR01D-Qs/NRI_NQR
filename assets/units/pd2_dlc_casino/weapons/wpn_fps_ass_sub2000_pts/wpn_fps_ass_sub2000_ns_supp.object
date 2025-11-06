@@ -1,0 +1,7 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_fg_suppressed" orientation_object="rp_wpn_fps_ass_sub2000_fg_suppressed" />	
+
+	<graphics>
+		<object name="g_foregrip_lod0" enabled="true" />
+	</graphics>
+</dynamic_object>

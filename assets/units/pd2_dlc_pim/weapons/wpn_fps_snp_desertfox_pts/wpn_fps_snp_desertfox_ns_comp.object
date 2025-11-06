@@ -1,0 +1,6 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_b_long" orientation_object="rp_wpn_fps_snp_desertfox_b_long" />
+	<graphics>
+		<object name="g_comp" enabled="true" />
+	</graphics>
+</dynamic_object>

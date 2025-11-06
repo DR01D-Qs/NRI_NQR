@@ -1,0 +1,6 @@
+<dynamic_object>
+	<diesel materials="units/pd2_dlc_berry/weapons/wpn_fps_snp_model70_pts/wpn_fps_snp_model70_ns_suppressor" orientation_object="rp_wpn_fps_snp_model70_ns_suppressor" />
+	<graphics>
+		<object name="g_supp" enabled="true" />
+	</graphics>
+</dynamic_object>

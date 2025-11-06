@@ -1,0 +1,6 @@
+<materials version="3" group="weapon_group">
+    <material name="drum_wpn_fps_upg_m4_reusable_parts_drum" render_template="generic:DEPTH_SCALING:DIFFUSE_TEXTURE:NORMALMAP:NORMALMAP_UV1" version="2">
+        <diffuse_texture file="units/payday2/weapons/wpn_fps_upg_m4_reusable/wpn_fps_upg_m4_m_drum_df"/>
+        <bump_normal_texture file="units/payday2/weapons/wpn_fps_upg_m4_reusable/wpn_fps_upg_m4_m_drum_nm"/>
+    </material>
+</materials>

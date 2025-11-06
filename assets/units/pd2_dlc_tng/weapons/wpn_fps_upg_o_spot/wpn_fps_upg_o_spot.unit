@@ -1,0 +1,10 @@
+<unit type="wpn" slot="1" >
+	<object file="units/pd2_dlc_tng/weapons/wpn_fps_upg_o_spot/wpn_fps_upg_o_spot" />
+	<dependencies>
+		<depends_on font="fonts/font_digital" />
+	</dependencies>	
+	
+	<extensions>
+		<extension class="ScriptUnitData" name="unit_data" />
+	</extensions>
+</unit>

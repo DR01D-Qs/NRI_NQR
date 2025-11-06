@@ -1,0 +1,11 @@
+<dynamic_object>
+    <diesel orientation_object="rp_wpn_ass_g36"/>
+	<animations>
+		<animation_group name="reload">
+			<object name="mag_align" enabled="true" />
+		</animation_group>    
+		<animation_group name="reload_not_empty">
+			<object name="mag_align_2" enabled="true" />
+		</animation_group>
+    </animations>
+</dynamic_object>

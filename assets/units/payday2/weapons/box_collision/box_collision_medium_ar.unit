@@ -1,0 +1,10 @@
+<unit type="gen" slot="14">
+	<object file="units/payday2/weapons/box_collision/box_collision_medium_ar" />
+	<extensions>
+		<extension name="unit_data" class="ScriptUnitData" />
+		<extension name="damage" class="MagazineUnitDamage" >
+			<var name="_collision_event" value="wp_clip_generic_ass_npc" />
+			<var name="_collision_sfx_quite_time" value="0.1" />
+		</extension>
+	</extensions>
+</unit>
