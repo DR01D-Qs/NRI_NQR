@@ -3094,7 +3094,7 @@ function BlackMarketGui:update_info_text()
 			local weapon_id = slot_data.name
 			local weapon_tweak = weapon_id and tweak_data.weapon[weapon_id]
 
-			if weapon_tweak.has_description then
+			if weapon_tweak and weapon_tweak.has_description then
 				updated_texts[4].text = updated_texts[4].text .. "\n" .. managers.localization:to_upper_text(tweak_data.weapon[slot_data.name].desc_id)
 				updated_texts[4].below_stats = true
 			end
