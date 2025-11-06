@@ -357,7 +357,7 @@ function IntimitateInteractionExt:sync_interacted(peer, player, status, skip_ali
 			peer:on_used_body_bags()
 		end
 	elseif self.tweak_data == "nqr_corpse_loot" then
-		managers.mission._fading_debug_output:script().log(tostring("sync_interacted, status: ")..tostring(status), Color.red)
+		--managers.mission._fading_debug_output:script().log(tostring("sync_interacted, status: ")..tostring(status), Color.red)
 		self._unit:base().lootable_ammo = self._unit:base().lootable_ammo or {}
 		if not status or status<100 then return end
 		local ammo_type_codes = {

@@ -74,21 +74,16 @@ function NewNPCRaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, d
 
 	if col_ray then
 		if col_ray.unit:in_slot(self._character_slotmask) then
-			managers.mission._fading_debug_output:script().log(tostring("csc 1"), Color.white)
 			hit_unit = InstantBulletBase:on_collision(col_ray, self._unit, user_unit, damage, self._fires_blanks)
 		elseif shoot_player and self._hit_player and self:damage_player(col_ray, from_pos, direction) then
-			managers.mission._fading_debug_output:script().log(tostring("csc 2"), Color.white)
 			InstantBulletBase:on_hit_player(col_ray, self._unit, user_unit, self._damage * (dmg_mul or 1))
 		else
-			managers.mission._fading_debug_output:script().log(tostring("csc 3"), Color.white)
 			hit_unit = InstantBulletBase:on_collision(col_ray, self._unit, user_unit, damage, self._fires_blanks)
 		end
 	elseif shoot_player and self._hit_player then
-		managers.mission._fading_debug_output:script().log(tostring("csc 4"), Color.white)
 		local hit, ray_data = self:damage_player(col_ray, from_pos, direction)
 
 		if hit then
-			managers.mission._fading_debug_output:script().log(tostring("csc 5"), Color.white)
 			InstantBulletBase:on_hit_player(ray_data, self._unit, user_unit, damage)
 		end
 	end

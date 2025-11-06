@@ -4007,7 +4007,7 @@ function PlayerStandard:_check_action_interact(t, input)
 		if not self:_action_interact_forbidden() and not self._state_data.interact_redirect_t then
 			new_action, timer, interact_object = self._interaction:interact(self._unit, input.data, self._interact_hand)
 
-			if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
+			--if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
 
 			if new_action then
 				self:_play_interact_redirect(t, input)
