@@ -4001,6 +4001,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_ass_groza_bolt_standard.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_ass_groza_g_standard.pcs = {}
     self.parts.wpn_fps_ass_groza_g_standard.stats = { concealment = 0, weight = 1 }
+    self.parts.wpn_fps_ass_groza_gl_gp25.perks = nil
     self.parts.wpn_fps_ass_groza_gl_gp25.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_ass_groza_m_speed.stats = { concealment = 7, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["9x39"] = 20 } }
     self.parts.wpn_fps_ass_groza_m_standard.pcs = {}
@@ -8419,6 +8420,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_pis_type54_m_ext.stats = { concealment = 5, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = 11 }
     self.parts.wpn_fps_pis_type54_m_standard.stats = { concealment = 3, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = 8 }
     self.parts.wpn_fps_pis_type54_sl_standard.stats = { concealment = 0, weight = 0 }
+    self.parts.wpn_fps_pis_type54_underbarrel.pcs = nil
+    self.parts.wpn_fps_pis_type54_underbarrel_piercing.pcs = nil
+    self.parts.wpn_fps_pis_type54_underbarrel_slug.pcs = nil
     --table.insert(self.parts.wpn_fps_pis_type54_underbarrel.forbids, "wpn_fps_pis_type54_fl_rail")
     --[[self.parts.wpn_fps_pis_type54_underbarrel.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_pis_type54_underbarrel_piercing.stats = { concealment = 0, weight = 0 }

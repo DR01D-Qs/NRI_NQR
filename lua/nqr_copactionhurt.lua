@@ -173,7 +173,7 @@ function CopActionHurt:_upd_bleedout(t)
 
 					target_dis = mvec3_dir(target_vec, shoot_from_pos, spread_pos)
 
-					self._weapon_base:singleshot(shoot_from_pos, target_vec, falloff.dmg_mul, self._attention.unit:base().is_local_player, nil, nil, nil, self._attention.unit)
+					self._weapon_base:singleshot(shoot_from_pos, target_vec, falloff.dmg_mul, (self._attention and self._attention.unit and self._attention.unit:base().is_local_player) or nil, nil, nil, nil, self._attention.unit)
 
 					local rand = self:_pseudorandom()
 					self._shoot_t = t + math.lerp(falloff.recoil[1], falloff.recoil[2], rand)

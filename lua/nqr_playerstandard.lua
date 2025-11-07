@@ -1590,7 +1590,7 @@ end
 function PlayerStandard:_start_action_reload(t, magdrop)
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
-	if not (wep_base and wep_base:can_reload()) then return end
+	--if not (wep_base and wep_base:can_reload()) then return end
 
 	local wep_tweak_orig = wep_tweak
 	local is_akimbo = wep_base.AKIMBO
@@ -1765,7 +1765,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 			wep_base.shs = adjusted_r_enter
 
 		end
-		wep_base.r_offset_enter = 10/30 -- -0.0001
+		wep_base.r_offset_enter = r_cycle[1]=="r_bolt_release_1" and r_steps.r_bolt_release_1 or 10/30 -- -0.0001
 	end
 
 	wep_base.r_starting_stage = wep_base.r_stage
@@ -1803,6 +1803,9 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 			else
 				wep_base:tweak_data_anim_stop("fire_steelsight")
 				wep_base:tweak_data_anim_play("reload_enter", speed_multiplier_enter, wep_base.r_stage and wep_base.r_offset_enter or 0)
+				if wep_tweak.sao then 
+					wep_base:tweak_data_anim_play("fire", 0, 1/30)
+				end
 			end
 		elseif wep_base.r_stage==#r_cycle then
 			self._state_data.reload_enter_anim_expire_t = nil
@@ -1899,6 +1902,13 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	self._ext_network:send("reload_weapon", empty_reload, speed_multiplier)
 	wep_base:check_bullet_objects()
 	if wep_base.r_stage and r_cycle[wep_base.r_stage]=="r_get_new_mag_in" then wep_base:predict_bullet_objects() end
+
+	local is_revolver = wep_base:is_category("revolver")
+	if is_revolver then
+		wep_base.delayed_t1 = nil
+		wep_base.delayed_t2 = nil
+		self._cock_t = nil
+	end
 
 	if wep_base.r_stage~=#wep_base.r_cycle then wep_base:set_loader_visibility(true) end
 end
@@ -3819,8 +3829,8 @@ function PlayerStandard:_check_action_steelsight(t, input)
 		if managers.user:get_setting("hold_to_steelsight") and input.btn_steelsight_release then
 			self._steelsight_wanted = false
 		elseif input.btn_steelsight_press then
-			self._steelsight_wanted = true
 			self._queue_reload_interupt = true
+			if not wep_tweak.sao then self._steelsight_wanted = true end
 		end
 
 		return new_action
@@ -3873,7 +3883,10 @@ function PlayerStandard:_start_action_steelsight(t, gadget_state)
 		self:set_animation_weapon_hold("model3")
 		wep_base:tweak_data_anim_play("fire", (wep_tweak.bolt_speed or 1)*0.4, wep_tweak.sao and 0.035 or nil)
 		self._ext_camera:play_redirect(self:get_animation("recoil"), 0.7, 0.035)
-		if wep_tweak.sao then return end
+		if wep_tweak.sao then
+			self._steelsight_wanted = false
+			return
+		end
 	end
 
 	if self:_changing_weapon()

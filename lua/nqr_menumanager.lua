@@ -1,6 +1,7 @@
 _G.NQR = _G.NQR or {}
 NQR._path = ModPath
-NQR.settings_path = SavePath .. "nqr_savefile.txt"
+NQR._loc_path = ModPath .. "loc/"
+NQR._settings_path = SavePath .. "NQR_Savefile.txt"
 
 
 
@@ -585,45 +586,45 @@ end
 
 
 function NQR:Reset()
-	self.settings = {
-        nqr_wanted_sight = 3,
-		nqr_sight_order = 2,
+	NQR.settings = {
+        nqr_wanted_sight = 2,
 		nqr_retention_time = 0.2,
 		nqr_secondsightangle_value = 45,
 	}
 end
-
 function NQR:Save()
-	local file = io.open( self.settings_path, "w+" )
+	local file = io.open( NQR._settings_path, "w+" )
 	if file then
-		file:write( json.encode( self.settings ) )
+		file:write( json.encode( NQR.settings ) )
 		file:close()
 	end
 end
 function NQR:Load()
-	local file = io.open( self.settings_path, "r" )
+	local file = io.open( NQR._settings_path, "r" )
 	if file then
-		self.settings = json.decode( file:read("*all") )
+		NQR.settings = json.decode( file:read("*all") )
 		file:close()
 	else
 		NQR:Reset()
 		NQR:Save()
 	end
 end
+NQR:Load()
 
 Hooks:Add("LocalizationManagerPostInit", "LocalizationManagerPostInit_NQR", function( loc )
-	loc:load_localization_file( NQR._path .. "loc/en.txt")
+	for i, k in pairs(file.GetFiles(NQR._loc_path)) do
+		if Idstring(k:match('^(.*).txt$') or ""):key()==SystemInfo:language():key() then
+			loc:load_localization_file(NQR._loc_path .. k)
+			break
+		end
+	end
+	loc:load_localization_file(NQR._loc_path .. "english.txt", false)
 end)
 
 Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_NQR", function( menu_manager )
 
 	MenuCallbackHandler.nqr_wanted_sight_choice_callback = function(self, item)
 		NQR.settings.nqr_wanted_sight = item:value()
-		NQR:Save()
-	end
-
-	MenuCallbackHandler.nqr_sight_order_choice_callback = function(self, item)
-		NQR.settings.nqr_sight_order = item:value()
 		NQR:Save()
 	end
 
@@ -640,19 +641,13 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_NQR", function( menu_
 	MenuCallbackHandler.nqr_reset_callback = function(self, item)
 		NQR:Reset()
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_wanted_sight_choice"] = true}, NQR.settings.nqr_wanted_sight)
-		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_sight_order_choice"] = true}, NQR.settings.nqr_sight_order)
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_retention_slider"] = true}, NQR.settings.nqr_retention_time)
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_secondsightangle_slider"] = true}, NQR.settings.nqr_secondsightangle_value)
 		NQR:Save()
 	end
 
 	NQR:Load()
-	MenuHelper:LoadFromJsonFile( NQR._path .. "nqr_modoptions.txt", NQR, NQR.settings )
+	MenuHelper:LoadFromJsonFile( NQR._path .. "nqr_modoptions.json", NQR, NQR.settings )
 
 end)
-
-NQR:Load()
-
-
-
 

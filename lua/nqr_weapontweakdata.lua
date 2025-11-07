@@ -3133,7 +3133,7 @@ end
     self.peacemaker.feed_system = "cylinder_fixed"
     self.peacemaker.sao = true
     self.peacemaker.bolt_release = "none"
-    self.peacemaker.bolt_release_ratio = { 0.5, 0.5 }
+    self.peacemaker.bolt_release_ratio = { 0.8, 0.6 }
     self.peacemaker.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
     self.peacemaker.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
     self.peacemaker.weapon_hold = "raging_bull"

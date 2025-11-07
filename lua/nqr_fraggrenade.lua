@@ -55,19 +55,3 @@ function FragGrenade:clbk_impact(tag, unit, body, other_unit, other_body, positi
 
 	self:_detonate(tag, unit, body, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity, new_velocity, direction, damage, ...)
 end
-function FragGrenade:_on_collision(col_ray)
-	local reflect = col_ray and col_ray.unit:vehicle() and col_ray.unit:vehicle():is_active()
-	reflect = managers.modifiers:modify_value("FragGrenade:ShouldReflect", reflect, col_ray and col_ray.unit, self._unit)
-
-    if (tweak_data.projectiles[self._tweak_projectile_entry].launch_speed * 2 * self._existing_t) < (tweak_data.projectiles[self._tweak_projectile_entry].arming_distance or 0) then
-        if col_ray then
-            CoreSerialize.string_to_classtable("InstantBulletBase"):on_collision(col_ray, self._weapon_unit or self._unit, self._thrower_unit, self._damage, false)
-        end
-
-        self._detonated = true
-
-        return
-    end
-
-	self:_detonate()
-end
