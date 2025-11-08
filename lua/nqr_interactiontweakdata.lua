@@ -63,7 +63,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.apartment_helicopter.timer = 8
 	self.gen_pku_warhead_box.interact_distance = 100
 	self.gen_pku_warhead.interact_distance = 100
-	self.cas_screw_down.interact_distance = 110
+	self.cas_screw_down.interact_distance = 130
 	self.methlab_bubbling.interact_distance = 120
 	self.methlab_caustic_cooler.interact_distance = 110
 	self.methlab_gas_to_salt.interact_distance = 110

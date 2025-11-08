@@ -6406,6 +6406,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_ass_sub2000_ns_supp.override = {}
     self.parts.wpn_fps_ass_sub2000_ns_supp.animations = nil
     self.parts.wpn_fps_ass_sub2000_ns_supp.stats = deep_clone(self.nqr.sps_stats.medium)
+    self.parts.wpn_fps_ass_sub2000_fg_suppressed.is_a_unlockable = nil
     --self.parts.wpn_fps_ass_sub2000_fg_suppressed.unit = fantom_unit
     --self.parts.wpn_fps_ass_sub2000_fg_suppressed.type = "exclusive_set"
     self.parts.wpn_fps_ass_sub2000_fg_suppressed.perks = nil
@@ -7308,8 +7309,11 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_nqr_saiga_m_drum.name_id = "bm_wp_saiga_m_drum"
     self.parts.wpn_nqr_saiga_m_drum.unit = "units/payday2/weapons/wpn_fps_shot_saiga_pts/wpn_upg_saiga_m_20rnd"
     self.parts.wpn_nqr_saiga_m_drum.pcs = {}
+    self.parts.wpn_nqr_saiga_m_drum.animations = nil
     self.parts.wpn_nqr_saiga_m_drum.stats = { concealment = 28, weight = 10, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { ["12 gauge"] = 12, [".410 bore"] = 18 } }
     self.wpn_fps_shot_saiga.adds = {}
+    self.wpn_fps_shot_saiga.animations.reload = nil
+    self.wpn_fps_shot_saiga.animations.reload_not_empty = nil
     table.addto_dict(self.wpn_fps_shot_saiga.override, overrides_shotgun_sps_sound)
     table.deletefrom(self.wpn_fps_shot_saiga.uses_parts, self.nqr.all_snoptics)
     table.delete(self.wpn_fps_shot_saiga.default_blueprint, "wpn_upg_o_marksmansight_rear")

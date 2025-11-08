@@ -2124,6 +2124,7 @@ end
 function PlayerStandard:_interupt_action_reload(t)
 	local wep_base = self._equipped_unit:base()
 	--if not self:_is_reloading() then return end
+	self._magdrop_t = nil
 	if not self._state_data.reload_expire_t then wep_base:interupt_bolting(true) return end
 
 	local t = t or TimerManager:game():time()

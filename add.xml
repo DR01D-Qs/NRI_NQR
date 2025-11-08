@@ -44,7 +44,11 @@
 	<model path="units\payday2\weapons\wpn_fps_smg_olympic\wpn_fps_smg_olympic" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_smg_olympic_pts\wpn_fps_smg_olympic_fg_olympic" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_smg_olympic_pts\wpn_fps_smg_olympic_fg_railed" force="true"/>
+	<material_config path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_drum" force="true"/>
+	<material_config path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_drum_cc" force="true"/>
+	<material_config path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_drum_cc_thq" force="true"/>
 	<texture path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_drum_df_cc" force="true"/>
+	<material_config path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_drum_thq" force="true"/>
 	<texture path="units\payday2\weapons\wpn_fps_upg_m4_reusable\wpn_fps_upg_m4_m_pmag_df" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_upg_o_aimpoint\wpn_fps_upg_o_aimpoint" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_upg_o_aimpoint\wpn_fps_upg_o_aimpoint_preorder" force="true"/>

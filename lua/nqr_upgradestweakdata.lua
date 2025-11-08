@@ -531,7 +531,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 
 
 
-	self.definitions.wpn_prj_jav = nil
+	--self.definitions.wpn_prj_jav = nil
 	table.delete(self.level_tree[41].upgrades, "wpn_prj_jav")
 
 	self.definitions.amcar.free = nil

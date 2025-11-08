@@ -92,3 +92,42 @@ function UpgradesManager:get_value(upgrade_id, ...)
 
 	print("no value for", upgrade_id, upgrade.category)
 end
+
+
+
+function UpgradesManager:aquire(id, loading, identifier)
+	if not tweak_data.upgrades.definitions[id] then
+		Application:error("Tried to aquire an upgrade that doesn't exist: " .. (id or "nil") .. "")
+
+		return
+	end
+
+	local upgrade = tweak_data.upgrades.definitions[id]
+
+	if upgrade.dlc and not managers.dlc:is_dlc_unlocked(upgrade.dlc) and id~="peacemaker" then
+		Application:error("Tried to aquire an upgrade locked to a dlc you do not have: " .. id .. " DLC: ", upgrade.dlc)
+
+		return
+	end
+
+	if not identifier then
+		debug_pause(identifier, "[UpgradesManager:aquire] No identifier for upgrade aquire", "id", id, "loading", loading)
+
+		identifier = UpgradesManager.AQUIRE_STRINGS[1]
+	end
+
+	local identify_key = Idstring(identifier):key()
+
+	if self._global.aquired[id] and self._global.aquired[id][identify_key] then
+		Application:error("Tried to aquire an upgrade that has already been aquired: " .. id, "identifier", identifier, "id_key", identify_key)
+		Application:stack_dump()
+
+		return
+	end
+
+	self._global.aquired[id] = self._global.aquired[id] or {}
+	self._global.aquired[id][identify_key] = identifier
+
+	self:_aquire_upgrade(upgrade, id, loading)
+	self:setup_current_weapon()
+end

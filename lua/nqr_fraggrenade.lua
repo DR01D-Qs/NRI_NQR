@@ -43,7 +43,7 @@ function FragGrenade:clbk_impact(tag, unit, body, other_unit, other_body, positi
 	reflect = managers.modifiers:modify_value("FragGrenade:ShouldReflect", reflect, other_unit, self._unit)
 
 	local proj_tweak = tweak_data.projectiles[self._tweak_projectile_entry]
-    if not self._detonated and proj_tweak and proj_tweak.arming_distance and proj_tweak.launch_speed
+    if not self._detonated and proj_tweak and proj_tweak.arming_distance and proj_tweak.launch_speed and self._existing_t
 	and ((proj_tweak.launch_speed * 2 * self._existing_t) < (proj_tweak.arming_distance or 0)) then
         self._detonated = true
 

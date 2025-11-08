@@ -1,3 +1,7 @@
+local mvec1 = Vector3()
+local mrot1 = Rotation()
+local mrot2 = Rotation()
+
 function WeaponFlashLight:init(unit)
 	WeaponFlashLight.super.init(self, unit)
 
