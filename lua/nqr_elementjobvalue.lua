@@ -12,5 +12,5 @@ function ElementJobValue:init(...)
         family = { func_job_value_003 = 4, func_job_value_002 = 4, func_job_value_001 = 2 },
     }
 
-    self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
+    self._values.value = (lookup[job] and lookup[job][self._editor_name]) or self._values.value
 end

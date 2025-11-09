@@ -115,6 +115,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.corp_prop_celing_wires_cut.interact_distance = 200
 	self.hold_generator_start.interact_distance = 180
 	self.burning_money.interact_distance = 200
+	self.cas_open_guitar_case.interact_distance = 200
+	self.cas_take_gear.interact_distance = 200
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2

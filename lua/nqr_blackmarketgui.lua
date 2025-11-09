@@ -5731,21 +5731,6 @@ function BlackMarketGui:show_stats()
 				total_value = math.max(total_base_stats[stat.name].value + total_mods_stats[stat.name].value, 0)
 				unaltered_total_value = math.max(unaltered_total_base_stats[stat.name].value + unaltered_total_mods_stats[stat.name].value, 0)
 
-				--[[mod_stats.chosen["damage"] = WeaponDescription.get_energy(
-					total_mods_stats["cartridge"].value~=0 and total_mods_stats["cartridge"].value or total_base_stats["cartridge"].value,
-					total_mods_stats["barrel_length"].value~=0 and total_mods_stats["barrel_length"].value or total_base_stats["barrel_length"].value
-				) / 40 * 10
-				mod_stats.chosen["spread"] = WeaponDescription.get_spread(
-					total_mods_stats["cartridge"].value~=0 and total_mods_stats["cartridge"].value or total_base_stats["cartridge"].value,
-					total_mods_stats["barrel_length"].value~=0 and total_mods_stats["barrel_length"].value or total_base_stats["barrel_length"].value,
-					action_factor_spread
-				)
-				mod_stats.chosen["recoil"] = WeaponDescription.get_recoil(
-					total_mods_stats["cartridge"].value~=0 and total_mods_stats["cartridge"].value or total_base_stats["cartridge"].value,
-					total_mods_stats["barrel_length"].value~=0 and total_mods_stats["barrel_length"].value or total_base_stats["barrel_length"].value,
-					total_base_stats["weight"].value+total_mods_stats["weight"].value,
-					wep_tweak.rise_factor, action_factor_recoil, secondary_factor
-				)]]
 				local mods_ammotype_data = tweak_data.weapon:nqr_ammotype_data(
 					total_mods_stats.caliber.value~=0 and total_mods_stats.caliber.value or total_base_stats.caliber.value,
 					total_mods_stats.ammotype.value~=0 and total_mods_stats.ammotype.value or total_mods_stats.ammotype.value
@@ -5780,7 +5765,7 @@ function BlackMarketGui:show_stats()
 				for name, column in pairs(self._stats_texts[stat.name]) do column:set_alpha(stat_changed and 1 or 0.5) end
 
 				equip_to_draw = (type(equip)=="number" or type(equip)=="number") and (equip==0 and "" or (equip>0 and (stat.override and "=" or "+") or "")..format_round(equip, stat.round_value)) or format_round(equip, stat.round_value)
-				chosen_to_draw = (type(chosen)=="number" or type(chosen)=="number") and (chosen==0 and "" or (chosen>0 and (stat.override and "=" or "+") or "")..format_round(chosen, stat.round_value)) or format_round(chosen, stat.round_value)
+				chosen_to_draw = (type(chosen)=="number" or type(chosen)=="number") and (chosen==0 and "" or (chosen>0 and ((stat.override or mag_override) and "=" or "+") or "")..format_round(chosen, stat.round_value)) or format_round(chosen, stat.round_value)
 
 				self._stats_texts[stat.name].base:set_text(equip_to_draw) --equip == 0 and "" or (equip > 0 and "+" or "") .. format_round(equip, stat.round_value)
 				self._stats_texts[stat.name].base:set_alpha(0.75)
@@ -5848,11 +5833,9 @@ function BlackMarketGui:show_stats()
 
 				for name, column in pairs(self._stats_texts[stat.name]) do column:set_alpha(stat_changed and 1 or 0.5) end
 
-				local part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(self._slot_data.name, factory_id, default_blueprint)
-				local csc = nil
-				if part_data and part_data.type=="magazine" and stat.name=="magazine" then csc = true end
-				equip_to_draw = (type(equip)=="number" or type(equip)=="number") and (equip==0 and "" or (equip>0 and ((stat.override or csc) and "=" or "+") or "")..format_round(equip, stat.round_value)) or format_round(equip, stat.round_value)
-				chosen_to_draw = (type(chosen)=="number" or type(chosen)=="number") and (chosen==0 and "" or (chosen>0 and ((stat.override or csc) and "=" or "+") or "")..format_round(chosen, stat.round_value)) or format_round(chosen, stat.round_value)
+				local mag_override = tweak_parts and (tweak_parts.type=="magazine" or tweak_parts.type=="barrel" or tweak_parts.type=="exclusive_set") and stat.name=="magazine"
+				equip_to_draw = (type(equip)=="number" or type(equip)=="number") and (equip==0 and "" or (equip>0 and ((stat.override or mag_override) and "=" or "+") or "")..format_round(equip, stat.round_value)) or format_round(equip, stat.round_value)
+				chosen_to_draw = (type(chosen)=="number" or type(chosen)=="number") and (chosen==0 and "" or (chosen>0 and ((stat.override or mag_override) and "=" or "+") or "")..format_round(chosen, stat.round_value)) or format_round(chosen, stat.round_value)
 
 				--log(base_stats.totalammo.value)
 				--log(mods_stats.totalammo.value)

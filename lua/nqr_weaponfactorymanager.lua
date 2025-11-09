@@ -5,37 +5,13 @@ function WeaponFactoryManager:get_sound_switch(switch_group, factory_id, bluepri
 	local forbidden = self:_get_forbidden_parts(factory_id, blueprint)
 	local override = self:_get_override_parts(factory_id, assembled_blueprint)
 	local part = nil
-	local t = {}
 
 	for _, part_id in ipairs(blueprint) do
 		part = self:_part_data(part_id, factory_id, override)
 
-		if not forbidden[part_id] and part.sound_switch and part.sound_switch[switch_group] and not table.contains(t, part_id) then
-			table.insert(t, part_id)
+		if not forbidden[part_id] and part.sound_switch and part.sound_switch[switch_group] then
+			return self:_part_data(part_id, factory_id, override).sound_switch[switch_group]
 		end
-	end
-
-	if #t > 0 then
-		if #t > 1 then
-			local part_x, part_y = nil
-
-			table.sort(t, function (x, y)
-				part_x = self:_part_data(x, factory_id, override)
-				part_y = self:_part_data(y, factory_id, override)
-
-				if part_x.sub_type == "silencer" then
-					return true
-				end
-
-				if part_y.sub_type == "silencer" then
-					return false
-				end
-
-				return x < y
-			end)
-		end
-
-		return self:_part_data(t[1], factory_id, override).sound_switch[switch_group]
 	end
 
 	return nil

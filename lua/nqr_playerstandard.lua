@@ -3696,6 +3696,8 @@ function PlayerStandard:_start_action_lying(t)
 	managers.rumble:play("hard_land")
 
 	self._camera_unit:base():set_pitch(45)
+
+	self._ext_damage:set_armor(0)
 end
 --NEW FUNCTION: ARMOR PENALTY MUL
 function PlayerStandard:_armor_penalty_mul(param)

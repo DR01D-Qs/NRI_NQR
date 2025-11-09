@@ -429,6 +429,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 			) or k.value+(parts_stats[i] or 0)
 		end
 	end
+	self._current_stats.total_ammo_mod = parts_stats.totalammo or 0
 
 	--[[if stats.concealment then --placeholder
 		stats.suspicion = 1.6 --math.clamp(wep_tweak_default.stats.concealment - base_stats.concealment - (parts_stats.concealment or 0), 1, wep_tweak_default.stats.concealment)
@@ -1846,7 +1847,7 @@ function NewRaycastWeaponBase:replenish()
 		self._mag_amount
 		and (self._mag_amount * (self:use_shotgun_reload() and 1 or (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX)))
 		or tweak_data.weapon[self._name_id].AMMO_MAX
-	) + ammo_max_per_clip
+	) + (self._total_ammo_mod or 0) + ammo_max_per_clip
 
 	self:set_ammo_max_per_clip(ammo_max_per_clip)
 	self:set_ammo_max(ammo_max)
@@ -1867,7 +1868,11 @@ function NewRaycastWeaponBase:replenish()
 end
 function NewRaycastWeaponBase:get_ammo_max_total()
 	--return (self._mag_amount and (self._mag_amount * self:calculate_ammo_max_per_clip()) or tweak_data.weapon[self._name_id].AMMO_MAX) + self:calculate_ammo_max_per_clip()
-	return (self._mag_amount and (self._mag_amount * (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX)) or tweak_data.weapon[self._name_id].AMMO_MAX) + self:calculate_ammo_max_per_clip()
+	return (
+		(self._mag_amount and (self._mag_amount * (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX)) or tweak_data.weapon[self._name_id].AMMO_MAX)
+		+ self:calculate_ammo_max_per_clip()
+		+ (self._total_ammo_mod or 0)
+	)
 end
 
 

@@ -125,10 +125,9 @@ local enemy_mapping = {
 	[Idstring("units/payday2/characters/ene_city_heavy_r870/ene_city_heavy_r870"):key()] = {
 		--weapon = { {8, { {3,"r870"}, {10,"benelli"} }} },
 	},
-
   --
 
-  --ZOMBIES IIRC
+  --ZOMBIES
 	[Idstring("units/pd2_dlc_hvh/characters/ene_fbi_swat_hvh_1/ene_fbi_swat_hvh_1"):key()] = {
 		weapon = { {8, { {7,"mp5"}, {10,"m4"} }} },
 	},
@@ -136,16 +135,13 @@ local enemy_mapping = {
 		weapon = { {8, { {3,"mp5"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_fbi_swat_hvh_2/ene_fbi_swat_hvh_2"):key()] = {
-		weapon = { {8, { {3,"r870"}, {10,"benelli"} }} },
-	},
-	[Idstring("units/pd2_dlc_hvh/characters/ene_fbi_heavy_hvh_1/ene_fbi_heavy_hvh_1"):key()] = {
-		weapon = { {8, { {3,"mp5"}, {10,"m4"} }} },
+		--weapon = { {8, { {3,"r870"}, {10,"benelli"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_fbi_heavy_hvh_r870/ene_fbi_heavy_hvh_r870"):key()] = {
 		--weapon = { {8, { {3,"r870"}, {10,"benelli"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_shield_hvh_2/ene_shield_hvh_2"):key()] = {
-		weapon = { {8, { {3,"c45"}, {10,"mp9"} }} },
+		weapon = { {8, { {10,"c45"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_shield_hvh_1/ene_shield_hvh_1"):key()] = {
 		armor = { body=2, back=1, head={2, 0.3, 1.0}, face={2, 0.7}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 },
@@ -173,22 +169,22 @@ local enemy_mapping = {
 	[Idstring("units/payday2/characters/ene_murkywater_1/ene_murkywater_1"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {8, { {10,"ump"} }} },
 	},
 	[Idstring("units/payday2/characters/ene_murkywater_2/ene_murkywater_2"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {8, { {10,"ump"} }} },
 	},
 	[Idstring("units/pd2_dlc_des/characters/ene_murkywater_not_security_1/ene_murkywater_not_security_1"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {8, { {10,"ump"}, }} },
 	},
 	[Idstring("units/pd2_dlc_des/characters/ene_murkywater_not_security_2/ene_murkywater_not_security_2"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {8, { {10,"ump"}, }} },
 	},
 	[Idstring("units/pd2_dlc_des/characters/ene_murkywater_no_light_not_security/ene_murkywater_no_light_not_security"):key()] = {
 		ammo = { 2, 0 },
@@ -198,12 +194,12 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_berry/characters/ene_murkywater_no_light/ene_murkywater_no_light"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {8, { {10,"ump"}, }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_light/ene_murkywater_light"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=2, back=1, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {4, { {7,"ump"}, {10,"m4"} }}, {8, { {7,"ump"}, {10,"m4"} }} },
+		weapon = { {3, { {10,"ump"} }}, {8, { {7,"ump"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_light_r870/ene_murkywater_light_r870"):key()] = {
 		ammo = { 1, 0 },
@@ -230,12 +226,12 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_heavy/ene_murkywater_heavy"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {4, { {3,"ump"}, {10,"m4"} }}, {8, { {3,"ump"}, {10,"m4"} }} },
+		weapon = { {3, { {10,"ump"} }}, {8, { {3,"ump"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_mcmansion/characters/ene_hoxton_breakout_guard_2/ene_hoxton_breakout_guard_2"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {4, { {10,"ump"} }}, {8, { {10,"ump"} }} },
+		weapon = { {8, { {10,"ump"} }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_heavy_shotgun/ene_murkywater_heavy_shotgun"):key()] = {
 		ammo = { 2, 0 },
@@ -244,7 +240,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_heavy_g36/ene_murkywater_heavy_g36"):key()] = {
 		ammo = { 2, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {4, { {3,"ump"}, {10,"m4"} }}, {8, { {3,"ump"}, {10,"m4"} }} },
+		weapon = { {3, { {10,"ump"} }}, {8, { {3,"ump"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_sniper/ene_murkywater_sniper"):key()] = {
 		armor = { body=1, back=1, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
@@ -252,7 +248,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_shield/ene_murkywater_shield"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=3, back=2, head={3, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {3,"c45"}, {10,"mp9"} }} },
+		weapon = { {3, { {10,"c45"} }}, {8, { {3,"c45"}, {10,"mp9"} }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_tazer/ene_murkywater_tazer"):key()] = {
 		armor = { body=3, back=3, head={3, 0.7, 0.9}, face={2, 0.2}, lower_legs=2, upper_legs=2, lower_arm=2, upper_arm=2 },
@@ -278,7 +274,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_swat_ak47_ass/ene_akan_cs_swat_ak47_ass"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=2, back=1, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {7,"mp5"}, {10,"ak47_ass"} }} },
+		weapon = { {8, { {10,"mp5"} }} },
 	},
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_swat_r870/ene_akan_cs_swat_r870"):key()] = {
 		ammo = { 1, 0 },
@@ -288,7 +284,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_heavy_ak47_ass/ene_akan_cs_heavy_ak47_ass"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=3, back=2, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {3,"mp5"}, {10,"ak47_ass"} }} },
+		weapon = { {8, { {10,"mp5"} }} },
 	},
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_heavy_r870/ene_akan_cs_heavy_r870"):key()] = {
 		ammo = { 1, 0 },
@@ -328,7 +324,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_shield_c45/ene_akan_cs_shield_c45"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=3, back=2, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {3,"sr2_smg"}, {10,"c45"} }} },
+		weapon = { {8, { {10,"c45"} }} },
 	},
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_fbi_shield_sr2_smg/ene_akan_fbi_shield_sr2_smg"):key()] = {
 		ammo = { 1, 0 },
@@ -366,7 +362,7 @@ local enemy_mapping = {
   --POLICIA FEDERALE
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_policia_federale/ene_swat_policia_federale"):key()] = {
 		armor = { body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {4, { {7,"mp5"}, {10,"m4"} }}, {8, { {7,"mp5"}, {10,"m4"} }} },
+		weapon = { {3, { {10,"mp5"} }}, {8, { {7,"mp5"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_policia_federale_r870/ene_swat_policia_federale_r870"):key()] = {
 		armor = { body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
@@ -382,7 +378,7 @@ local enemy_mapping = {
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_heavy_policia_federale/ene_swat_heavy_policia_federale"):key()] = {
 		ammo = { 1, 0 },
 		armor = { body=3, back=2, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=2, upper_legs=0, lower_arm=2, upper_arm=0 },
-		weapon = { {8, { {3,"mp5"}, {10,"m4"} }} },
+		weapon = { {3, { {10,"mp5"} }}, {8, { {3,"mp5"}, {10,"m4"} }} },
 	},
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_heavy_policia_federale_r870/ene_swat_heavy_policia_federale_r870"):key()] = {
 		ammo = { 1, 0 },
@@ -395,7 +391,7 @@ local enemy_mapping = {
 	},
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_shield_policia_federale_c45/ene_swat_shield_policia_federale_c45"):key()] = {
 		armor = { body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
-		weapon = { {8, { {3,"c45"}, {10,"mp9"} }} },
+		weapon = { {8, { {10,"c45"} }} },
 	},
 	[Idstring("units/pd2_dlc_bex/characters/ene_swat_shield_policia_federale_mp9/ene_swat_shield_policia_federale_mp9"):key()] = {
 		armor = { body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 },
@@ -416,6 +412,7 @@ local enemy_mapping = {
 	},
   --
 
+  --MISC
 	[Idstring("units/pd2_dlc_usm2/characters/ene_male_marshal_shield_1/ene_male_marshal_shield_1"):key()] = {
 		weapon = { {8, { {10,"r870"} }} },
 	},
@@ -426,6 +423,7 @@ local enemy_mapping = {
 	[Idstring("units/payday2/characters/ene_bulldozer_4/ene_bulldozer_4"):key()] = {
 		weapon = { {8, { {10,"mini"} }} },
 	},
+  --
 }
 
 Hooks:PostHook(CopBase, "init", "nqr_CopBase:init", function(self, unit)

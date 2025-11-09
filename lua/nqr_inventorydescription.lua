@@ -312,7 +312,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 					if stats_mag==base_stats.magazine.value then
 						mag_dflt = stats_mag
 						mag_main = 0
-					elseif part_data.type~="magazine" and part_data.type~="barrel" then
+					elseif part_data.type~="magazine" and part_data.type~="barrel" and part_data.type~="exclusive_set" then
 						mag_ext = stats_mag
 					elseif stats_mag then
 						mag_dflt = stats_mag
@@ -343,7 +343,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 			end
 		end
 		main_total_ammo = (main_total_ammo==0 and wep_tweak.AMMO_MAX or main_total_ammo) + added_total_ammo
-		mods_stats.totalammo.value = main_total_ammo==base_stats.magazine.value and 1 or (main_total_ammo - base_stats.totalammo.value)
+		mods_stats.totalammo.value = main_total_ammo - base_stats.totalammo.value
 
 		local index, stat_name = nil
 
@@ -489,8 +489,8 @@ function WeaponDescription._get_weapon_mod_stats(mod_name, weapon_name, base_sta
 					end
 				elseif stat.name == "totalammo" then
 					if part_data.stats.mag_amount then
-						mod[stat.name] = (part_data.stats.mag_amount and part_data.stats.mag_amount[2] or 0)
-					elseif part_data.stats[stat.name] then
+						mod[stat.name] = (part_data.stats.mag_amount[2])-base_stats.totalammo.value
+					elseif part_data.stats.totalammo then
 						mod[stat.name] = part_data.stats[stat.name]
 					end
 				else

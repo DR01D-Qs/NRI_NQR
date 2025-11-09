@@ -329,6 +329,19 @@ function ActionSpooc:anim_act_clbk(anim_act)
 		managers.mutators:_run_func("OnPlayerCloakerKicked", self._unit)
 		managers.modifiers:run_func("OnPlayerCloakerKicked", self._unit)
 
+		if spooc_res~="countered" then
+			local push_vel = target_vec:with_z(0.1):normalized() * 600
+			local melee_weapon = self._unit:base():melee_weapon()
+			local is_weapon = melee_weapon == "weapon"
+			local action_data = {
+				variant = "melee",
+				damage = 2,
+				attacker_unit = self._common_data.unit,
+				push_vel = push_vel,
+			}
+			self._strike_unit:character_damage():damage_melee(action_data)
+		end
+
 		if spooc_res == "countered" then
 			if not Network:is_server() then
 				self._ext_network:send_to_host("action_spooc_stop", self._ext_movement:m_pos(), 1, self._action_id)

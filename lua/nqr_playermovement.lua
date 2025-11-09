@@ -15,7 +15,6 @@ function PlayerMovement:on_SPOOCed(enemy_unit)
 		state = managers.modifiers:modify_value("PlayerMovement:OnSpooked", state)
 
 		managers.player:player_unit():movement():current_state():_start_action_lying(TimerManager:game():time())
-		managers.player:player_unit():movement():current_state():_nqr_force_reequip(TimerManager:game():time())
 
 		managers.achievment:award(tweak_data.achievement.finally.award)
 
