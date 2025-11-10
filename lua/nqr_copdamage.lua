@@ -15,6 +15,30 @@ CopDamage._hurt_severities = {
 
 
 
+function CopDamage:_comment_death(attacker, killed_unit, special_comment)
+	if attacker==managers.player:player_unit() then return end
+
+	local victim_base = killed_unit:base()
+
+	if special_comment then
+		PlayerStandard.say_line(attacker:sound(), special_comment)
+	elseif victim_base:has_tag("tank") then
+		PlayerStandard.say_line(attacker:sound(), "g30x_any")
+	elseif victim_base:has_tag("spooc") then
+		PlayerStandard.say_line(attacker:sound(), "g33x_any")
+	elseif victim_base:has_tag("taser") then
+		PlayerStandard.say_line(attacker:sound(), "g32x_any")
+	elseif victim_base:has_tag("shield") then
+		PlayerStandard.say_line(attacker:sound(), "g31x_any")
+	elseif victim_base:has_tag("sniper") then
+		PlayerStandard.say_line(attacker:sound(), "g35x_any")
+	elseif victim_base:has_tag("medic") then
+		PlayerStandard.say_line(attacker:sound(), "g36x_any")
+	end
+end
+
+
+
 --REMOVE IMPACT EFFECT
 function CopDamage:damage_simple(attack_data)
 	if self._dead or self._invulnerable then
@@ -757,14 +781,6 @@ function CopDamage:damage_explosion(attack_data)
 
 		if critical_hit then
 			damage = crit_damage
-		end
-
-		if attack_data.weapon_unit and attack_data.variant ~= "stun" then
-			if critical_hit then
-				managers.hud:on_crit_confirmed()
-			else
-				managers.hud:on_hit_confirmed()
-			end
 		end
 	end
 

@@ -265,6 +265,16 @@ end
 
 
 
+function FPCameraPlayerBase:set_visible(visible)
+	self._unit:set_visible(visible)
+
+	if self._unit:spawn_manager() then
+		self._unit:spawn_manager():set_visibility_state(visible)
+	end
+end
+
+
+
 --GUN LENGTH SYSTEM
 Hooks:PostHook(FPCameraPlayerBase, "clbk_stance_entered", "nqr_FPCameraPlayerBase:clbk_stance_entered", function(self, new_shoulder_stance, new_head_stance, new_vel_overshot, new_fov, new_shakers, stance_mod, duration_multiplier, duration, head_duration_multiplier, head_duration)
 	self._current_stance = new_shoulder_stance

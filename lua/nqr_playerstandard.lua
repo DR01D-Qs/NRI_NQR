@@ -944,7 +944,7 @@ function PlayerStandard:_toggle_second_sight()
 end
 --IS CHANGING WEAPON: ADD REEQUIP FACTOR
 function PlayerStandard:_changing_weapon()
-	return self._unequip_weapon_expire_t or self._equip_weapon_expire_t or self._reequip_gadget_expire_t or self._state_data.interact_redirect_t
+	return self._unequip_weapon_expire_t or self._equip_weapon_expire_t or self._reequip_gadget_expire_t --or self._state_data.interact_redirect_t
 end
 --UPDATE ACTIONS: REEQUIP ON GADGET CHECK, MOVEMENT UNEQUIP CHECK
 function PlayerStandard:_update_check_actions(t, dt, paused)
@@ -4023,7 +4023,7 @@ function PlayerStandard:_check_action_interact(t, input)
 		if not self:_action_interact_forbidden() and not self._state_data.interact_redirect_t then
 			new_action, timer, interact_object = self._interaction:interact(self._unit, input.data, self._interact_hand)
 
-			--if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
+			if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
 
 			if new_action then
 				self:_play_interact_redirect(t, input)
@@ -4070,7 +4070,7 @@ function PlayerStandard:_check_action_interact(t, input)
 		end
 	end
 
-	if (self._start_intimidate or force_secondary_intimidate) and not self:_action_interact_forbidden() and (not keyboard and t > self._start_intimidate_t + secondary_delay or force_secondary_intimidate) then
+	if (self._start_intimidate or force_secondary_intimidate) --[[and not self:_action_interact_forbidden()]] and (not keyboard and t > self._start_intimidate_t + secondary_delay or force_secondary_intimidate) then
 		self:_start_action_intimidate(t, true)
 
 		self._start_intimidate = false
@@ -4367,6 +4367,28 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 	end
 
 	return voice_type, plural, prime_target
+end
+function PlayerStandard:_play_distance_interact_redirect(t, variant)
+	managers.network:session():send_to_peers_synched("play_distance_interact_redirect", self._unit, variant)
+
+	if self._state_data.in_steelsight then return end
+
+	if self._shooting or not self._equipped_unit:base():start_shooting_allowed() then return end
+
+	if self:_is_reloading()
+	or self:_changing_weapon()
+	or self:_is_meleeing()
+	or self._use_item_expire_t
+	or self._wall_unequip_t
+	or self._cock_t
+	then
+		return
+	end
+
+	if self._running then return end
+
+	self._state_data.interact_redirect_t = t + 1
+	self._ext_camera:play_redirect(Idstring(variant))
 end
 
 

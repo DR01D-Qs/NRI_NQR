@@ -252,3 +252,8 @@ end
 function HUDManager:activate_objective(data)
 	self._hud_objectives:activate_objective(data)
 end
+
+
+
+function HUDManager:on_hit_confirmed(damage_scale) end
+function HUDManager:on_crit_confirmed(damage_scale) end

@@ -23,6 +23,17 @@ function LocalizationManager:text(string_id, macros)
 
 		if string.find(str_id, "hud_v_four_stores_mission2") then
 			return_string = string.gsub(return_string, "15", "150")
+		elseif string.find(str_id, "menu_cg22_post_objective_1_desc") then
+			return_string = string.gsub(return_string, "2000", "200")
+		elseif string.find(str_id, "menu_cg22_post_objective_2_desc") then
+			return_string = string.gsub(return_string, "150", "15")
+			return_string = string.gsub(return_string, self:text("menu_difficulty_very_hard"), string.capitalize(self:text("menu_difficulty_hard")))
+		elseif string.find(str_id, "menu_cg22_post_objective_3_desc") then
+			return_string = string.gsub(return_string, "1000", "10")
+		elseif string.find(str_id, "menu_aru_job_3_obj_desc") then
+			return_string = string.gsub(return_string, self:text("bm_w_erma"), self:text("bm_w_ching"))
+		elseif string.find(str_id, "menu_aru_job_4_obj_desc") then
+			return_string = string.gsub(return_string, self:text("bm_w_ching"), self:text("bm_w_erma"))
 		end
 	end
 

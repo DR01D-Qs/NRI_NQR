@@ -107,9 +107,9 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.bex_activate_flare.sound_interupt = "bar_light_fireworks_cancel"
 	self.bex_activate_flare.sound_done = "bar_light_fireworks_finished"
 	self.c4_consume_x3.interact_distance = 100
-	self.stash_server_pickup.interact_distance = 160
+	self.stash_server_pickup.interact_distance = 170
 	self.stash_server_pickup.timer = nil
-	self.stash_server_pickup_server.interact_distance = 160
+	self.stash_server_pickup_server.interact_distance = 170
 	self.stash_server_pickup_server.timer = nil
 	self.c4_consume_x3.interact_distance = 100
 	self.corp_prop_celing_wires_cut.interact_distance = 200
@@ -117,6 +117,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.burning_money.interact_distance = 200
 	self.cas_open_guitar_case.interact_distance = 200
 	self.cas_take_gear.interact_distance = 200
+	self.hold_place_gps_tracker.interact_distance = 180
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2

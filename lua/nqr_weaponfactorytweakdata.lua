@@ -2132,6 +2132,8 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_upg_o_atibal_reddot.sub_type = "piggyback"
     self.parts.wpn_fps_upg_o_atibal_reddot.stats = { concealment = 3, weight = 1, sightheight = 1.9 } --height_dflt+5.9 --2.7
     self.parts.wpn_fps_upg_o_hamr.reticle_obj = "g_gfx"
+    self.parts.wpn_fps_upg_o_hamr.forbids = {}
+    table.addto(self.parts.wpn_fps_upg_o_hamr.forbids, self.nqr.all_second_sights)
     self.parts.wpn_fps_upg_o_hamr.stats = { concealment = 7, weight = 5, sightheight = height_dflt, zoom = 4 }
     self.parts.wpn_fps_upg_o_hamr_reddot.stats = { concealment = 0, weight = 0, sightheight = height_dflt+3.3 } --3.45
 
@@ -5999,13 +6001,16 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
         stats = { concealment = 0, weight = 2 },
 	}
     self.wpn_fps_smg_m45.adds = {}
+    self.wpn_fps_smg_m45.override = {
+        wpn_fps_addon_ris = { unit = "units/payday2/weapons/wpn_fps_shot_r870_pts/wpn_fps_shot_r870_gadget_rail" },
+    }
     table.deletefrom(self.wpn_fps_smg_m45.uses_parts, self.nqr.all_optics)
     table.insert(self.wpn_fps_smg_m45.default_blueprint, 1, "wpn_fps_extra_lock_sights")
     table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_fps_extra_lock_sights")
     table.insert(self.wpn_fps_smg_m45.default_blueprint, 1, "wpn_fps_extra2_lock_gadgets")
     table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_fps_extra2_lock_gadgets")
     table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_nqr_m45_sightrail")
-    table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_fps_shot_r870_gadget_rail")
+    table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_fps_addon_ris")
     table.insert(self.wpn_fps_smg_m45.uses_parts, "wpn_fps_remove_s")
     table.addto(self.wpn_fps_smg_m45.uses_parts, self.nqr.all_angled_sights)
 

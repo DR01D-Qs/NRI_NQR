@@ -294,7 +294,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 			) or "Default"
 		end
 
-		mods_stats.length.value = 0 - (base_stats.barrel_length and base_stats.barrel_length.value or 0)
+		--mods_stats.length.value = 0 - (base_stats.barrel_length and base_stats.barrel_length.value or 0)
 		local mag_dflt = wep_tweak.CLIP_AMMO_MAX
 		local mag_main = 0
 		local mag_ext = 0
@@ -320,10 +320,11 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 					end
 				end
 
-				mods_stats.length.value = mods_stats.length.value + --[[(part_data.stats.length or 0) +]] (part_data.stats.barrel_length or 0)
+				--mods_stats.length.value = mods_stats.length.value + --[[(part_data.stats.length or 0) +]] (part_data.stats.barrel_length or 0)
 			end
 		end
 		mods_stats.magazine.value = mag_main + mag_ext
+		mods_stats.length.value = mods_stats.length.value + (mods_stats.barrel_length.value or 0)
 
 		local main_total_ammo = 0
 		local added_total_ammo = 0
