@@ -9796,6 +9796,10 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     end
 
 
+
+    --jesus fucking christ this one single line solved such a headache
+    for i, k in pairs(self) do if self[i.."_npc"] then self[i.."_npc"].uses_parts = deep_clone(self[i].uses_parts) end end
+
 end)
 
 

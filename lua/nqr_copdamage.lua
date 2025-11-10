@@ -15,27 +15,9 @@ CopDamage._hurt_severities = {
 
 
 
-function CopDamage:_comment_death(attacker, killed_unit, special_comment)
+Hooks:PostHook( CopDamage, "_comment_death", "nqr_CopDamage:_comment_death", function(self, attacker, killed_unit, special_comment)
 	if attacker==managers.player:player_unit() then return end
-
-	local victim_base = killed_unit:base()
-
-	if special_comment then
-		PlayerStandard.say_line(attacker:sound(), special_comment)
-	elseif victim_base:has_tag("tank") then
-		PlayerStandard.say_line(attacker:sound(), "g30x_any")
-	elseif victim_base:has_tag("spooc") then
-		PlayerStandard.say_line(attacker:sound(), "g33x_any")
-	elseif victim_base:has_tag("taser") then
-		PlayerStandard.say_line(attacker:sound(), "g32x_any")
-	elseif victim_base:has_tag("shield") then
-		PlayerStandard.say_line(attacker:sound(), "g31x_any")
-	elseif victim_base:has_tag("sniper") then
-		PlayerStandard.say_line(attacker:sound(), "g35x_any")
-	elseif victim_base:has_tag("medic") then
-		PlayerStandard.say_line(attacker:sound(), "g36x_any")
-	end
-end
+end)
 
 
 

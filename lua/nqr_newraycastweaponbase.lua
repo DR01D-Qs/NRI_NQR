@@ -807,10 +807,6 @@ function NewRaycastWeaponBase:assemble_from_blueprint(factory_id, blueprint, clb
 
 	self:_check_thq_align_anim()
 	self:_update_stats_values()
-
-	for i, k in pairs(self._blueprint) do
-		--managers.mission._fading_debug_output:script().log(tostring(i)..": "..tostring(k), Color.red)
-	end
 end
 
 function NewRaycastWeaponBase:_refresh_second_sight_list()
