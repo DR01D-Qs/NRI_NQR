@@ -1,5 +1,9 @@
 <table directory="assets">
 	<animation path="anims\fps\jowi\jowi_recoil_heavy" force="true"/>
+	<animation path="anims\fps\ksg\ksg_reload" force="true"/>
+	<animation path="anims\fps\ksg\ksg_reload_enter" force="true"/>
+	<animation path="anims\fps\ksg\ksg_reload_exit" force="true"/>
+	<animation path="anims\fps\ksg\ksg_reload_not_empty_exit" force="true"/>
 	<effect path="effects\particles\weapons\sniper_glint_marshal" force="true"/>
 	<model path="units\payday2\characters\ene_acc_shield_lights\ene_acc_shield_lights" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_74\wpn_fps_ass_74" force="true"/>
