@@ -1137,7 +1137,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 	if not wep_base.force_fire_t then wep_base.force_fire_t = -1 end
 
 	if not action_forbidden and action_wanted
-	and not wep_base:use_shotgun_reload()
+	and not (wep_base:use_shotgun_reload() and not wep_base.r_stage)
 	and wep_base.r_cycle and wep_base.r_cycle[1]=="r_bolt_release_1"
 	and (wep_base.r_stage==2 or wep_base.r_stage==#wep_base.r_cycle) then
 		wep_base.r_didnt_load = wep_base.r_stage~=#wep_base.r_cycle
@@ -1356,7 +1356,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 							--end
 						end
 
-						if (wep_tweak.action=="bolt_action" or wep_base._name_id=="china") and self._state_data.in_steelsight then
+						if (wep_tweak.action=="bolt_action" or wep_tweak.ads_reset) and self._state_data.in_steelsight then
 							self:_interupt_action_steelsight(t)
 							self._steelsight_wanted = true
 						end
@@ -1518,7 +1518,7 @@ function PlayerStandard:_check_action_reload(t, input)
 	if not wep_base then return end
 	local action_forbidden = (
 		self._state_data.reload_expire_t
-		or wep_base:clip_full()
+		or (wep_base:clip_full() and not wep_base.r_stage)
 		or (wep_tweak.only_empty and not wep_base:clip_empty())
 		or self:shooting()
 		or self:_changing_weapon()
@@ -1534,7 +1534,7 @@ function PlayerStandard:_check_action_reload(t, input)
 
 	if input.btn_reload_press then
 		if not action_forbidden then
-			if not wep_base:use_shotgun_reload() then
+			if wep_base:can_magdrop() then
 				if not self._magdrop_t then
 					local no_mag = nil
 					if wep_base.r_stage then for i=1, wep_base.r_stage-1 do if wep_base.r_cycle[i]=="r_mag_out" then no_mag = 0 break end end end
@@ -1629,7 +1629,6 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	is_reload_not_empty = wep_tweak.feed_system=="ejecting_mag" and wep_base.r_not_empty or is_reload_not_empty
 	wep_base._started_reload_empty = not is_reload_not_empty or wep_base._started_reload_empty
 	wep_base.r_not_empty = is_reload_not_empty
-	local can_magdrop = wep_tweak.CLIP_AMMO_MAX>2 and wep_tweak.feed_system~="tube_fed"
 	local speed_multiplier = 1
 	local speed_multiplier_enter = 1
 	local speed_multiplier_loop = 1
@@ -1649,7 +1648,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 		* ( 1 + ((0.002*math.max(0, wep_base._weight-5))^0.75) )
 		* ((armor==6 or armor==5) and 1.05 or armor==7 and 1.1 or 1)
 		* (self._state_data.lying and 1.1 or 1)
-		* math.rand(0.9, 1.1)
+		* (wep_base:use_shotgun_reload() and 1 or math.rand(0.9, 1.1))
 	)
 	local r_steps = {
 		r_reach_for_old_mag = 0.2 * (wep_tweak.bullpup and 2 or 1) * r_multipliers,
@@ -1680,7 +1679,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	if not wep_base:use_shotgun_reload() then
 		for i, k in pairs(r_cycle) do if k=="r_keep_old_mag" and r_cycle[i-1]~="r_mag_out" then r_steps.r_keep_old_mag = 0.3 end end --if theres no old mag
 
-		if magdrop and can_magdrop and not wep_base._magdrop then
+		if magdrop and not wep_base._magdrop then
 			managers.mission._fading_debug_output:script().log(tostring("nqr_magdrop"),  Color.red)
 			self._state_data.magdrop_t = t
 			for i=(wep_base.r_stage or 1), #r_cycle do
@@ -1737,6 +1736,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 
 		if (r_cycle[1]=="r_bolt_release_1") and (wep_base._is_bolting==2) then
 			wep_base.r_stage = math.max(2, wep_base.r_stage or 0)
+			wep_base.r_offset_enter = wep_tweak.custom_enter or r_steps.r_bolt_release_1
 			r_steps.r_bolt_release_1 = 0
 		end
 
@@ -1762,10 +1762,8 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 			local adjusted_r_shell = vanilla_r_shell / speed_multiplier_loop
 			local adjusted_r_enter = ((r_cycle[1]=="r_bolt_release_1" and true_enter_tweak or 0) + r_steps.r_keep_old_mag_orig + r_steps.r_get_new_mag_in) - adjusted_r_shell
 			speed_multiplier_enter = adjusted_r_enter<=0 and 100 or (true_enter_tweak / adjusted_r_enter)
-			wep_base.shs = adjusted_r_enter
-
 		end
-		wep_base.r_offset_enter = r_cycle[1]=="r_bolt_release_1" and r_steps.r_bolt_release_1 or 10/30 -- -0.0001
+		wep_base.r_offset_enter = r_cycle[1]=="r_bolt_release_1" and wep_base.r_offset_enter or 10/30 -- -0.0001
 	end
 
 	wep_base.r_starting_stage = wep_base.r_stage
@@ -1911,6 +1909,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	end
 
 	if wep_base.r_stage~=#wep_base.r_cycle then wep_base:set_loader_visibility(true) end
+	wep_base:set_casing_visibility(true)
 end
 --RELOAD UPDATE: RESETTING RELOAD STAGE AND BOLTING, EXIT SPEED MULTIPLIER, BULLET OBJECTS REFILL FIX, AMMO BACKPACK CHECK
 function PlayerStandard:_update_reload_timers(t, dt, input)
@@ -2065,6 +2064,7 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 					wep_base:tweak_data_anim_stop("reload_not_empty_exit")
 					wep_base:tweak_data_anim_stop("reload_exit")
 					wep_base:tweak_data_anim_stop("reload")
+					wep_base:tweak_data_anim_stop("reload_enter")
 					wep_base:tweak_data_anim_play(wep_anim, 1, wep_tweak.anim_r_exit and 0.2 or 0)
 				end
 	
@@ -2143,15 +2143,13 @@ function PlayerStandard:_interupt_action_reload(t)
 	wep_base:set_loader_visibility(false)
 
 	if not wep_base:use_shotgun_reload() then
-		local can_magdrop = wep_tweak.CLIP_AMMO_MAX>2 and wep_tweak.feed_system~="tube_fed"
-
 		if r_cycle[r_stage]=="r_reach_for_old_mag" or r_cycle[r_stage]=="r_mag_out" then
 			r_stage = r_cycle[r_stage]=="r_reach_for_old_mag" and r_stage or (r_stage-1) --table.get_vector_index(r_cycle, "r_reach_for_old_mag")
 			wep_base._magdrop = nil
 		end
 
 		if (r_cycle[r_stage]=="r_keep_old_mag" and r_cycle[r_stage-1]=="r_mag_out") or r_cycle[r_stage]=="r_get_new_mag_in" then
-			if can_magdrop and not wep_base._magdrop then
+			if wep_base:can_magdrop() and not wep_base._magdrop then
 				managers.mission._fading_debug_output:script().log(tostring("nqr_magdrop"..(r_cycle[r_stage]=="r_get_new_mag_in" and " (full mag)" or "(partial mag)")),  Color.red)
 				wep_base:do_magdrop(r_cycle[r_stage]=="r_get_new_mag_in")
 			end
@@ -2178,7 +2176,6 @@ function PlayerStandard:_interupt_action_reload(t)
 			wep_base.r_offset = offset
 		end
 	else
-		local can_magdrop = true
 		local time = wep_base.r_time - ((self._state_data.reload_expire_t or 0) - t)
 		local count = 0
 		for i=(r_stage or 1), #r_cycle do
@@ -2201,10 +2198,10 @@ function PlayerStandard:_interupt_action_reload(t)
 		end
 
 		if r_stage and (r_cycle[r_stage]=="r_keep_old_mag" and r_cycle[r_stage-1]=="r_mag_out") or r_cycle[r_stage]=="r_get_new_mag_in" then
-			if can_magdrop and not wep_base._magdrop then
+			--if wep_base:can_magdrop() and not wep_base._magdrop then
 				managers.mission._fading_debug_output:script().log(tostring("nqr_magdrop"),  Color.red)
 				wep_base:do_magdrop()
-			end
+			--end
 
 			for i, k in pairs(r_cycle) do
 				if k=="r_keep_old_mag" then
@@ -2252,7 +2249,10 @@ function PlayerStandard:do_bolting(t)
 	local wep_tweak = wep_base:weapon_tweak_data()
 	local offset = 0.07
 
-	if wep_tweak.action=="bolt_action" and self._state_data.in_steelsight then
+	wep_base:set_casing_visibility(wep_base.chamber_state~=0)
+	if wep_tweak.r_hide_mag_on_bolting then wep_base:set_mag_visibility(not wep_base:clip_empty()) end
+
+	if self._state_data.in_steelsight and (wep_tweak.action=="bolt_action" or wep_tweak.ads_reset) then
 		self:_interupt_action_steelsight(t)
 		self._steelsight_wanted = not wep_base.r_stage
 	end
@@ -3903,7 +3903,7 @@ function PlayerStandard:_start_action_steelsight(t, gadget_state)
 	or self._wall_unequip_t
 	or (
 		not self._state_data.reload_expire_t and
-		(wep_tweak.action=="bolt_action" or wep_base._name_id=="china")
+		(wep_tweak.action=="bolt_action" or wep_tweak.ads_reset)
 		and not self._equipped_unit:base():start_shooting_allowed()
 	)
 	then
@@ -4023,7 +4023,7 @@ function PlayerStandard:_check_action_interact(t, input)
 		if not self:_action_interact_forbidden() and not self._state_data.interact_redirect_t then
 			new_action, timer, interact_object = self._interaction:interact(self._unit, input.data, self._interact_hand)
 
-			if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
+			--if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
 
 			if new_action then
 				self:_play_interact_redirect(t, input)

@@ -212,8 +212,7 @@ end
 --MAG VISIBILITY
 function NewRaycastWeaponBase:set_mag_visibility(visibility)
 	local mag_list = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("magazine", self._factory_id, self._blueprint)
-	local mag_id = mag_list and mag_list[1]
-	table.addto(mag_list, managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("loader", self._factory_id, self._blueprint))
+	table.addto(mag_list, managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("magazine2", self._factory_id, self._blueprint))
 
 	for i, k in pairs(mag_list) do
 		local part_data = self._parts[k]
@@ -229,6 +228,12 @@ function NewRaycastWeaponBase:set_mag_visibility(visibility)
 end
 function NewRaycastWeaponBase:set_loader_visibility(visibility)
 	local mag_list = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("loader", self._factory_id, self._blueprint)
+	local mag_id = mag_list and mag_list[1]
+	local part_data = self._parts[mag_id]
+	if part_data and part_data.unit then part_data.unit:set_visible(visibility) end
+end
+function NewRaycastWeaponBase:set_casing_visibility(visibility)
+	local mag_list = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("casing", self._factory_id, self._blueprint)
 	local mag_id = mag_list and mag_list[1]
 	local part_data = self._parts[mag_id]
 	if part_data and part_data.unit then part_data.unit:set_visible(visibility) end

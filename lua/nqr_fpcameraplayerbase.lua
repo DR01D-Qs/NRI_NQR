@@ -321,7 +321,6 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 		plr._wall_push = nil
 		local push_dist = overall_length - (ray and ray.distance or overall_length)
 		if plr._state_data.on_ladder and wep_base:selection_index()==2 then push_dist = math.max(9, push_dist) end
-		if plr._state_data.on_ladder then  self.shs = true else self.shs = nil end
 
 		if push_dist>4 then
 			plr._wall_push = true
@@ -339,6 +338,7 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 		end
 	end
 
+	if not self._current_stance then return end
 	local ads_mul = wep_base._current_stats.shouldered and 0.6 or 1
 	stance_pos = stance_pos or Vector3()
 	mvector3.lerp(stance_pos, stance_pos, self._current_stance.translation, dt * 16 * ads_mul * wep_swapped)
@@ -471,9 +471,15 @@ end
 --
 function FPCameraPlayerBase:enter_shotgun_reload_loop(unit, state, ...)
 	if alive(self._parent_unit) then
-		local speed_multiplier = self._parent_unit:inventory():equipped_unit():base()._current_reload_speed_multiplier_loop--:reload_speed_multiplier()
+		local wep_base = self._parent_unit:inventory():equipped_unit():base()
+		local wep_tweak = wep_base:weapon_tweak_data()
+		local speed_multiplier = wep_base._current_reload_speed_multiplier_loop--:reload_speed_multiplier()
 
-		self._parent_unit:inventory():equipped_unit():base():tweak_data_anim_play("reload", speed_multiplier)
+		if wep_tweak.r_ffs then
+			wep_base:tweak_data_anim_play("reload_enter", speed_multiplier, wep_tweak.r_enter/30)
+		else
+			wep_base:tweak_data_anim_play("reload", speed_multiplier)
+		end
 		self._unit:anim_state_machine():set_speed(Idstring(state), speed_multiplier)
 	end
 end

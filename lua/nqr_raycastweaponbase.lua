@@ -242,6 +242,8 @@ end
 
 --ANIM PLAY: OFFSET ARGUMENT, DONT_PLAY ARGUMENT
 function RaycastWeaponBase:anim_play(anim, speed_multiplier, offsetq, dont_play)
+	--managers.mission._fading_debug_output:script().log(tostring(anim).." "..tostring(speed_multiplier),  Color.white)
+
 	if anim then
 		local length = self._unit:anim_length(Idstring(anim))
 		speed_multiplier = speed_multiplier or 1

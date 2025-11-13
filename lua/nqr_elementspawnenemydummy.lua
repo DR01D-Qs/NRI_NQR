@@ -99,6 +99,15 @@ function ElementSpawnEnemyDummy:produce(params)
 			"spawn6_005",
 			"spawn6_006",
 		},
+		pal = {
+			"ai_spawn_enemy_shield_defend005",
+			"ai_spawn_enemy_shield_defend011",
+			"ai_spawn_enemy_shield_defend014",
+
+			"ai_spawn_enemy_shield_defend003",
+			"ai_spawn_enemy_shield_defend009",
+			"ai_spawn_enemy_shield_defend016",
+		},
 	}
 	forbids.election_day_3_skip1 = deep_clone(forbids.election_day_3)
 	forbids.election_day_3_skip2 = deep_clone(forbids.election_day_3)

@@ -177,42 +177,45 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		chca = {1.3,1.5}, --black cat
 		mad = {1.2,1}, --boiling point
 		kenaz = {1.2,1.5}, --golden grin casino
+		pal = {1.5,2}, --counterfeit
 	}
 	local custom_force = {
-		mia_2 = {2,1.5},
-		friend = {2,1.5},
-		mallcrasher = {2,1.5},
-		four_stores = {2,1.5},
-		crojob2 = {2,1.5},
-		big = {2,1.5},
-		welcome_to_the_jungle_1 = {2,1.5},
-		welcome_to_the_jungle_1_night = {2,1.5},
-		mex = {2,1.5},
-		framing_frame_1 = {2,1.5},
-		mus = {2, 1.5},
+		mia_2 = {2,1.3},
+		friend = {2,1.3},
+		mallcrasher = {2,1.3},
+		four_stores = {2,1.3},
+		crojob2 = {2,1.3},
+		big = {2,1.3},
+		welcome_to_the_jungle_1 = {2,1.3},
+		welcome_to_the_jungle_1_night = {2,1.3},
+		mex = {2,1.3},
+		framing_frame_1 = {2,1.3},
+		mus = {2, 1.3},
 
-		firestarter_1 = {1.5, 1.3},
-		firestarter_2 = {1.5, 1.3},
-		welcome_to_the_jungle_2 = {1.5, 1.3},
-		ranc = {1.5, 1.3},
-		deep = {1.5, 1.3},
-		hox_1 = {1.5, 1.3},
-		hox_2 = {1.5, 1.3},
-		wwh = {1.5, 1.3},
+		firestarter_1 = {1.5, 1.2},
+		firestarter_2 = {1.5, 1.2},
+		welcome_to_the_jungle_2 = {1.5, 1.2},
+		ranc = {1.5, 1.2},
+		deep = {1.5, 1.2},
+		hox_1 = {1.5, 1.2},
+		hox_2 = {1.5, 1.2},
+		wwh = {1.5, 1.2},
 	}
 	custom_force = custom_force[job] or {1, 1}
-	local diff_mul = difficulty_index==2 and 0.8 or difficulty_index<=4 and 0.9 or 1
-	local force_mul = (job_mapping[job] and job_mapping[job][1] or 1) * diff_mul
-	local delay_mul = job_mapping[job] and job_mapping[job][2] or 1
-	self.besiege.assault.delay = { 10*delay_mul, 20*delay_mul, 30*delay_mul }
-	self.besiege.assault.force = { 3*force_mul*custom_force[1], 4*force_mul*custom_force[2], 6*force_mul }
+	local force_mul = (job_mapping[job] and job_mapping[job][1] or 1)
+
 	if difficulty_index <= 2 then
-		self.besiege.assault.force_pool = { 8*custom_force[1], 10*custom_force[2], 12 }
+		self.besiege.assault.force = { 3*force_mul*custom_force[1], 5*force_mul*custom_force[2], 7*force_mul }
+		self.besiege.assault.force_pool = { 6, 10, 14 }
 	else
-		self.besiege.assault.force_pool = { 8*custom_force[1], 10*custom_force[2], 12 }
+		self.besiege.assault.force = { 4*force_mul*custom_force[1], 6*force_mul*custom_force[2], 8*force_mul }
+		self.besiege.assault.force_pool = { 8, 12, 16 }
 	end
 	self.besiege.assault.force_balance_mul = { 1.0, 1.75, 2.5, 3.5 }
 	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.5, 2.0, 3.0 }
+
+	local delay_mul = job_mapping[job] and job_mapping[job][2] or 1
+	self.besiege.assault.delay = { 10*delay_mul, 20*delay_mul, 30*delay_mul }
 
 	self.besiege.assault.groups = {
 		tac_swat_shotgun_rush = { 0.0, 0.0, 0.1 },
@@ -228,9 +231,9 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 	self.besiege.assault.groups.single_spooc = { 0, 0, 0 }
 	self.besiege.assault.groups.Phalanx = { 0, 0, 0 }
 	if difficulty_index == 3 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.2, 0.3 }
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.2 }
 	elseif difficulty_index == 5 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.2, 0.3 }
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.2 }
 		self.besiege.assault.groups.tac_tazer_flanking = { 0.0, 0.1, 0.3 }
 		self.besiege.assault.groups.tac_tazer_charge = { 0.0, 0.1, 0.3 }
 	end

@@ -51,8 +51,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.big_computer_hackable.interact_distance = 140
 	self.hold_signal_driver.interact_distance = 350
 	self.hold_remove_rope.interact_distance = 110
-	self.hold_open_bomb_hatch.interact_distance = 100
-	self.hold_start_bomb_charge.interact_distance = 100
+	self.hold_open_bomb_hatch.interact_distance = 80
+	self.hold_start_bomb_charge.interact_distance = 80
 	self.disarm_bomb.interact_distance = 180
 	self.glass_cutter.interact_distance = 200
 	self.glass_cutter_jammed.interact_distance = 200
@@ -63,7 +63,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.apartment_helicopter.timer = 8
 	self.gen_pku_warhead_box.interact_distance = 100
 	self.gen_pku_warhead.interact_distance = 100
-	self.cas_screw_down.interact_distance = 130
+	self.cas_screw_down.interact_distance = 120
 	self.methlab_bubbling.interact_distance = 120
 	self.methlab_caustic_cooler.interact_distance = 110
 	self.methlab_gas_to_salt.interact_distance = 110
@@ -118,6 +118,9 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.cas_open_guitar_case.interact_distance = 200
 	self.cas_take_gear.interact_distance = 200
 	self.hold_place_gps_tracker.interact_distance = 180
+	self.apply_thermite_paste_chca.interact_distance = 300
+	self.press_printer_paper.interact_distance = 180
+	self.press_printer_ink.interact_distance = 180
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2
@@ -161,6 +164,9 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	local lookup = {
 		man = { gen_int_saw = { interact_distance = 120 }, gen_int_saw_jammed = { interact_distance = 120 }, gen_int_saw_upgrade = { interact_distance = 120 } },
 		flat = { apartment_saw = { interact_distance = 200 }, gen_int_saw_jammed = { interact_distance = 200 }, gen_int_saw_upgrade = { interact_distance = 200 } },
+		chca = { apartment_saw = { interact_distance = 200 }, gen_int_saw_jammed = { interact_distance = 200 }, gen_int_saw_upgrade = { interact_distance = 200 } },
+		brb = { cas_screw_down = { interact_distance = 155 } },
+		pal = { c4_diffusible = { timer = 3 } },
 	}
 	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k) do self[i][u] = j end end
 

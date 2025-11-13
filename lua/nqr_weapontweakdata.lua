@@ -1889,6 +1889,7 @@ end
     self.ching.custom_cycle_2 = { "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release" }
     self.ching.eq_fr = {0,8,12}
     self.ching.r_ass = 1/30
+	self.ching.r_no_bullet_clbk = true
 	self.ching.shot_anim_steelsight = true
 
     self.sbl.caliber = ".45-70"
@@ -2238,7 +2239,7 @@ end
     self.boot.r_get_new_mag_in = 0.7
     self.boot.anim_empty_chamber = true
     self.boot.bolt_release = "none"
-    self.boot.bolt_release_ratio = { 0.5, 0.5 }
+    self.boot.bolt_release_ratio = { 1.2, 0.5 }
     self.boot.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.boot.exit_anim_partial = true
 	self.boot.custom_enter = 11/30
@@ -2331,6 +2332,7 @@ end
     self.ksg.feed_system = "tube_fed"
     self.ksg.fire_mode_data.fire_rate = 0.6
     self.ksg.shot_anim_hands = 13
+    self.ksg.timers.shotgun_reload_enter = 14/30
     self.ksg.r_enter = 8
     self.ksg.r_shell = 10
     self.ksg.eq_fr = {0,13,13}
@@ -2346,6 +2348,7 @@ end
     self.spas12.timers.shotgun_reload_exit_empty = 1
     self.spas12.r_enter = self.r870.r_enter
     self.spas12.r_shell = self.r870.r_shell
+    self.spas12.r_exit_mul = 0.6
     self.spas12.eq_fr = self.r870.eq_fr
     self.spas12.shot_anim_mul = 0.6
     --self.spas12.weapon_hold = self.r870.weapon_hold
@@ -2358,6 +2361,7 @@ end
     self.benelli.feed_system = "tube_fed"
     self.benelli.bolt_release = "half"
     self.benelli.anim_r_exit = "reload"
+    self.benelli.r_exit_mul = 0.6
     self.benelli.r_can_doubleload = true
     self.benelli.r_enter = self.r870.r_enter
     self.benelli.r_shell = self.r870.r_shell
@@ -3369,7 +3373,7 @@ end
     self.gre_m79.animations = { equip_id = "equip_gre_m79", recoil_steelsight = true }
     self.gre_m79.feed_system = "break_action"
     self.gre_m79.bolt_release = "none"
-    self.gre_m79.bolt_release_ratio = { 0.7, 0.4 }
+    self.gre_m79.bolt_release_ratio = { 0.5, 0.3 }
     self.gre_m79.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
     --11 13
 
@@ -3386,7 +3390,7 @@ end
     self.m32.anim_r_loop = "reload"
     self.m32.r_enter = 58
     self.m32.r_shell = 44
-    self.m32.r_get_new_mag_in = 1
+    self.m32.r_get_new_mag_in = 1.5
     self.m32.shot_anim_mul = 2
     self.m32.anim_custom_click = 12/30
     self.m32.fire_mode_data.fire_rate = 0.3
@@ -3405,8 +3409,17 @@ end
     self.china.action = "pump_action"
     self.china.feed_system = "tube_fed"
     self.china.fire_mode_data.fire_rate = 1
-    --self.china.r_enter = 24
-    --self.china.r_shell = 17
+    self.china.shot_anim_hands = 38
+    self.china.r_get_new_mag_in = 0.7
+    self.china.r_ffs = 1
+    self.china.r_hide_mag_on_bolting = 1
+    self.china.timers.shotgun_reload_first_shell_offset = nil
+    --self.china.timers.shotgun_reload_shell = 18/30
+    self.china.anim_r_loop = "reload"
+    self.china.r_enter = 26
+    --self.china.r_shell = 18
+    self.china.r_exit_mul = 1
+    self.china.ads_reset = true
     self.china.eq_fr = self.m1897.eq_fr
     self.china.use_shotgun_reload = true
 
@@ -3439,9 +3452,13 @@ end
 
     self.ray.weight = 53
     self.ray.caliber = "M235"
-    self.ray.feed_system = "clip_loader"
+    self.ray.feed_system = "cylinder_detachable"
     self.ray.has_description = nil
     self.ray.fire_mode_data.fire_rate = 0.5
+    self.ray.mag_release = "topcover"
+    self.ray.bolt_release = "none"
+    self.ray.bolt_release_ratio = { 0.4, 1.2 }
+    self.ray.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 
     self.rpg7.weight = 63
     self.rpg7.caliber = "PG-7VL"

@@ -186,6 +186,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 	end
 
 	local to_load = {
+		"units/pd2_dlc_peta/weapons/wpn_fps_shot_m37/wpn_fps_shot_m37",
 		"units/pd2_dlc_lawp/weapons/wpn_fps_shot_ultima/wpn_fps_sho_ultima",
 		"units/pd2_dlc_grv/weapons/wpn_fps_snp_siltstone/wpn_fps_snp_siltstone",
 
@@ -652,6 +653,18 @@ end
 
 
 
+function NewRaycastWeaponBase:can_magdrop()
+	local wep_tweak = self:weapon_tweak_data()
+
+	return not (
+		self:use_shotgun_reload()
+		or wep_tweak.feed_system=="break_action"
+		or wep_tweak.feed_system=="clip_loader"
+	)
+end
+
+
+
 function NewRaycastWeaponBase:update_visibility_state()
 	self:_set_parts_visible(self._unit:visible(), true)
 end
@@ -672,6 +685,8 @@ function NewRaycastWeaponBase:_set_parts_visible(visible, dont_touch_mag)
 			local is_mag = (dont_touch_mag or self._magdrop) and tweak_data.weapon.factory.parts[part_id] and (
 				tweak_data.weapon.factory.parts[part_id].type=="loader"
 				or tweak_data.weapon.factory.parts[part_id].type=="magazine"
+				or tweak_data.weapon.factory.parts[part_id].type=="magazine2"
+				or tweak_data.weapon.factory.parts[part_id].type=="casing"
 			)
 			if not is_mag and alive(unit) then
 				is_visible = visible and self:_is_part_visible(part_id)
@@ -716,6 +731,8 @@ function NewRaycastWeaponBase:fire(...)
 	if self._fire_mode == ids_burst and self._bullets_fired > 1 and not self:weapon_tweak_data().sounds.fire_single then
 		--self:_fire_sound()
 	end
+
+	self:set_casing_visibility(true)
 
 	return ray_res
 end
@@ -1221,7 +1238,7 @@ end
 
 --ANIM PLAY: OFFSET ARGUMENT, DONT_PLAY ARGUMENT
 function NewRaycastWeaponBase:tweak_data_anim_play(anim, speed_multiplier, offsetq, dont_play, skip_sao_check)
-	--managers.mission._fading_debug_output:script().log(tostring(anim),  Color.white)
+	--managers.mission._fading_debug_output:script().log(tostring(anim).." "..tostring(speed_multiplier),  Color.white)
 
 	if not skip_sao_check and self:weapon_tweak_data().sao and anim=="fire" and dont_play then
 		self:tweak_data_anim_stop("fire", true)
