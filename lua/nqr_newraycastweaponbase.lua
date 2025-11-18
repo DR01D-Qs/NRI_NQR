@@ -191,6 +191,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		"units/pd2_dlc_grv/weapons/wpn_fps_snp_siltstone/wpn_fps_snp_siltstone",
 
 		["deagle"] = "units/pd2_dlc_rota/weapons/wpn_fps_sho_rota/wpn_fps_sho_rota",
+		["x_deagle"] = "units/pd2_dlc_rota/weapons/wpn_fps_sho_rota/wpn_fps_sho_rota",
 		["contraband"] = "units/pd2_dlc_spa/weapons/wpn_fps_snp_tti/wpn_fps_snp_tti",
 
 		--regressions
@@ -660,6 +661,7 @@ function NewRaycastWeaponBase:can_magdrop()
 		self:use_shotgun_reload()
 		or wep_tweak.feed_system=="break_action"
 		or wep_tweak.feed_system=="clip_loader"
+		or wep_tweak.feed_system=="backpack"
 	)
 end
 
@@ -728,9 +730,9 @@ end
 function NewRaycastWeaponBase:fire(...)
 	local ray_res = NewRaycastWeaponBase.super.fire(self, ...)
 
-	if self._fire_mode == ids_burst and self._bullets_fired > 1 and not self:weapon_tweak_data().sounds.fire_single then
+	--if self._fire_mode == ids_burst and self._bullets_fired > 1 and not self:weapon_tweak_data().sounds.fire_single then
 		--self:_fire_sound()
-	end
+	--end
 
 	self:set_casing_visibility(true)
 
@@ -1118,6 +1120,24 @@ function NewRaycastWeaponBase:_set_parts_enabled(enabled)
 				end
 			end
 		end
+	end
+end
+
+
+
+function NewRaycastWeaponBase:start_shooting()
+	if self._fire_mode == ids_volley then
+		self:_start_charging()
+
+		self._shooting = true
+
+		return
+	end
+
+	NewRaycastWeaponBase.super.start_shooting(self)
+
+	if self._fire_mode == ids_burst then
+		self._shooting_count = (self._burst_count or 3) * (self.AKIMBO and 2 or 1)
 	end
 end
 
@@ -1861,6 +1881,7 @@ function NewRaycastWeaponBase:replenish()
 		and (self._mag_amount * (self:use_shotgun_reload() and 1 or (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX)))
 		or tweak_data.weapon[self._name_id].AMMO_MAX
 	) + (self._total_ammo_mod or 0) + ammo_max_per_clip
+	ammo_max = tweak_data.weapon[self._name_id].feed_system=="backpack" and tweak_data.weapon[self._name_id].AMMO_MAX or ammo_max
 
 	self:set_ammo_max_per_clip(ammo_max_per_clip)
 	self:set_ammo_max(ammo_max)

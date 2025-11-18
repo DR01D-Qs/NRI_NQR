@@ -363,43 +363,6 @@ function PlayerStandard:update(t, dt)
 	self._initial_shake = self._initial_shake or shake
 	self._breath_offset = (self._breath_offset or self._initial_shake) + ((shake - self._initial_shake) * 4 * dt)
 	self._ext_camera:set_shaker_parameter("breathing", "offset", self._breath_offset)
-
-
-
-	if not self._ammo_backpack_given and not self._lost_ammo_from_backpack and not managers.player:get_my_carry_data() then
-		for i, k in pairs(self._unit:inventory():available_selections()) do
-			if k.unit:base():get_name_id()=="m134" then
-				--managers.player:set_synced_carry(managers.network:session():local_peer(), "ammo_backpack", 1, true, false, 1)
-				--managers.player:update_synced_carry_to_peers("ammo_backpack", 1, true, false, 1)
-				managers.player:set_carry("ammo_backpack", 1, true, false, 1)
-				managers.player:register_carry(managers.network:session():local_peer(), managers.player:get_my_carry_data() and managers.player:get_my_carry_data().carry_id)
-				self._ammo_backpack_given = true
-				break
-			end
-		end
-	end
-	self._has_ammo_backpack = managers.player:get_my_carry_data() and managers.player:get_my_carry_data().carry_id=="ammo_backpack"
-	if self._has_ammo_backpack and not self._got_ammo_from_backpack then
-		self._got_ammo_from_backpack = true
-		self._lost_ammo_from_backpack = nil
-		for i, k in pairs(self._unit:inventory():available_selections()) do
-			if k.unit:base():get_name_id()=="m134" then
-				k.unit:base():set_ammo_total(1000*managers.player:get_my_carry_data().multiplier)
-				managers.hud:set_ammo_amount(i, k.unit:base():ammo_info())
-			end
-		end
-	end
-	if not self._has_ammo_backpack and not self._lost_ammo_from_backpack then
-		self._got_ammo_from_backpack = nil
-		self._lost_ammo_from_backpack = true
-		for i, k in pairs(self._unit:inventory():available_selections()) do
-			if k.unit:base():get_name_id()=="m134" then
-				k.unit:base():set_ammo_total(0)
-				k.unit:base():set_ammo_remaining_in_clip(0)
-				managers.hud:set_ammo_amount(i, k.unit:base():ammo_info())
-			end
-		end
-	end
 end
 
 function PlayerStandard:exit(state_data, new_state_name)
@@ -1133,7 +1096,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 	local is_openbolt = wep_tweak.open_bolt
 	local delayed = is_openbolt or is_revolver
 	wep_base.delayed = delayed
-	local rof = wep_base:weapon_fire_rate()/wep_base:fire_rate_multiplier()
+	local rof = (wep_base:weapon_fire_rate()/wep_base:fire_rate_multiplier())*(wep_base.AKIMBO and self._shooting and 0.5 or 1)
 	if not wep_base.force_fire_t then wep_base.force_fire_t = -1 end
 
 	if not action_forbidden and action_wanted
@@ -1164,8 +1127,9 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 
 				wep_base.force_fire_t = wep_base.force_fire_t + rof
 				rof = (wep_base.force_fire_t - t)
-				wep_base.delayed_t1 = t + (rof / 2)
+				wep_base.delayed_t1 = t + rof*0.5
 				wep_base:tweak_data_anim_play((wep_tweak.anim_shoot_stop or wep_tweak.dao_delayed) and "" or "fire", wep_tweak.bolt_speed or 1)
+				wep_base._fire_second_gun_next = not wep_base._fire_second_gun_next
 			end
 		end
 
@@ -1193,17 +1157,15 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 					if wep_base.delayed_t1~=0 then
 						wep_base.delayed_t1 = nil
 						self._shooting2 = nil
-						wep_base.delayed_t2 = t + rof/2
+						wep_base.delayed_t2 = t + rof*0.5
 						self:set_animation_weapon_hold(nil)
 						wep_base:tweak_data_anim_stop("fire")
 						self._ext_camera:play_redirect(self:get_animation("recoil"), 1, wep_tweak.anim_custom_click or 11/30)
-						wep_base._fire_second_gun_next = not wep_base._fire_second_gun_next
 					elseif wep_base.delayed_t1==0 and input.btn_primary_attack_press then
 						wep_base.delayed_t1 = nil
 						self._shooting2 = nil
-						wep_base.delayed_t2 = t + rof/2
+						wep_base.delayed_t2 = t + rof*0.5
 						wep_base:tweak_data_anim_stop("fire")
-						wep_base._fire_second_gun_next = not wep_base._fire_second_gun_next
 					end
 				end
 			end
@@ -1234,9 +1196,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 						if not self._shooting_fake then
 							if wep_base._next_fire_allowed <= t then
 								self._shooting_fake = true
-								self._ext_camera:play_redirect(self:get_animation("recoil_enter"))
 							else
-								self:_check_stop_shooting()
 								return false
 							end
 						end
@@ -1329,10 +1289,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 					if fired then
 						if wep_base.delayed_start then
 							wep_base.delayed_start = nil
-							wep_base.delayed_t2 = t + rof/2
-						end
-						if self._has_ammo_backpack and wep_base:get_name_id()=="m134" then
-							managers.player:nqr_check_backpack_value(0.001)
+							wep_base.delayed_t2 = t + rof*0.5
 						end
 
 						self._fire2_played = nil
@@ -1368,7 +1325,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 
 						local recoil_multiplier = (wep_base:recoil()) * (wep_base.AKIMBO and 1.5 or 1) -- + wep_base:recoil_addend()) * wep_base:recoil_multiplier()
 						local up, down, left, right = 1.6, 1.2, -0.1, 1.0 --unpack(wep_tweak.kick[self._state_data.in_steelsight and "steelsight" or self._state_data.ducking and "crouching" or "standing"])
-						if wep_tweak.reverse_rise then up, down, left, right = -1, -1.5, -0.1, 1.0 end
+						if wep_tweak.reverse_rise then up, down, left, right = -1, -1.2, -0.1, 1.0 end
 						self._camera_unit:base():recoil_kick(up * recoil_multiplier, down * recoil_multiplier, left * recoil_multiplier, right * recoil_multiplier)
 						if not wep_base._current_stats.shouldered then self:recoil_kick(up * recoil_multiplier, up * recoil_multiplier, left * recoil_multiplier, right * recoil_multiplier) end
 
@@ -1636,7 +1593,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	local empty_reload = wep_base:clip_empty() and 1 or 0
 	local reload_prefix = wep_base:reload_prefix() or ""
 	local reload_name_id = wep_tweak.r_anim_swap or wep_tweak.animations.reload_name_id or wep_base.name_id
-	local reload_anim = (is_reload_not_empty and wep_base:get_ammo_max_per_clip()>2) and "reload_not_empty" or "reload"
+	local reload_anim = (is_reload_not_empty and wep_base:clip_not_empty()) and "reload_not_empty" or "reload"
 	local reload_ids = Idstring(string.format("%s%s_%s", reload_prefix, reload_anim, reload_name_id))
 	local reload_tweak = is_reload_not_empty and (wep_tweak.timers.reload_not_empty or 2.2) or (wep_tweak.timers.reload_empty or 2.6)
 	local true_enter_tweak = wep_tweak.r_enter and (wep_tweak.r_enter/30) or wep_base:_first_shell_reload_expire_t(is_reload_not_empty)
@@ -3267,11 +3224,6 @@ function PlayerStandard:_determine_move_direction()
 		return
 	end
 
-	if self._state_data.lying and (
-		self._state_data.interact_redirect_t
-		or self:_is_meleeing()
-	) then return end
-
 	self._stick_move = self._controller:get_input_axis("move")
 	if mvector3.length(self._stick_move) < PlayerStandard.MOVEMENT_DEADZONE or self:_interacting() or self:_does_deploying_limit_movement() then
 		self._move_dir = nil
@@ -4379,7 +4331,8 @@ function PlayerStandard:_play_distance_interact_redirect(t, variant)
 	or self:_changing_weapon()
 	or self:_is_meleeing()
 	or self._use_item_expire_t
-	or self._wall_unequip_t
+	or not self._wall_equipped
+	or not self._movement_equipped
 	or self._cock_t
 	then
 		return

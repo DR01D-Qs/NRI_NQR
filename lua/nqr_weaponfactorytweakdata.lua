@@ -2467,13 +2467,16 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_m4_uupg_b_sd.forbids = deep_clone(forbids_fg_sd)
     self.parts.wpn_fps_m4_uupg_b_sd.override = { wpn_fps_m4_uupg_fg_rail_ext = { unit = fantom_unit } }
     self.parts.wpn_fps_m4_uupg_b_sd.stats = { concealment = 0, weight = 11, barrel_length = 6, md_code = {5,0,0,0,0} } --not_sure barrel
+    self.parts.wpn_fps_upg_ass_m4_b_beowulf.sound_switch = nil
     self.parts.wpn_fps_upg_ass_m4_b_beowulf.stats = { concealment = 0, weight = 0, barrel_length = 23 } --roughly
 
     self.parts.wpn_fps_ass_m16_o_handle_sight.pcs = {}
+    self.parts.wpn_fps_ass_m16_o_handle_sight.type = "ironsight"
     self.parts.wpn_fps_ass_m16_o_handle_sight.sightpairs = { "wpn_fps_ass_m16_os_frontsight", "wpn_fps_ass_m16_os_frontsight2", "wpn_fps_ass_m16_os_frontsight3" }
     self.parts.wpn_fps_ass_m16_o_handle_sight.adds = {}
-    self.parts.wpn_fps_ass_m16_o_handle_sight.forbids = { "wpn_fps_m4_uupg_o_flipup", "wpn_fps_amcar_uupg_body_upperreciever" } --"wpn_fps_m4_upg_fg_mk12"
-    table.addto(self.parts.wpn_fps_ass_m16_o_handle_sight.forbids, self.nqr.all_second_sights)
+    self.parts.wpn_fps_ass_m16_o_handle_sight.forbids = { --[["wpn_fps_m4_uupg_o_flipup",]] "wpn_fps_amcar_uupg_body_upperreciever" } --"wpn_fps_m4_upg_fg_mk12"
+    --table.addto(self.parts.wpn_fps_ass_m16_o_handle_sight.forbids, self.nqr.all_second_sights)
+    table.addto(self.parts.wpn_fps_ass_m16_o_handle_sight.forbids, self.nqr.all_sights)
     self.parts.wpn_fps_ass_m16_o_handle_sight.stats = { concealment = 5, weight = 3 }
     self.parts.wpn_fps_ass_m16_os_frontsight.pcs = {}
     self.parts.wpn_fps_ass_m16_os_frontsight.a_obj = "a_os1"
@@ -3029,6 +3032,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_ass_m4.default_blueprint, "wpn_fps_snp_victor_s_adapter")
     table.insert(self.wpn_fps_ass_m4.uses_parts, "wpn_fps_remove_s_addon")
     table.insert(self.wpn_fps_ass_m4.uses_parts, "wpn_fps_remove_fg")
+    table.insert(self.wpn_fps_ass_m4.uses_parts, "wpn_fps_remove_ironsight")
 
     self.parts.wpn_fps_amcar_uupg_fg_amcar.pcs = {}
     self.parts.wpn_fps_amcar_uupg_fg_amcar.name_id = "bm_wp_fps_amcar_uupg_fg_amcar"
@@ -3183,6 +3187,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_ass_m16.uses_parts, "wpn_fps_foregrip_lock_vertical_grips")
     table.insert(self.wpn_fps_ass_m16.default_blueprint, "wpn_fps_upg_blankcal_556")
     table.insert(self.wpn_fps_ass_m16.uses_parts, "wpn_fps_upg_blankcal_556")
+    table.insert(self.wpn_fps_ass_m16.uses_parts, "wpn_fps_remove_ironsight")
 
     self.parts.wpn_fps_smg_olympic_s_adjust.pcs = {}
     self.parts.wpn_fps_smg_olympic_s_adjust.name_id = "bm_wp_fps_smg_olympic_s_adjust"
@@ -3241,6 +3246,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_smg_olympic.uses_parts, "wpn_fps_foregrip_lock_vertical_grips")
     table.insert(self.wpn_fps_smg_olympic.default_blueprint, "wpn_fps_upg_blankcal_556")
     table.insert(self.wpn_fps_smg_olympic.uses_parts, "wpn_fps_upg_blankcal_556")
+    table.insert(self.wpn_fps_smg_olympic.uses_parts, "wpn_fps_remove_ironsight")
     table.addto(self.wpn_fps_smg_olympic.uses_parts, self.nqr.all_angled_sights)
 
     --self.wpn_fps_snp_victor.sightheight_mod = self.wpn_fps_ass_m16.sightheight_mod --this has to be down below
@@ -3435,6 +3441,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_snp_victor.uses_parts, "wpn_fps_snp_victor_body_receiver_upper_hera")
     table.insert(self.wpn_fps_snp_victor.uses_parts, "wpn_fps_snp_victor_body_receiver_lower_hera")
     table.insert(self.wpn_fps_snp_victor.uses_parts, "wpn_fps_remove_ns")
+    table.insert(self.wpn_fps_snp_victor.uses_parts, "wpn_fps_remove_ironsight")
     table.insert(self.wpn_fps_snp_victor.uses_parts, "wpn_fps_fold_ironsight")
     table.addto(self.wpn_fps_snp_victor.uses_parts, self.nqr.all_bxs_sbr)
 --------
@@ -5084,7 +5091,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_snp_tti_fg_standard.override = {}
     self.parts.wpn_fps_snp_tti_fg_standard.stats = { concealment = 0, weight = 7 }
     self.parts.wpn_fps_snp_tti_g_grippy.stats = { concealment = 0, weight = 0 }
-    self.parts.wpn_fps_snp_tti_m_standard.stats = { concealment = 8, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = 20 }
+    self.parts.wpn_fps_snp_tti_m_standard.stats = { concealment = 8, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["7.62x51"] = 20, ["12 gauge"] = 0 } }
     self.parts.wpn_fps_snp_tti_ns_hex.texture_bundle_folder = "spa"
     self.parts.wpn_fps_snp_tti_ns_hex.dlc = "spa"
     self.parts.wpn_fps_snp_tti_ns_hex.parent = "barrel"
@@ -5125,6 +5132,8 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_foregrip_lock_gadgets")
     table.insert(self.wpn_fps_snp_tti.default_blueprint, 1, "wpn_fps_foregrip_lock_vertical_grips")
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_foregrip_lock_vertical_grips")
+    table.insert(self.wpn_fps_snp_tti.default_blueprint, "wpn_fps_upg_blankcal_762x51")
+    table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_upg_blankcal_762x51")
     table.insert(self.wpn_fps_snp_tti.default_blueprint, "wpn_fps_snp_victor_s_adapter")
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_remove_s_addon")
     --table.addto(self.wpn_fps_snp_tti.uses_parts, self.nqr.all_tube_stocks)
@@ -5136,7 +5145,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_sho_sko12_m_stick")
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_sho_sko12_m_drum")
     table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_upg_cal_12g")
-    table.addto(self.wpn_fps_snp_sbl.uses_parts, self.nqr.all_shotgun_ammotypes)
+    table.addto(self.wpn_fps_snp_tti.uses_parts, self.nqr.all_shotgun_ammotypes)
 
     self.parts.wpn_fps_snp_qbu88_b_long.stats = { concealment = 0, weight = 0, barrel_length = 32 } --roughly
     self.parts.wpn_fps_snp_qbu88_b_short.stats = { concealment = 0, weight = 0, barrel_length = 20 } --roughly
@@ -7393,9 +7402,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_sho_sko12_fg_standard.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_sho_sko12_m_stick.pcs = {}
     self.parts.wpn_fps_sho_sko12_m_stick.name_id = "bm_wp_sko12_m_stick"
-    self.parts.wpn_fps_sho_sko12_m_stick.stats = { concealment = 16, weight = 3, mag_amount = { 2, 3, 4 }, CLIP_AMMO_MAX = 9 }
+    self.parts.wpn_fps_sho_sko12_m_stick.stats = { concealment = 16, weight = 3, mag_amount = { 2, 3, 4 }, CLIP_AMMO_MAX = { ["12 gauge"] = 9, ["7.62x51"] = 0 } }
     self.parts.wpn_fps_sho_sko12_m_drum.pcs = {}
-    self.parts.wpn_fps_sho_sko12_m_drum.stats = { concealment = 54, weight = 8, mag_amount = { 1, 1, 1 }, CLIP_AMMO_MAX = 25, retention = false }
+    self.parts.wpn_fps_sho_sko12_m_drum.stats = { concealment = 54, weight = 8, mag_amount = { 1, 1, 1 }, CLIP_AMMO_MAX = { ["12 gauge"] = 25, ["7.62x51"] = 0 }, retention = false }
     self.parts.wpn_fps_sho_sko12_ns_default.pcs = {}
     self.parts.wpn_fps_sho_sko12_ns_default.dlc = "pxp2"
     self.parts.wpn_fps_sho_sko12_ns_default.texture_bundle_folder = "pxp2"
@@ -8634,6 +8643,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_upg_m4_g_contender.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_upg_m4_s_contender.type = "stock_addon"
     self.parts.wpn_fps_upg_m4_s_contender.adds_type = nil
+    self.parts.wpn_fps_upg_m4_s_contender.forbids = {}
     self.parts.wpn_fps_upg_m4_s_contender.stats = { concealment = 0, weight = 4, length = 7, shouldered = true }
     self.parts.wpn_fps_snp_contender_frontgrip_short.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_snp_contender_frontgrip_long.stats = { concealment = 0, weight = 0 }

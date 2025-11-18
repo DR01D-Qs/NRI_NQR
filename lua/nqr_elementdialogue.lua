@@ -63,8 +63,84 @@ function ElementDialogue:on_executed(instigator)
 		return
 	end
 
+    local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		escape_park = {
+			["time_limit_1"] = "none",
+			["time_limit_10sec"] = "none",
+			["time_limit_10sec001"] = "none",
+			["time_limit_2"] = "none",
+			["time_limit_3"] = "none",
+			["time_limit_30sec"] = "none",
+			["time_limit_4"] = "none",
+			["time_limit_5"] = "none",
+		},
+		escape_cafe = {
+			["10sec"] = "none",
+			["10sec001"] = "none",
+			["1min_VAN"] = "none",
+			["2min_VAN"] = "none",
+			["30sec_VAN"] = "none",
+			["3min_VAN"] = "none",
+			["4min"] = "none",
+			["5min"] = "none",
+		},
+		escape_street = {
+			["2min"] = "none",
+			["3min"] = "none",
+			["4min"] = "none",
+			["5min"] = "none",
+		},
+		escape_street = {
+			["2min"] = "none",
+			["3min"] = "none",
+			["4min"] = "none",
+			["5min"] = "none",
+		},
+		escape_overpass = {
+			["leaving_in_1min_HELI"] = "none",
+			["leaving_in_1min_VAN"] = "none",
+			["leaving_in_2min"] = "none",
+			["leaving_in_30sec_HELI"] = "none",
+			["leaving_in_30sec_VAN"] = "none",
+			["leaving_in_3min"] = "none",
+			["leaving_in_4min"] = "none",
+			["heli_leave_1min"] = "none",
+			["heli_leave_1min001"] = "none",
+			["heli_leave_1min002"] = "none",
+			["heli_leave_2min"] = "none",
+			["heli_leave_2min001"] = "none",
+			["van_leave_1min"] = "none",
+			["van_leave_1min001"] = "none",
+			["van_leave_1min002"] = "none",
+			["van_leave_1min003"] = "none",
+			["van_leave_2min"] = "none",
+			["van_leave_2min001"] = "none",
+		},
+		escape_garage = {
+			["Diag5min"] = "none",
+			["Diag4min"] = "none",
+			["Diag3min"] = "none",
+			["Diag2min"] = "none",
+			["Diag2min001"] = "none",
+			["Diag1min"] = "none",
+			["Diag1min001"] = "none",
+			["Diag30sec"] = "none",
+			["Diag10sec"] = "none",
+			["Diag10sec001"] = "none",
+		},
+	}
+	lookup.escape_cafe_day = deep_clone(lookup.escape_cafe)
+	lookup.escape_park_day = deep_clone(lookup.escape_park)
+	self._values.dialogue = (lookup[job] and lookup[job][self._editor_name]) or self._values.dialogue
+
     local lookup = {
 		dia_vo_4s_b015 = { dialogue = "pln_fost_en_03" },
+
+		--escape_street lines, as some of them have the same _editor_name's
+		pln_esc_01_to_departure_heli = { dialogue = "none" },
+		pln_esc_10secs_to_departure_heli = { dialogue = "none" },
+		pln_esc_30secs_to_departure_heli = { dialogue = "none" },
     }
 	self._values.dialogue = (lookup[self._editor_name] and lookup[self._editor_name].dialogue) or self._values.dialogue
 

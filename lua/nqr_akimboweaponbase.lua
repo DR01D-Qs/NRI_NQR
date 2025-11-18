@@ -1,3 +1,17 @@
+function AkimboWeaponBase:init(...)
+	AkimboWeaponBase.super.init(self, ...)
+
+	self._manual_fire_second_gun = self:weapon_tweak_data().manual_fire_second_gun
+
+	self._unit:set_extension_update_enabled(Idstring("base"), true)
+
+	self._fire_callbacks = {}
+
+	self._fire_second_gun_next = self:is_category("revolver") or self:weapon_tweak_data().dao or self:weapon_tweak_data().open_bolt
+end
+
+
+
 function AkimboWeaponBase:fire(...)
 	if not self._manual_fire_second_gun then
 		local result = AkimboWeaponBase.super.fire(self, ...)
@@ -18,12 +32,17 @@ function AkimboWeaponBase:fire(...)
 		if self._fire_second_gun_next then
 			if alive(self._second_gun) and self._setup and alive(self._setup.user_unit) then
 				result = self._second_gun:base().super.fire(self._second_gun:base(), ...)
+
+				if result then
+					self._second_gun:base():_fire_sound()
+				end
 			end
 
-			self._fire_second_gun_next = false
+			if not self.delayed then self._fire_second_gun_next = false end
 		else
 			result = AkimboWeaponBase.super.fire(self, ...)
-			self._fire_second_gun_next = true
+
+			if not self.delayed then self._fire_second_gun_next = true end
 		end
 
 		return result

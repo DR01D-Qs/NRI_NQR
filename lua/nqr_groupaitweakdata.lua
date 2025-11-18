@@ -153,7 +153,14 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		election_day_3_skip2 = {1.4,1.5}, --election day 3
 		bex = {2,1.5}, --san martin
 		chas = {2,1}, --dragon heist
-		escape_cafe = {0.4,1}, --escape cafe
+		escape_cafe = {0.4,1.5}, --escape cafe
+		escape_cafe_day = {0.4,1.5}, --escape cafe
+		escape_park = {0.4,1.5}, --escape park
+		escape_park_day = {0.4,1.5}, --escape park
+		escape_overpass = {0.4,1.5}, --escape overpass
+		escape_overpass_night = {0.4,1.5}, --escape overpass
+		escape_street = {0.4,1.5}, --escape street
+		escape_garage = {0.4,1.5}, --escape garage
 		watchdogs_1 = {1.2,1.5}, --
 		watchdogs_2 = {1,1.5}, --
 		ranc = {2.5,1.5}, --midland ranch

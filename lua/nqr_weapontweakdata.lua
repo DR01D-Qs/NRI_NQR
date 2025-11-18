@@ -2202,10 +2202,12 @@ end
     self.b682.weight = 37
     self.b682.rise_factor = 2
     self.b682.feed_system = "break_action"
-    self.b682.timers.reload_not_empty = 2.6
+    self.b682.timers.reload_not_empty = 2.7
     self.b682.bolt_release = "none"
     self.b682.bolt_release_ratio = { 0.6, 0.6 }
     self.b682.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+    self.b682.custom_cycle_2 = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+    self.b682.always_empty = false
     self.b682.eq_fr = {1,13,12}
 
     self.huntsman.caliber = "12 gauge"
@@ -2895,7 +2897,7 @@ end
     self.beer.rise_factor = 2
     self.beer.action = "moving_barrel"
     self.beer.eq_fr = {0,15,12}
-    self.beer.shot_anim_mul = 2
+    self.beer.shot_anim_mul = 1.75
     self.beer.timers = self.czech.timers
     self.beer.weapon_hold = self.czech.weapon_hold
     self.beer.animations.reload_name_id = self.czech.animations.reload_name_id
@@ -3198,6 +3200,24 @@ end
 
 
 ------AKIMBO
+    self.x_g18c.timers.reload_not_empty = self.x_g18c.timers.reload_not_empty-0.07
+
+    self.x_2006m.animations.reload_name_id = "x_chinchilla"
+    self.x_judge.animations.reload_name_id = "x_chinchilla"
+	--self.x_2006m.animations.second_gun_versions = self.x_rage.animations.second_gun_versions or {}
+    --self.x_2006m.animations.second_gun_versions.reload = "reload"
+    --self.x_judge.sounds.fire = "judge_fire"
+	--self.x_judge.sounds.fire_single = nil
+    self.x_sr2.sounds = self.sr2.sounds
+    self.x_deagle.sounds = self.deagle.sounds
+    if self.x_lemming then self.x_lemming.has_description = nil end
+    if self.x_rsh12 then self.x_rsh12.has_description = nil end
+
+	self.jowi.global_value = "pd2_clan"
+	self.x_g22c.global_value = "pd2_clan"
+	self.x_usp.global_value = "pd2_clan"
+	self.x_judge.global_value = "pd2_clan"
+
     local aki_origs = {
         "glock_17",
         "glock_18c",
@@ -3313,56 +3333,25 @@ end
                 self[ aki_weps[i] ][o] = l
             end
         end
-        if self[ aki_weps[i] ] then
-            self[ aki_weps[i] ].manual_fire_second_gun = true
-            self[ aki_weps[i] ].shot_anim_hip = true
-            self[ aki_weps[i] ].anim_custom_click = 8/30
-            self[ aki_weps[i] ].use_data.selection_index = 3
-            --self[ aki_weps[i] ].anim_no_full = true
+
+        local aki_wep = self[ aki_weps[i] ]
+        if aki_wep then
+            aki_wep.manual_fire_second_gun = true
+            aki_wep.shot_anim_hip = true
+            aki_wep.anim_custom_click = 8/30
+            aki_wep.anim_no_full = true
+            --aki_wep.use_data.selection_index = 3
+            --aki_wep.anim_no_full = true
+
+            if table.contains(aki_wep and aki_wep.categories or {}, "akimbo")
+            and table.contains(aki_wep and aki_wep.categories or {}, "machine_pistol") then
+                aki_wep.weapon_hold = self.x_g18c.weapon_hold
+                aki_wep.animations.reload_name_id = "x_g18c"
+                aki_wep.anim_reload_mul = 0.6
+                aki_wep.timers = self.x_g18c.timers
+            end
         end
-        --Utils.PrintTable(self[ aki_weps[i] ].sounds)
     end
-    self.x_2006m.animations.reload_name_id = "x_chinchilla"
-	--self.x_2006m.animations.second_gun_versions = self.x_rage.animations.second_gun_versions or {}
-    --self.x_2006m.animations.second_gun_versions.reload = "reload"
-    --self.x_judge.sounds.fire = "judge_fire"
-	--self.x_judge.sounds.fire_single = nil
-    self.x_deagle.sounds = self.deagle.sounds
-    self.x_judge.animations.reload_name_id = "x_chinchilla"
-    if self.x_lemming then self.x_lemming.has_description = nil end
-    if self.x_rsh12 then self.x_rsh12.has_description = nil end
-    self.x_mp9.weapon_hold = self.x_g18c.weapon_hold
-    self.x_mp9.animations.reload_name_id = "x_g18c"
-    self.x_mp9.anim_reload_mul = 0.6
-    self.x_mp9.timers.reload_not_empty = self.x_mp9.timers.reload_not_empty+0.1
-    self.x_mp9.timers.reload_empty = self.x_mp9.timers.reload_empty+1.0
-    self.x_mac10.weapon_hold = self.x_mp9.weapon_hold
-    self.x_mac10.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_mac10.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_pm9.weapon_hold = self.x_mp9.weapon_hold
-    self.x_pm9.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_pm9.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_pm9.timers.reload_not_empty = self.x_mp9.timers.reload_not_empty
-    self.x_pm9.timers.reload_empty = self.x_mp9.timers.reload_empty
-    self.x_scorpion.weapon_hold = self.x_mp9.weapon_hold
-    self.x_scorpion.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_scorpion.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_baka.weapon_hold = self.x_mp9.weapon_hold
-    self.x_baka.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_baka.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_tec9.weapon_hold = self.x_mp9.weapon_hold
-    self.x_tec9.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_tec9.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_cobray.weapon_hold = self.x_mp9.weapon_hold
-    self.x_cobray.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_cobray.anim_reload_mul = self.x_mp9.anim_reload_mul
-    self.x_sr2.weapon_hold = self.x_mp9.weapon_hold
-    self.x_sr2.animations.reload_name_id = self.x_mp9.animations.reload_name_id
-    self.x_sr2.anim_reload_mul = self.x_mp9.anim_reload_mul
-	self.jowi.global_value = "pd2_clan"
-	self.x_g22c.global_value = "pd2_clan"
-	self.x_usp.global_value = "pd2_clan"
-	self.x_judge.global_value = "pd2_clan"
 
 
 
@@ -3439,11 +3428,13 @@ end
 
     self.m134.caliber = "7.62x51"
     self.m134.weight = 190 --not_sure
-    self.m134.fire_mode_data.fire_rate = 0.05
+    self.m134.CLIP_AMMO_MAX = 1000
+    self.m134.fire_mode_data.fire_rate = 0.04
     self.m134.action = "gatling"
     self.m134.feed_system = "backpack"
     self.m134.reverse_rise = true
     self.m134.eq_fr = {0,30,17}
+    self.m134.fire_offset = 0.5/30
     self.m134.r_no_bullet_clbk = true
     self.m134.anim_no_semi = true
     self.m134.has_description = true
@@ -3532,7 +3523,7 @@ end
             --ALWAYS EMPTY
             if (self[wep].custom_cycle and self[wep].custom_cycle[1]=="r_bolt_release_1")
             and not (self[wep].custom_cycle_2 and self[wep].custom_cycle_2[1]~="r_bolt_release_1") then
-                self[wep].always_empty = true
+                self[wep].always_empty = self[wep].always_empty==nil and true
             end
 
             --ACTION MECHANICAL
@@ -3584,7 +3575,7 @@ end
     end
 
     self.m134.AMMO_PICKUP = { 0, 0 }
-    self.m134.AMMO_MAX = 1000
+    self.m134.AMMO_MAX = 0
 
 
 

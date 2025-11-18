@@ -166,6 +166,12 @@ end
 
 
 
+function RaycastWeaponBase:calculate_ammo_max_per_clip()
+	return (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX) * (self.AKIMBO and 2 or 1)
+end
+
+
+
 function RaycastWeaponBase:reload_speed_multiplier()
 	local multiplier = 1
 
@@ -370,9 +376,9 @@ function RaycastWeaponBase:update_next_shooting_time(bolting_factor)
 	end
 
 	local rof_cap = 0.12
-	local rof = self:weapon_fire_rate() / self:fire_rate_multiplier()
+	local rof = (self:weapon_fire_rate() / self:fire_rate_multiplier())
 	local t = self._unit:timer():time()
-	local next_fire = math.max(rof, self:fire_mode()=="single" and rof_cap or 0)
+	local next_fire = math.max(rof, self:fire_mode()=="single" and rof_cap or 0) * (self.AKIMBO and 0.5 or 1)
 	self._next_fire_allowed = (bolting_factor and t or self._next_fire_allowed) + math.max(bolting_factor or 0, next_fire - (bolting_factor or 0))
 end
 
@@ -789,8 +795,6 @@ function RaycastWeaponBase:get_chamber()
 	local wep_tweak = self:weapon_tweak_data()
 	return ((wep_tweak.chamber or 0) - (self.chamber_state and 1 or 0))*(self:is_category("akimbo") and 2 or 1)
 end
-
-
 
 function RaycastWeaponBase:start_shooting()
 	if self:gadget_overrides_weapon_functions() then
