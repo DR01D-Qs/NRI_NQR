@@ -6557,6 +6557,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     table.addto(self.wpn_fps_smg_fmg9.uses_parts, self.nqr.all_sights_no_snoptics)
     table.deletefrom(self.wpn_fps_smg_fmg9.uses_parts, self.nqr.all_bxs)
     table.insert(self.wpn_fps_smg_fmg9.default_blueprint, "wpn_fps_smg_fmg9_b_dummy")
+    table.insert(self.wpn_fps_smg_fmg9.uses_parts, "wpn_fps_smg_fmg9_b_dummy")
     table.addto(self.wpn_fps_smg_fmg9.uses_parts, self.nqr.all_bxs_sbp)
     table.addto(self.wpn_fps_smg_fmg9.uses_parts, self.nqr.all_pistol_gadgets)
     --table.insert(self.wpn_fps_smg_fmg9.uses_parts, "wpn_fps_remove_o")

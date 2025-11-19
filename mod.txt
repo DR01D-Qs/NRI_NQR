@@ -3,7 +3,7 @@
 	"description" : "NQR is a big work-in-progress overhaul mod, which aims for a vastly more grounded, hollywood-realism-flavoured gameplay experience.",
 	"author" : "DR01D_Qs, TheTankDivision, splish",
 	"contact" : "https://modworkshop.net/mod/54318",
-	"version" : "0.1.13",
+	"version" : "0.1.13.1",
 	"blt_version" : 2,
 	"priority" : 100,
 	"color" : "255 0 0",
