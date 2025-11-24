@@ -68,6 +68,52 @@ end
 
 
 
+function PlayerDamage:damage_explosion(attack_data)
+	if not self:_chk_can_take_dmg() then
+		return
+	end
+
+	local damage_info = {
+		result = {
+			variant = "explosion",
+			type = "hurt"
+		}
+	}
+
+	if self._god_mode or self._invulnerable or self._mission_damage_blockers.invulnerable then
+		self:_call_listeners(damage_info)
+
+		return
+	elseif self._unit:movement():current_state().immortal then
+		return
+	elseif self:incapacitated() then
+		return
+	end
+
+	local distance = mvector3.distance(attack_data.position, self._unit:position())
+
+	if attack_data.range < distance then
+		return
+	end
+
+	attack_data.damage = (attack_data.damage or 1) * (1 - distance / attack_data.range)
+
+	if self._bleed_out then
+		return
+	end
+
+	local armor_attack_data = deep_clone(attack_data)
+	armor_attack_data.damage = armor_attack_data.damage*3
+	local armor_subtracted = self:_calc_armor_damage(armor_attack_data)
+
+	local health_subtracted = self:_calc_health_damage(attack_data)
+
+	managers.player:send_message(Message.OnPlayerDamage, nil, attack_data)
+	self:_call_listeners(damage_info)
+end
+
+
+
 --STOP LYING ON REVIVE
 function PlayerDamage:revive(silent)
 	if Application:digest_value(self._revives, false) == 0 then

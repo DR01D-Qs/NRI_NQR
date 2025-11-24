@@ -623,6 +623,8 @@ end
         "x_basset",
         "x_sko12",
         "x_rota",
+    ------AKIMBO
+        "x_model3",
     ------SPECIAL
         "saw",
         "saw_secondary",
@@ -716,7 +718,7 @@ end
         "x_2006m",
         "x_chinchilla",
         "x_rage",
-        "x_model3",
+        --"x_model3",
         "x_judge",
     ------MACHINE PISTOL
         "x_mac10",
@@ -1458,6 +1460,7 @@ end
     self.amcar.bolt_release = "half"
     --self.amcar.timers.reload_not_empty = 2.0
     --self.amcar.timers.reload_empty = 2.8
+    self.amcar.animations.reload_name_id = "m4"
     self.amcar.eq_fr = self.new_m4.eq_fr
     self.amcar.shot_anim_mul = 1.25
     --self.amcar.r_no_bullet_clbk = true
@@ -1469,6 +1472,7 @@ end
     self.m16.fire_mode_data.fire_rate = 0.08
     self.m16.rise_factor = 0
     self.m16.bolt_release = "half"
+    self.m16.animations.reload_name_id = "m4"
     self.m16.eq_fr = self.new_m4.eq_fr
     self.m16.shot_anim_mul = 1.5
     --self.m16.r_no_bullet_clbk = true
@@ -1481,6 +1485,7 @@ end
     self.olympic.bolt_release = "half"
     self.olympic.fire_mode_data.fire_rate = 0.0667
     self.olympic.timers.reload_empty = 3.2
+    self.olympic.animations.reload_name_id = "m4"
     self.olympic.eq_fr = self.new_m4.eq_fr
     self.olympic.shot_anim_mul = 1.25
     --self.olympic.r_no_bullet_clbk = true
@@ -1493,6 +1498,7 @@ end
     self.victor.rise_factor = 0
     self.victor.bolt_release = "half"
     --self.victor.eq_fr = {0,7,14}
+    self.victor.animations.reload_name_id = "m4"
     self.victor.weapon_hold = self.new_m4.weapon_hold
     self.victor.eq_fr = self.new_m4.eq_fr
     self.victor.timers = self.new_m4.timers
@@ -1527,6 +1533,7 @@ end
     self.akm.rise_factor = 2
     self.akm.mag_release = "paddle"
     self.akm.bolt_release = "none"
+    self.akm.animations.reload_name_id = "ak74"
     self.akm.weapon_hold = self.ak74.weapon_hold
     self.akm.timers = self.ak74.timers
     self.akm.r_no_bullet_clbk = self.ak74.r_no_bullet_clbk
@@ -1543,6 +1550,7 @@ end
 		unequip = 0.5,
 		equip = 0.5
 	}
+    self.akm_gold.animations.reload_name_id = "ak74"
     self.akm_gold.eq_fr = self.ak74.eq_fr
     self.akm_gold.weapon_hold = self.ak74.weapon_hold
     self.akm_gold.timers = self.ak74.timers
@@ -1556,6 +1564,7 @@ end
     self.akmsu.fire_mode_data.fire_rate = 0.08
     self.akmsu.timers.reload_not_empty = 2.0
     self.akmsu.timers.reload_empty = 3.6
+    self.akmsu.animations.reload_name_id = "ak74"
     self.akmsu.eq_fr = self.ak74.eq_fr
     self.akmsu.shot_anim_mul = 1.25
     self.akmsu.timers = self.ak74.timers
@@ -1573,6 +1582,7 @@ end
     --self.rpk.eq_fr = {1,20,21}
     --self.rpk.r_no_bullet_clbk = true
     --self.rpk.anim_no_full = true
+    self.rpk.animations.reload_name_id = "ak74"
     self.rpk.weapon_hold = self.ak74.weapon_hold
     self.rpk.eq_fr = self.ak74.eq_fr
     self.rpk.timers = self.ak74.timers
@@ -2068,6 +2078,7 @@ end
     self.msr.action = "bolt_action"
     self.msr.fire_mode_data.fire_rate = 1.4
     self.msr.shot_anim_hands = 32
+    self.msr.bolt_release = "rotate"
     self.msr.mag_release = "paddle"
     self.msr.timers.reload_empty = 3.5
     self.msr.eq_fr = {1,12,12}
@@ -2081,7 +2092,6 @@ end
     self.r93.shot_anim_hands = 36
     self.r93.mag_release = "doublebutton"
     self.r93.bolt_release = "none"
-    self.r93.bolt_release_ratio = { 0.7, 0.7 }
     self.r93.eq_fr = {1,21,18}
     self.r93.r_no_bullet_clbk = true
     self.r93.has_description = nil
@@ -2106,8 +2116,9 @@ end
     self.wa2000.caliber = ".300 WM" --308
     self.wa2000.weight = 70
     self.wa2000.rise_factor = 0
+    self.wa2000.bullpup = true
     self.wa2000.fire_mode_data.fire_rate = 0.15
-    self.wa2000.mag_release = "doublebutton"
+    self.wa2000.mag_release = "paddle"
     self.wa2000.bolt_release = "none" --not_sure
     self.wa2000.timers.reload_empty = 5.8
     self.wa2000.eq_fr = {3,19,19}
@@ -2135,7 +2146,7 @@ end
     self.scout.weight = 30
     self.scout.action = "bolt_action"
     self.scout.fire_mode_data.fire_rate = 1.2
-    self.scout.shot_anim_hands = 38
+    self.scout.shot_anim_hands = 29
     self.scout.mag_release = "paddle"
     self.scout.bolt_release = "rotate"
     self.scout.bolt_release_ratio = { 0.5, 0.5 }
@@ -2484,7 +2495,7 @@ end
     self.new_mp5.action = "roller_delayed"
     self.new_mp5.mag_release = "paddle"
     self.new_mp5.bolt_release = "none"
-    self.new_mp5.bolt_release_ratio = { 1, 0.5 }
+    self.new_mp5.bolt_release_ratio = { 0.8, 0.5 }
     self.new_mp5.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
     self.new_mp5.eq_fr = {1,12,13}
     self.new_mp5.shot_anim_mul = 1.25
@@ -2536,6 +2547,7 @@ end
     self.vityaz.action = "blowback"
     self.vityaz.mag_release = "paddle"
     self.vityaz.bolt_release = "none"
+    self.vityaz.shot_anim_mul = 1.25
     self.vityaz.eq_fr = {0,10,13}
 
     self.m45.caliber = "9x19"
@@ -3494,6 +3506,8 @@ end
     self.frankish.caliber = nil
 
     self.ecp.caliber = nil
+
+    self.trip_mines.player_damage = 30
 
     --airgun 12 13
 

@@ -21,6 +21,37 @@ function LocalizationManager:text(string_id, macros)
 		return_string = Localizer:lookup(Idstring(str_id))
 		self._macro_context = nil
 
+		local lookup_delet = {
+			["bm_wp_upg_ns_ass_smg_firepig_desc"] = true,
+			["bm_wp_upg_ns_ass_smg_stubby_desc"] = true,
+			["bm_wp_upg_ns_ass_smg_tank_desc"] = true,
+			["bm_wp_upg_ns_shot_shark_desc"] = true,
+			["bm_wp_upg_ns_pis_small_desc"] = true,
+			["bm_wp_upg_ns_ass_smg_small_desc"] = true,
+			["bm_wp_upg_ns_pis_medium_desc"] = true,
+			["bm_wp_upg_ns_ass_smg_medium_desc"] = true,
+			["bm_wp_upg_ns_pis_large_desc"] = true,
+			["bm_wp_upg_ns_ass_smg_large_desc"] = true,
+			["bm_wp_upg_ns_shot_thick_desc"] = true,
+
+			["bm_wp_m4_uupg_b_long_desc"] = true,
+			["bm_wp_m4_uupg_b_medium_desc"] = true,
+			["bm_wp_m4_uupg_b_short_desc"] = true,
+			["bm_wp_m4_uupg_b_sd_desc"] = true,
+			["bm_wp_74_b_standard_desc"] = true,
+			["bm_wp_akm_b_standard_desc"] = true,
+			["bm_wp_g36_b_short_desc"] = true,
+			["bm_wp_aug_b_long_desc"] = true,
+			["bm_wp_aug_b_short_desc"] = true,
+			["bm_wp_p90_b_long_desc"] = true,
+			["bm_wp_rage_b_comp1_desc"] = true,
+			["bm_wp_rage_b_long_desc"] = true,
+			["bm_wp_rage_b_short_desc"] = true,
+			["bm_wp_rage_b_comp2_desc"] = true,
+			["bm_wp_rage_b_comp2_desc"] = true,
+		}
+		return_string = lookup_delet[str_id] and "" or return_string
+
 		if string.find(str_id, "hud_v_four_stores_mission2") then
 			return_string = string.gsub(return_string, "15", "150")
 		elseif string.find(str_id, "menu_cg22_post_objective_1_desc") then
@@ -34,6 +65,8 @@ function LocalizationManager:text(string_id, macros)
 			return_string = string.gsub(return_string, self:text("bm_w_erma"), self:text("bm_w_ching"))
 		elseif string.find(str_id, "menu_aru_job_4_obj_desc") then
 			return_string = string.gsub(return_string, self:text("bm_w_ching"), self:text("bm_w_erma"))
+		elseif string.find(str_id, "bm_menu_locked_ching") then
+			return_string = string.gsub(return_string, self:text("menu_aru_job_3"), self:text("menu_aru_job_2"))
 		end
 	end
 

@@ -19,6 +19,42 @@ end
 
 
 
+function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, factory_id, blueprint)
+	local factory = tweak_data.weapon.factory
+	local override = self:_get_override_parts(factory_id, blueprint)
+	local part = self:_part_data(part_id, factory_id, override)
+	local desc_id = part.desc_id or tweak_data.blackmarket.weapon_mods[part_id].desc_id
+	local params = {
+		BTN_GADGET = managers.localization:btn_macro("weapon_gadget", true),
+		BTN_BIPOD = managers.localization:btn_macro("deploy_bipod", true)
+	}
+	local result = ""
+
+	local md_code_desc = ""
+	for i, k in pairs((part.stats and part.stats.md_code) or {}) do
+		local lookup = {
+			"supp",
+			"flash",
+			"comp",
+			"brake",
+			"can",
+		}
+		if k~=0 and lookup[i] then md_code_desc = md_code_desc..managers.localization:text("bm_md_"..lookup[i])..": "..k..". " end
+	end
+
+	if managers.menu:is_pc_controller() and managers.localization:exists(desc_id .. "_pc") then
+		result = managers.localization:text(desc_id .. "_pc", params)
+	elseif managers.localization:exists(desc_id) then
+		result = managers.localization:text(desc_id, params)
+	elseif Application:production_build() then
+		result = managers.localization:text(desc_id)
+	end
+
+	return result..(result~="" and " " or "")..md_code_desc
+end
+
+
+
 --GET STATS: SUPPORT NEW STATS
 function WeaponFactoryManager:get_stats(factory_id, blueprint)
 	local factory = tweak_data.weapon.factory

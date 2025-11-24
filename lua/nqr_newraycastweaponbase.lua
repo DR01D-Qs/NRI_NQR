@@ -220,6 +220,7 @@ function NewRaycastWeaponBase:set_factory_data(factory_id)
 
 	local factory = tweak_data.weapon.factory[self._factory_id]
 	self._name_id = (factory and factory.regression) or self._name_id
+	self.name_id = self._name_id
 end
 
 
@@ -1709,6 +1710,8 @@ function NewRaycastWeaponBase:update_bolting(t, reloading)
 					end
 				end
 			end
+		else
+			self._is_bolting = nil
 		end
 	end
 
@@ -1734,8 +1737,13 @@ function NewRaycastWeaponBase:interupt_bolting(forced)
 	local wep_tweak = self:weapon_tweak_data()
 	--if (wep_tweak.action~="bolt_action" and self._is_bolting~=1) or (wep_tweak.action=="bolt_action" and not self._is_bolting) then return end
 	--managers.mission._fading_debug_output:script().log(tostring("interupt attempt, bolting: ")..tostring(self._is_bolting), Color.red)
-	--managers.mission._fading_debug_output:script().log(tostring(self._is_bolting), Color.red)
-	if self._bolting_interupted or not self._is_bolting and forced or (wep_tweak.action~="bolt_action" and self._is_bolting==2) then return end
+	--managers.mission._fading_debug_output:script().log(tostring(self._bolting_interupted), Color.red)
+	if (self._bolting_interupted or not self._is_bolting and forced)
+	or (wep_tweak.action~="bolt_action" and self._is_bolting==2)
+	or (self._is_bolting==1 and not self.chamber_state)
+	then
+		return
+	end
 	managers.mission._fading_debug_output:script().log(tostring("bolting interupted"), Color.red)
 	--if state_data then state_data.reload_exit_expire_t = nil end
 	self._bolting_interupted = true

@@ -150,9 +150,20 @@
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot_rangefinder" force="true"/>
 	<model path="units\pd2_dlc_usm1\weapons\wpn_npc_dmr\wpn_npc_dmr" force="true"/>
 	<model path="units\pd2_dlc_xm20\weapons\wpn_fps_upg_o_tf90\wpn_fps_upg_o_tf90" force="true"/>
-
-
-
+	<model path="units\payday2\weapons\wpn_fps_upg_ak_reusable\wpn_fps_ak_bolt" force="true"/>
+	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_mxm_m4\wpn_fps_m4_uupg_lorec_radian" force="true"/>
+	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_mxm_m4\wpn_fps_m4_uupg_upprec_radian" force="true"/>
+	<model path="units\pd2_dlc_pxp3\weapons\wpn_upg_m4_mod_pts\wpn_fps_upg_m4_s_contender" force="true"/>
+	<model path="units\pd2_dlc_pxp3\weapons\wpn_upg_m4_mod_pts\wpn_third_upg_m4_s_contender" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_body_receiver_lower" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_body_receiver_lower_hera" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_body_receiver_upper" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_body_receiver_upper_hera" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_bolt_hera" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_bolt_standard" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_dh_hera" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_dh_standard" force="true"/>
+	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_s_hera" force="true"/>
 
 
 

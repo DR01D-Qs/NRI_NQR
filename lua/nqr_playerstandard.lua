@@ -348,9 +348,12 @@ function PlayerStandard:update(t, dt)
 			end
 		--elseif wep_base._bolting_interupted then
 		elseif wep_base._bolting_interupted and wep_base.chamber_state then
-			wep_base:tweak_data_anim_play("fire", 1, 0.1, true)
+			local offset = wep_base._is_bolting==2 and wep_base:weapon_fire_rate()*0.5 or 0.1
+			wep_base:tweak_data_anim_play("fire", 1, offset, true)
 		end
 	end
+
+	--managers.mission._fading_debug_output:script().log(tostring(wep_base._is_bolting), Color.white)
 
 	local weight = wep_base._current_stats.weight or 10
 	local shouldered = wep_base._current_stats.shouldered
@@ -1843,19 +1846,21 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	wep_base.r_exit_expire_t = self._state_data.reload_exit_expire_t
 
 	local r_show_mag_t = 0
-	for i=(wep_base.r_stage or 1), #r_cycle do
+	for i=1, #r_cycle do
 		if r_cycle[i]=="r_get_new_mag_in" then break end
-		r_show_mag_t = r_show_mag_t + r_steps[ r_cycle[i] ]
+		if not wep_base.r_stage or wep_base.r_stage<=i then r_show_mag_t = r_show_mag_t + r_steps[ r_cycle[i] ] end
 	end
 	if wep_tweak.r_no_bullet_clbk and r_show_mag_t>0 then
 		--self._state_data.r_show_mag_t = t + math.max(r_show_mag_t, wep_base.r_time*0.0)
 		self._state_data.r_show_mag_t = t + wep_base.r_time*0.5
+	else
+		self._state_data.r_show_mag_t = nil
 	end
 
 	Application:trace("PlayerStandard:_start_action_reload( t ): ", reload_ids)
 	wep_base:start_reload()
 	self._ext_network:send("reload_weapon", empty_reload, speed_multiplier)
-	wep_base:check_bullet_objects()
+	--wep_base:check_bullet_objects()
 	if wep_base.r_stage and r_cycle[wep_base.r_stage]=="r_get_new_mag_in" then wep_base:predict_bullet_objects() end
 
 	local is_revolver = wep_base:is_category("revolver")

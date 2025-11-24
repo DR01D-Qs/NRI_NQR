@@ -133,7 +133,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		mia_1 = {2,1}, --hotline miami 1
 		mia_2 = {1,1.5}, --hotline miami 2
 		nail = {2,2.5},	--lab rats
-		hox_1 = {1.2,1}, --hoxton breakout 1
+		hox_1 = {1.0,1}, --hoxton breakout 1
 		hox_2 = {1.6,1}, --hoxton breakout 2
 		hox_3 = {1.2,1.5}, --hoxton revenge
 		xmn_hox1 = {1,1},
@@ -218,7 +218,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		self.besiege.assault.force = { 4*force_mul*custom_force[1], 6*force_mul*custom_force[2], 8*force_mul }
 		self.besiege.assault.force_pool = { 8, 12, 16 }
 	end
-	self.besiege.assault.force_balance_mul = { 1.0, 1.75, 2.5, 3.5 }
+	self.besiege.assault.force_balance_mul = { 1.0, 1.5, 2.0, 3.0 }
 	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.5, 2.0, 3.0 }
 
 	local delay_mul = job_mapping[job] and job_mapping[job][2] or 1
@@ -229,20 +229,20 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		tac_swat_shotgun_flank = { 0.0, 0.0, 0.1 },
 		tac_swat_rifle = { 0.4, 0.3, 0.3 },
 		tac_swat_rifle_flank = { 0.4, 0.3, 0.3 },
-		tac_shield_wall_charge = { 0.0, 0.2, 0.8 },
-		tac_tazer_flanking = { 0.0, 0.2, 0.8 },
+		tac_shield_wall_charge = { 0.0, 0.4, 0.8 },
+		tac_tazer_flanking = { 0.0, 0.4, 0.8 },
 		tac_tazer_charge = { 0.0, 0.2, 0.8 },
 		FBI_spoocs = { 0, 0.4, 0.9 },
-		tac_bull_rush = { 0, 0.2, 0.8 },
+		tac_bull_rush = { 0, 0.3, 0.9 },
 	}
 	self.besiege.assault.groups.single_spooc = { 0, 0, 0 }
 	self.besiege.assault.groups.Phalanx = { 0, 0, 0 }
-	if difficulty_index == 3 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.2 }
-	elseif difficulty_index == 5 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.2 }
-		self.besiege.assault.groups.tac_tazer_flanking = { 0.0, 0.1, 0.3 }
-		self.besiege.assault.groups.tac_tazer_charge = { 0.0, 0.1, 0.3 }
+	if difficulty_index == 2 then
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.1 }
+	elseif difficulty_index == 4 then
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.1 }
+		self.besiege.assault.groups.tac_tazer_flanking = { 0.0, 0.2, 0.4 }
+		self.besiege.assault.groups.tac_tazer_charge = { 0.0, 0.2, 0.4 }
 	end
 
 	self.besiege.reenforce.interval = { 10, 20, 30 }
