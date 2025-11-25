@@ -2391,7 +2391,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
         "wpn_fps_upg_fg_jp", "wpn_fps_upg_fg_smr", "wpn_fps_m16_fg_railed",
     }
     self.parts.wpn_fps_m4_uupg_b_long.forbids = { "wpn_fps_amcar_uupg_fg_amcar", "wpn_fps_m4_uupg_fg_lr300", }
-    self.parts.wpn_fps_m4_uupg_b_long.stats = { concealment = 0, weight = 20, barrel_length = 14, md_code = {0,2,0,0,0}, md_bulk = {1, 1} }
+    self.parts.wpn_fps_m4_uupg_b_long.stats = { concealment = 0, weight = 20, barrel_length = 20, md_code = {0,2,0,0,0}, md_bulk = {1, 1} }
     self.parts.wpn_fps_m4_uupg_b_medium.forbids = { "wpn_fps_m16_fg_standard", "wpn_fps_m16_fg_vietnam", }
     self.parts.wpn_fps_m4_uupg_b_medium.override = {}
     self.parts.wpn_fps_m4_uupg_b_medium.override.wpn_fps_ass_m16_os_frontsight = { forbids = deep_clone(forbids_b_os1) }
@@ -2490,9 +2490,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
         wpn_fps_upg_ass_m4_fg_lvoa = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
         wpn_fps_uupg_fg_radian = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
         wpn_fps_snp_victor_fg_hera = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
-        wpn_fps_upg_fg_jp = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short_os3", }, },
-        wpn_fps_upg_fg_smr = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short_os3", }, },
-        wpn_fps_m16_fg_railed = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short_os3", }, },
+        wpn_fps_upg_fg_jp = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
+        wpn_fps_upg_fg_smr = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
+        wpn_fps_m16_fg_railed = { forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", }, },
     } --add original forbids later
     self.parts.wpn_fps_ass_m16_os_frontsight.stats = { concealment = 0, weight = 1 }
     self.parts.wpn_fps_m4_uupg_fg_rail_ext.pcs = {}
