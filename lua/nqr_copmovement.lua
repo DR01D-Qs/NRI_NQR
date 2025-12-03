@@ -138,6 +138,11 @@ function CopMovement:damage_clbk(my_unit, damage_info)
 	end
 
 	if request_action then
+		if self._ext_brain._current_logic_name=="intimidated" and hurt_type=="heavy_hurt" or hurt_type=="hurt" then
+			self._ext_brain:set_objective(nil)
+			CopLogicBase._exit(self._unit, "idle")
+		end
+
 		self:action_request(action_data)
 
 		if hurt_type == "death" and self._queued_actions then

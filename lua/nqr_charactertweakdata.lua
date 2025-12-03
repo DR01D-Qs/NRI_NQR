@@ -14744,22 +14744,25 @@ function CharacterTweakData:_presets(tweak_data)
 		tased_response = { light = { down_time = 5, 	tased_time = 5 }, heavy = { down_time = 10, 	tased_time = 5 } } }
 
 	presets.gang_member_damage = {
-		HEALTH_INIT = 75,
-		REGENERATE_TIME = 2,
+		HEALTH_INIT = 32,
+		REGENERATE_TIME = 6,
 		REGENERATE_TIME_AWAY = 0.2,
 		DOWNED_TIME = tweak_data.player.damage.DOWNED_TIME,
 		TASED_TIME = tweak_data.player.damage.TASED_TIME,
 		BLEED_OUT_HEALTH_INIT = tweak_data.player.damage.BLEED_OUT_HEALTH_INIT,
 		ARRESTED_TIME = tweak_data.player.damage.ARRESTED_TIME,
 		INCAPACITATED_TIME = tweak_data.player.damage.INCAPACITATED_TIME,
-		hurt_severity = deep_clone(presets.hurt_severities.base) }
+		respawn_time_penalty = tweak_data.player.damage.respawn_time_penalty,
+		base_respawn_time_penalty = tweak_data.player.damage.base_respawn_time_penalty,
+		MIN_DAMAGE_INTERVAL = tweak_data.player.damage.MIN_DAMAGE_INTERVAL,
+		hurt_severity = deep_clone(presets.hurt_severities.base)
+	}
 	presets.gang_member_damage.hurt_severity.bullet = { health_reference = "current", zones = {
-		{ none = 1, 	light = 0, 	moderate = 0, 	health_limit = 0.4 },
-		{ none = 1, 	light = 0, 	moderate = 0, 	health_limit = 0.7 },
-		{ heavy = 0, 	light = 0, 	moderate = 0, 	none = 1 } } }
-	presets.gang_member_damage.MIN_DAMAGE_INTERVAL = 0.35
-	presets.gang_member_damage.respawn_time_penalty = 0
-	presets.gang_member_damage.base_respawn_time_penalty = 5
+		{ none = 0, light = 0.9, moderate = 0.1, heavy = 0.0, health_limit = 0.4, },
+		{ none = 0, light = 0.7, moderate = 0.3, heavy = 0.0, health_limit = 0.8, },
+		{ none = 0, light = 0.0, moderate = 0.5, heavy = 0.5, health_limit = 1.0, },
+	} }
+	presets.gang_member_damage.MIN_DAMAGE_INTERVAL = 0
 
 
 
@@ -15339,7 +15342,8 @@ function CharacterTweakData:_presets(tweak_data)
 			factors = { enemy_weap_cold = 0.05, unaware_of_aggressor = 0.1, flanked = 0.04, isolated = 0.1, aggressor_dis = { [300.0] = 0.1, [1000.0] = 0 } } },
 		special = { base_chance = 0.25, significant_chance = 0.25, violence_timeout = 2,
 			reasons = { pants_down = 0.6, weapon_down = 0.02, health = { [0.5] = 0, [0.2] = 0.25 } },
-			factors = { enemy_weap_cold = 0.05, unaware_of_aggressor = 0.02, isolated = 0.05, flanked = 0.015 } }
+			factors = { enemy_weap_cold = 0.05, unaware_of_aggressor = 0.02, isolated = 0.05, flanked = 0.015 }
+		}
 	}
 
 

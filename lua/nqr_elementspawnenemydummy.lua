@@ -1,5 +1,25 @@
+core:import("CoreMissionScriptElement")
+
+ElementSpawnEnemyDummy = ElementSpawnEnemyDummy or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementSpawnEnemyDummy:init(...)
 	ElementSpawnEnemyDummy.super.init(self, ...)
+
+    local job = Global.level_data and Global.level_data.level_id
+	local lookup_cut = {
+		pal = {
+			ai_spawn_enemy_shield_defend005 = { [101483] = true, },
+			ai_spawn_enemy_shield_defend011 = { [101483] = true, },
+			ai_spawn_enemy_shield_defend003 = { [101321] = true, },
+			ai_spawn_enemy_shield_defend009 = { [101321] = true, },
+		},
+	}
+	if lookup_cut[job] and lookup_cut[job][self._editor_name] and self._values.on_executed then
+		for i, k in pairs(self._values.on_executed) do
+			if lookup_cut[job][self._editor_name][k.id] then table.remove(self._values.on_executed, i) end
+		end
+		self._values.enabled = false
+	end
 
 	self._enemy_name = self._values.enemy and Idstring(self._values.enemy) or Idstring("units/payday2/characters/ene_swat_1/ene_swat_1")
 	self._values.enemy = nil

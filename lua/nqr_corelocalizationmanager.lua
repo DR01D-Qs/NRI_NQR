@@ -49,6 +49,11 @@ function LocalizationManager:text(string_id, macros)
 			["bm_wp_rage_b_short_desc"] = true,
 			["bm_wp_rage_b_comp2_desc"] = true,
 			["bm_wp_rage_b_comp2_desc"] = true,
+			["bm_wp_deagle_co_short_desc"] = true,
+			["bm_wp_1911_co_1_desc"] = true,
+			["bm_wp_1911_co_2_desc"] = true,
+			["bm_wp_g18c_co_1_desc"] = true,
+			["bm_wp_g18c_co_comp_2_desc"] = true,
 		}
 		return_string = lookup_delet[str_id] and "" or return_string
 
@@ -65,8 +70,6 @@ function LocalizationManager:text(string_id, macros)
 			return_string = string.gsub(return_string, self:text("bm_w_erma"), self:text("bm_w_ching"))
 		elseif string.find(str_id, "menu_aru_job_4_obj_desc") then
 			return_string = string.gsub(return_string, self:text("bm_w_ching"), self:text("bm_w_erma"))
-		elseif string.find(str_id, "bm_menu_locked_ching") then
-			return_string = string.gsub(return_string, self:text("menu_aru_job_3"), self:text("menu_aru_job_2"))
 		end
 	end
 

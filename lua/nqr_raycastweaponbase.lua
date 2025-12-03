@@ -149,7 +149,7 @@ function RaycastWeaponBase:setup(setup_data, damage_multiplier)
 		self._reload = 1
 	end
 
-	self._bullet_slotmask = setup_data.hit_slotmask or self._bullet_slotmask
+	self._bullet_slotmask = (setup_data.hit_slotmask or self._bullet_slotmask) - World:make_slot_mask(16)
 	self._panic_suppression_chance = setup_data.panic_suppression_skill and self:weapon_tweak_data().panic_suppression_chance
 
 	if self._panic_suppression_chance == 0 then
@@ -841,9 +841,9 @@ function RaycastWeaponBase:fire(from_pos, direction, dmg_mul, shoot_player, spre
 	if self._bullets_fired then
 		self:play_tweak_data_sound("stop_fire")
 		self:_fire_sound()
-
 		self._bullets_fired = self._bullets_fired + 1
 	end
+	if self._sound_singleshot then self:_sound_singleshot() end
 
 	local is_player = self._setup.user_unit == managers.player:player_unit()
 	local ammo_usage = self:ammo_usage()

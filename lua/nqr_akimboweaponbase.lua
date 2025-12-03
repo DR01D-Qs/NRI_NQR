@@ -12,6 +12,16 @@ end
 
 
 
+function AkimboWeaponBase:_sound_singleshot()
+	if self._firing_muted then
+		return
+	end
+
+	if AkimboWeaponBase.super._sound_singleshot then AkimboWeaponBase.super._sound_singleshot(self) end
+end
+
+
+
 function AkimboWeaponBase:fire(...)
 	if not self._manual_fire_second_gun then
 		local result = AkimboWeaponBase.super.fire(self, ...)

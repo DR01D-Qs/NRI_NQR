@@ -124,7 +124,7 @@ function PlayerDamage:revive(silent)
 
 	local arrested = self:arrested()
 
-	managers.player:player_unit():movement():current_state()._state_data.lying = false
+	managers.player:player_unit():movement():current_state():_end_action_ducking()
 	managers.player:set_player_state("standard")
 	managers.player:remove_copr_risen_cooldown()
 

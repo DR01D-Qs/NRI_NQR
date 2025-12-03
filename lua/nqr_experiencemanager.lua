@@ -52,17 +52,14 @@ function ExperienceManager:get_xp_by_params(params)
 	if success and on_last_stage then
 		job_xp_dissect = managers.experience:get_job_xp_by_stars(total_stars) * job_mul
 		level_limit_dissect = level_limit_dissect + managers.experience:get_job_xp_by_stars(job_stars) * job_mul
+		mission_xp_dissect = params.mission_xp or self:mission_xp()
+		mission_xp_kills_dissect = params.mission_xp_kills or self:mission_xp_kills()
 	end
 
 	local static_stage_experience = level_id and tweak_data.levels[level_id].static_experience
 	static_stage_experience = static_stage_experience and static_stage_experience[difficulty_stars + 1]
 	stage_xp_dissect = static_stage_experience or managers.experience:get_stage_xp_by_stars(total_stars)
 	level_limit_dissect = level_limit_dissect + (static_stage_experience or managers.experience:get_stage_xp_by_stars(job_stars))
-
-	if success then
-		mission_xp_dissect = params.mission_xp or self:mission_xp()
-		mission_xp_kills_dissect = params.mission_xp_kills or self:mission_xp_kills()
-	end
 
 	base_xp = job_xp_dissect + stage_xp_dissect + mission_xp_dissect
 	pro_job_xp_dissect = math.round(base_xp * pro_job_multiplier - base_xp)

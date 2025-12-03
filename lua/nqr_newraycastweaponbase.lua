@@ -196,10 +196,19 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 
 		--regressions
 		["amcar"] = "units/payday2/weapons/wpn_fps_ass_amcar/wpn_fps_ass_amcar",
+		["amcar_crew"] = "units/payday2/weapons/wpn_fps_ass_amcar/wpn_fps_ass_amcar_npc",
 		["m16"] = "units/payday2/weapons/wpn_fps_ass_m16/wpn_fps_ass_m16",
+		["m16_crew"] = "units/payday2/weapons/wpn_fps_ass_m16/wpn_fps_ass_m16_npc",
+		["olympic"] = "units/payday2/weapons/wpn_fps_smg_olympic/wpn_fps_smg_olympic",
+		["olympic_crew"] = "units/payday2/weapons/wpn_fps_smg_olympic/wpn_fps_smg_olympic_npc",
+		["victor"] = "units/pd2_dlc_savi/weapons/wpn_fps_snp_victor/wpn_fps_snp_victor",
+		["victor_crew"] = "units/pd2_dlc_savi/weapons/wpn_fps_snp_victor/wpn_fps_snp_victor_npc",
 		["rpk"] = "units/pd2_dlc_gage_lmg/weapons/wpn_fps_lmg_rpk/wpn_fps_lmg_rpk",
+		["rpk_crew"] = "units/pd2_dlc_gage_lmg/weapons/wpn_fps_lmg_rpk/wpn_fps_lmg_rpk_npc",
 		["akmsu"] = "units/payday2/weapons/wpn_fps_smg_akmsu/wpn_fps_smg_akmsu",
+		["akmsu_crew"] = "units/payday2/weapons/wpn_fps_smg_akmsu/wpn_fps_smg_akmsu_npc",
 		["tecci"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci",
+		["tecci_crew"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci_npc",
 	}
 	for i, k in pairs(to_load) do
 		if type(i)=="string" and i==self._name_id or type(i)~="string" then 
@@ -415,11 +424,11 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 			if type(value)=="table" then
 				local caliber = "9x19"
 				for u, j in pairs(value) do if string.find(stats2.caliber or "", u) then caliber = u break end end
-				self._current_stats[stat] = stats2[stat] and value[caliber] or 1
+				self._current_stats[stat] = stats2[stat] and value[caliber] or wep_tweak.CLIP_AMMO_MAX or 1
 			else
-				self._current_stats[stat] = stats2[stat] and value or 1
+				self._current_stats[stat] = stats2[stat] and value or wep_tweak.CLIP_AMMO_MAX or 1
 			end
-			self._current_stats[stat] = self._current_stats[stat] --* (self:is_category("akimbo") and 2 or 1)
+			--self._current_stats[stat] = self._current_stats[stat] * (self:is_category("akimbo") and 2 or 1)
 		end
 	end
 	self._current_stats.alert_size = stats.alert_size or 10000 --wep_tweak_default.stats.alert_size[math_clamp(stats.alert_size, 1, #stats_tweak_data.alert_size)]
@@ -618,6 +627,17 @@ end
 function NewRaycastWeaponBase:check_bullet_objects()
 	if self._bullet_objects then
 		self:_update_bullet_objects("get_ammo_remaining_in_clip")
+	end
+end
+
+
+
+function RaycastWeaponBase:use_ammo(base, ammo_usage)
+	local is_player = self._setup.user_unit == managers.player:player_unit()
+	if not is_player then return end
+
+	if ammo_usage > 0 then
+		base:set_ammo_total(base:get_ammo_total() - ammo_usage)
 	end
 end
 
@@ -991,7 +1011,7 @@ function NewRaycastWeaponBase:_get_spread(user_unit)
 end
 function NewRaycastWeaponBase:_get_spread_from_number(user_unit, current_state, current_spread_value)
 	local spread = self:_get_spread_indices(current_state)
-	return math.max(spread * current_spread_value * 10 / self:weapon_tweak_data().barrel_length, 0)
+	return math.max(spread * current_spread_value * 10 / (self:weapon_tweak_data().barrel_length or 1), 0)
 end
 function NewRaycastWeaponBase:_get_spread_indices(current_state)
 	local spread_index = self._current_stats_indices and self._current_stats_indices.spread or 1
@@ -1660,6 +1680,7 @@ function NewRaycastWeaponBase:update_bolting(t, reloading)
 				end]]
 
 			if self.r_expire_t and open_reload then
+				log(self:get_ammo_remaining_in_clip())
 				if not self.r_stage and not (bolting_stage_t2 < t) then
 					self._is_bolting = 1
 				elseif bolt_opened then

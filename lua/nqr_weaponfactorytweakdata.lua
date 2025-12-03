@@ -7746,7 +7746,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_pis_g18c_m_mag_33rnd.stats = { concealment = 6, weight = 2, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { ["9x19"] = 33, [".40 S&W"] = 29 } }
     self.parts.wpn_fps_pis_g18c_s_stock.stats = { concealment = 0, weight = 0, shouldered = true }
     table.delete(self.wpn_fps_pis_g18c.uses_parts, "wpn_fps_pis_g18c_s_stock")
-    table.swap(self.wpn_fps_pis_g18c.default_blueprint, "wpn_fps_pis_g18c_b_standrd")
+    --table.swap(self.wpn_fps_pis_g18c.default_blueprint, "wpn_fps_pis_g18c_b_standard")
     table.insert(self.wpn_fps_pis_g18c.default_blueprint, "wpn_fps_pis_g18c_bb_standard")
     table.insert(self.wpn_fps_pis_g18c.uses_parts, "wpn_fps_pis_g18c_bb_standard")
     table.insert(self.wpn_fps_pis_g18c.uses_parts, "wpn_fps_upg_cal_40sw")
@@ -8207,27 +8207,21 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     }
     self.parts.wpn_fps_pis_sparrow_b_rpl.stats = { concealment = 0, weight = 0 } --thread protector
     self.parts.wpn_fps_pis_sparrow_b_941.stats = { concealment = 0, weight = 0, barrel_length = 4.5 }
-    self.parts.wpn_fps_pis_sparrow_b_comp.type = "barrel_ext"
+    --self.parts.wpn_fps_pis_sparrow_b_comp.type = "barrel_ext"
     self.parts.wpn_fps_pis_sparrow_b_comp.forbids = {}
-    self.parts.wpn_fps_pis_sparrow_b_comp.unit = fantom_unit
-    self.parts.wpn_fps_pis_sparrow_b_comp.override = {
-        wpn_fps_pis_sparrow_b_threaded = {
-            third_unit = "units/pd2_dlc_rip/weapons/wpn_third_pis_sparrow_pts/wpn_third_pis_sparrow_b_comp",
-            unit = "units/pd2_dlc_rip/weapons/wpn_fps_pis_sparrow_pts/wpn_fps_pis_sparrow_b_comp"
-        },
-    }
-    self.parts.wpn_fps_pis_sparrow_b_comp.stats = { concealment = 0, weight = 0, md_code = {0,2,0,0,0} }
+    table.addto(self.parts.wpn_fps_pis_sparrow_b_comp.forbids, self.nqr.all_bxs)
+    self.parts.wpn_fps_pis_sparrow_b_comp.stats = { concealment = 0, weight = 1, barrel_length = 4.5, length = 1, md_code = {0,2,0,0,0} }
     self.parts.wpn_fps_pis_sparrow_b_threaded.unit = "units/pd2_dlc_rip/weapons/wpn_fps_pis_sparrow_pts/wpn_fps_pis_sparrow_b_rpl"
     self.parts.wpn_fps_pis_sparrow_b_threaded.third_unit = "units/pd2_dlc_rip/weapons/wpn_third_pis_sparrow_pts/wpn_third_pis_sparrow_b_rpl"
     self.parts.wpn_fps_pis_sparrow_b_threaded.stats = { concealment = 0, weight = 0, barrel_length = 4.5 }
-    self.parts.wpn_fps_pis_sparrow_body_941.stats = { concealment = 0, weight = 0, length = 3 }
+    self.parts.wpn_fps_pis_sparrow_body_941.stats = { concealment = 0, weight = 3, length = 3 }
     self.parts.wpn_fps_pis_sparrow_body_941.override.wpn_fps_pis_sparrow_b_rpl = nil
     self.parts.wpn_fps_pis_sparrow_body_rpl.rails = { "bottom" }
     self.parts.wpn_fps_pis_sparrow_body_rpl.forbids = { "wpn_fps_pis_sparrow_fl_rail", "wpn_fps_pis_sparrow_g_cowboy" }
     self.parts.wpn_fps_pis_sparrow_body_rpl.override.wpn_fps_pis_sparrow_b_941 = nil
     self.parts.wpn_fps_pis_sparrow_body_rpl.override.wpn_fps_pis_sparrow_b_rpl = nil
     self.parts.wpn_fps_pis_sparrow_body_rpl.override.wpn_fps_extra_lock_gadgets = { forbids = {} }
-    self.parts.wpn_fps_pis_sparrow_body_rpl.stats = { concealment = 0, weight = 0, length = 3 }
+    self.parts.wpn_fps_pis_sparrow_body_rpl.stats = { concealment = 0, weight = 1, length = 3 }
     self.parts.wpn_fps_pis_sparrow_fl_dummy.stats = { concealment = 0, weight = 0 }
     self.parts.wpn_fps_pis_sparrow_fl_rail.type = "extra3"
     self.parts.wpn_fps_pis_sparrow_fl_rail.pcs = {}
@@ -9854,9 +9848,12 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     end
 
 
-
-    --jesus fucking christ this one single line solved such a headache
-    for i, k in pairs(self) do if self[i.."_npc"] then self[i.."_npc"].uses_parts = deep_clone(self[i].uses_parts) end end
+    
+    for i, k in pairs(self) do if self[i.."_npc"] then
+        self[i.."_npc"] = deep_clone(self[i])
+        self[i.."_npc"].unit = (self[i].unit and (self[i].unit.."_npc"))
+        self[i.."_npc"].regression = (self[i].regression and (self[i].regression.."_crew"))
+    end end
 
 end)
 

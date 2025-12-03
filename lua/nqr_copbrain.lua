@@ -1,3 +1,16 @@
+function CopBrain:action_request(new_action_data)
+	local new_action_data = new_action_data or {}
+	if new_action_data.variant=="hands_up" and new_action_data.blocks then
+		new_action_data.blocks.heavy_hurt = nil
+		new_action_data.blocks.hurt = nil
+		new_action_data.blocks.light_hurt = nil
+	end
+
+	return self._unit:movement():action_request(new_action_data)
+end
+
+
+
 --NQR_CORPSE_LOOT ON PAGER
 function CopBrain:on_alarm_pager_interaction(status, player)
 	if not managers.groupai:state():whisper_mode() then

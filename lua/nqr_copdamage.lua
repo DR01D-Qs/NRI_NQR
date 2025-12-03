@@ -207,6 +207,10 @@ end
 
 --GET DAMAGE TYPE: -
 function CopDamage:get_damage_type(damage_percent, category)
+	if not (self._char_tweak and self._char_tweak.damage and self._char_tweak.damage.hurt_severity) then
+		log(self._unit and self._unit:base() and self._unit:base()._tweak_table)
+		return "dmg_rcv"
+	end
 	local hurt_table = self._char_tweak.damage.hurt_severity[category or "bullet"]
 	local dmg = damage_percent / self._HEALTH_GRANULARITY
 

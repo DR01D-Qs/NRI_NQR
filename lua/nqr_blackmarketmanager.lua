@@ -54,6 +54,34 @@ local DEFAULT_CUSTOMIZE_MASK_BLUEPRINT = {
 
 
 
+local ALLOWED_CREW_WEAPON_CATEGORIES = {
+	smg = true,
+	assault_rifle = true,
+	shotgun = true,
+	lmg = true,
+	snp = true,
+	dmr = true,
+	machine_pistol = true,
+}
+function BlackMarketManager:is_weapon_category_allowed_for_crew(weapon_category)
+	return not not ALLOWED_CREW_WEAPON_CATEGORIES[weapon_category]
+end
+
+
+
+function BlackMarketManager:is_crew_item_unlocked(item) end
+
+
+
+function BlackMarketManager:has_unlocked_ching()
+	return managers.generic_side_jobs:has_completed_and_claimed_rewards("aru_2"), "bm_menu_locked_erma"
+end
+function BlackMarketManager:has_unlocked_erma()
+	return managers.generic_side_jobs:has_completed_and_claimed_rewards("aru_3"), "bm_menu_locked_ching"
+end
+
+
+
 function BlackMarketManager:weapon_unlocked_by_crafted(category, slot)
 	local crafted = self._global.crafted_items[category][slot]
 

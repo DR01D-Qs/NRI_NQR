@@ -7,7 +7,7 @@ local wp_onscreen_target_pos = Vector3()
 
 function HUDManager:_update_waypoints(t, dt)
 	local cam = managers.viewport:get_current_camera()
-    local in_steelsight = managers.player:local_player() and managers.player:local_player():movement():current_state():in_steelsight()
+	local in_steelsight = managers.player:local_player() and managers.player:local_player():movement():current_state():in_steelsight()
 
 	if not cam then
 		return
@@ -162,14 +162,20 @@ function HUDManager:_update_waypoints(t, dt)
 					end
 				end
 
-				local alpha = 0.6
-				if dot > 0.95 then
-					alpha = math.clamp((1 - dot) / 0.05, 0.2, alpha)^(in_steelsight and 2 or 1)
-				end
-                --managers.mission._fading_debug_output:script().log(tostring(data.bitmap:color().alpha), Color.white)
+				local alpha_from = 0.6
+				local alpha_to = in_steelsight and 0.05 or 0.2
+				local dot_from = in_steelsight and 0.96 or 0.98
+				local dot_to = in_steelsight and 0.99 or 1
+				local alpha = math.clamp(
+					alpha_from - ((dot - dot_from) / (dot_to - dot_from) * (alpha_from - alpha_to)),
+					alpha_to,
+					alpha_from
+				)
+				--managers.mission._fading_debug_output:script().log(tostring(alpha), Color.white)
+				--managers.mission._fading_debug_output:script().log(tostring(dot), Color.white)
 
 				if data.bitmap:color().alpha ~= alpha then
-                    alpha = data.bitmap:color().alpha - ((data.bitmap:color().alpha - alpha)*dt*6)
+					alpha = data.bitmap:color().alpha - ((data.bitmap:color().alpha - alpha)*dt*6)
 					data.bitmap:set_color(data.bitmap:color():with_alpha(alpha))
 
 					if data.distance then
@@ -213,9 +219,10 @@ function HUDManager:_update_waypoints(t, dt)
 				if data.distance then
 					local length = wp_dir:length()
 
+					data.distance:set_font_size(16)
 					data.distance:set_text(string.format("%.0f", length / 100) .. "m")
 					data.distance:set_center_x(data.bitmap:center_x())
-					data.distance:set_top(data.bitmap:bottom())
+					data.distance:set_top(data.bitmap:bottom()-4)
 				end
 			end
 		end

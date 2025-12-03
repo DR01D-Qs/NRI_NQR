@@ -2,7 +2,7 @@ function ContourExt:add(type, sync, multiplier, override_color, is_element)
 	self._contour_list = self._contour_list or {}
 	local data = self._types[type]
 	local fadeout = data.fadeout
-	local multiplier = data.color==tweak_data.contour.character.dangerous_color and (multiplier or 0.15) or multiplier
+	local multiplier = data.color==tweak_data.contour.character.dangerous_color and (multiplier or 0.2) or multiplier
 
 	if data.fadeout_silent and managers.groupai:state():whisper_mode() then
 		fadeout = data.fadeout_silent

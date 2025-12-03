@@ -174,3 +174,36 @@ function NewNPCRaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, d
 
 	return result
 end
+
+
+
+function NewNPCRaycastWeaponBase:_sound_autofire_start(nr_shots)
+	self._sound_fire:stop()
+
+	--[[local tweak_sound = tweak_data.weapon[self._name_id].sounds
+	local sound_name = tweak_sound.prefix .. self._setup.user_sound_variant .. self._voice .. (nr_shots and "_" .. tostring(nr_shots) .. "shot" or "_loop")
+	local sound = self._sound_fire:post_event(sound_name, callback(self, self, "_on_auto_fire_stop"), nil, "end_of_event")
+
+	if not sound then
+		sound_name = tweak_sound.prefix .. "1" .. self._voice .. "_end"
+		sound = self._sound_fire:post_event(sound_name)
+	end]]
+end
+
+
+
+--[[function NewNPCRaycastWeaponBase:trigger_held(...)
+	local fired = nil
+
+	if self._next_fire_allowed <= Application:time() then
+		fired = self:fire(...)
+
+		if fired then
+			local fire_rate = tweak_data.weapon[self._name_id] and tweak_data.weapon[self._name_id].auto and tweak_data.weapon[self._name_id].auto.fire_rate
+			fire_rate = fire_rate or 0.1
+			self._next_fire_allowed = self._next_fire_allowed + fire_rate
+		end
+	end
+
+	return fired
+end]]

@@ -353,7 +353,7 @@ function PlayerStandard:update(t, dt)
 		end
 	end
 
-	--managers.mission._fading_debug_output:script().log(tostring(wep_base._is_bolting), Color.white)
+	--managers.mission._fading_debug_output:script().log(tostring(wep_base.chamber_state), Color.white)
 
 	local weight = wep_base._current_stats.weight or 10
 	local shouldered = wep_base._current_stats.shouldered
@@ -809,7 +809,7 @@ function PlayerStandard:_check_action_weapon_gadget(t, input)
 		self:_interupt_action_running(t)
 
 		if self._reequip_gadget_expire_t and self._do_the_thing then
-			self:_toggle_gadget(t, wep_base)
+			self:_toggle_gadget(wep_base)
 		end
 
 		if (wep_base.toggle_second_sight and self:in_steelsight() and wep_base:has_second_sight() and wep_base:toggle_second_sight(self)) then
@@ -830,7 +830,7 @@ function PlayerStandard:_check_action_weapon_gadget(t, input)
 	if self._reequip_gadget_expire_t and t >= self._reequip_gadget_expire_t-0.05 then
 		if self._do_the_thing then
 			if not self._reequip_on_second_sight then
-				self:_toggle_gadget(t, self._equipped_unit:base())
+				self:_toggle_gadget(self._equipped_unit:base())
 			else
 				self:_toggle_second_sight()
 				self._reequip_on_second_sight = false
@@ -874,7 +874,7 @@ function PlayerStandard:_update_reequip_gadget_timers(t, input)
 	if self._reequip_gadget_expire_t and t >= self._reequip_gadget_expire_t-0.05 then
 		if self._do_the_thing then
 			if not self._reequip_on_second_sight then
-				self:_toggle_gadget(t, self._equipped_unit:base())
+				self:_toggle_gadget(self._equipped_unit:base())
 			else
 				self:_toggle_second_sight()
 				self._reequip_on_second_sight = false
@@ -990,7 +990,7 @@ function PlayerStandard:_update_check_actions(t, dt, paused)
 	self:_find_pickups(t)
 end
 --TOGGLE_GADGET: JUST A COMPAT FIX
-function PlayerStandard:_toggle_gadget(t, wep_base)
+function PlayerStandard:_toggle_gadget(wep_base)
 	local gadget_index = 0
 
 	if wep_base.toggle_second_sight and self:in_steelsight() and wep_base:has_second_sight() and wep_base:toggle_second_sight(self) then
@@ -1976,7 +1976,10 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 						self._ext_network:send("set_stance", 2, false, false)
 					end
 
-					if wep_base:get_ammo_remaining_in_clip()>0 then wep_base._started_reload_empty = nil end
+					if wep_base:get_ammo_remaining_in_clip()>0 then
+						wep_base._started_reload_empty = nil
+					end
+					wep_base.chamber_state = nil
 				end
 			else
 				if wep_base.r_stage ~= #wep_base.r_cycle then
@@ -2062,6 +2065,8 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 
 	if self._state_data.reload_exit_expire_t and self._state_data.reload_exit_expire_t <= t then
 		self._state_data.reload_exit_expire_t = nil
+
+		if self._state_data.in_steelsight then self._ext_camera:play_redirect(self:get_animation("idle")) end
 
 		if self._equipped_unit then
 			managers.statistics:reloaded()
@@ -3447,7 +3452,7 @@ function PlayerStandard:_check_movement_equipped(t)
 
 		self._wall_unequip_t = nil
 		self._wall_unequip = nil
-		--self._running_enter_end_t = nil
+		self._running_enter_end_t = nil
 		self._running_exit_start_t = nil	
 		return
 	end
@@ -3497,7 +3502,7 @@ function PlayerStandard:_check_movement_equipped(t)
 		self._wall_equipped = true
 		self._wall_unequip_t = nil
 		self._wall_unequip = nil
-		--self._running_enter_end_t = nil
+		self._running_enter_end_t = nil
 		self._running_exit_start_t = nil	
 		return
 	end
@@ -3882,6 +3887,9 @@ function PlayerStandard:_start_action_steelsight(t, gadget_state)
 	then
 		self:_interupt_action_reload(t)
 		self._ext_camera:play_redirect(self:get_animation("idle"))
+		wep_base:tweak_data_anim_stop("reload")
+		wep_base:tweak_data_anim_stop("reload_not_empty")
+		wep_base:tweak_data_anim_stop("reload_exit")
 	end
 
 	if (self._state_data.on_ladder and wep_base:selection_index()==2)
@@ -3981,6 +3989,7 @@ function PlayerStandard:_check_action_interact(t, input)
 			new_action, timer, interact_object = self._interaction:interact(self._unit, input.data, self._interact_hand)
 
 			--if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
+			if interact_object then log(interact_object:interaction().tweak_data) end
 
 			if new_action then
 				self:_play_interact_redirect(t, input)
@@ -4310,9 +4319,17 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 
 				for _, char in pairs(char_table) do
 					if char.unit_type ~= unit_type_camera and char.unit_type ~= unit_type_teammate and (not is_whisper_mode or not char.unit:movement():cool()) then
-						local int_amount = char.unit_type == unit_type_civilian and amount_civ or amount
+						local not_ass = not (
+							managers.groupai:state()
+							and managers.groupai:state()._task_data
+							and managers.groupai:state()._task_data.assault
+							and managers.groupai:state()._task_data.assault.phase=="build"
+							and managers.groupai:state()._task_data.assault.phase=="sustain"
+						)
+						local not_bleedout = not (char.unit:movement() and char.unit:movement().bleedouted)
+						local int_amount = char.unit_type == unit_type_civilian and amount_civ or amount or 0
 
-						if prime_target_key == char.unit:key() then
+						if prime_target_key == char.unit:key() and not_ass and not_bleedout then
 							voice_type = char.unit:brain():on_intimidated(int_amount, self._unit) or voice_type
 						elseif not primary_only and char.unit_type ~= unit_type_enemy then
 							char.unit:brain():on_intimidated(int_amount * char.inv_wgt / max_inv_wgt, self._unit)
@@ -4335,6 +4352,7 @@ function PlayerStandard:_play_distance_interact_redirect(t, variant)
 	if self:_is_reloading()
 	or self:_changing_weapon()
 	or self:_is_meleeing()
+	or self:_interacting()
 	or self._use_item_expire_t
 	or not self._wall_equipped
 	or not self._movement_equipped

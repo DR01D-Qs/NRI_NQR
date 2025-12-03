@@ -76,3 +76,31 @@ function ElementInstancePoint:_create()
 		managers.editor:output_error("[ElementInstancePoint:_create()] No instance defined in [" .. self._editor_name .. "]")
 	end
 end
+
+
+
+ElementInstanceOutputEvent = ElementInstanceOutputEvent or class(CoreMissionScriptElement.MissionScriptElement)
+
+function ElementInstanceOutputEvent:init(...)
+	ElementInstanceOutputEvent.super.init(self, ...)
+
+    local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		dah = { obj_started003 = { { delay = 0, id = 104890 }, }, },
+	}
+	if lookup[job] and lookup[job][self._editor_name] and self._values.on_executed then
+		for i, k in pairs(lookup[job][self._editor_name]) do
+			table.insert(self._values.on_executed, k)
+		end
+	end
+
+	if self._values.instance then
+		managers.world_instance:register_output_event_element(self._values.instance, self._values.event, self)
+	end
+
+	if self._values.event_list then
+		for _, event_list_data in ipairs(self._values.event_list) do
+			managers.world_instance:register_output_event_element(event_list_data.instance, event_list_data.event, self)
+		end
+	end
+end

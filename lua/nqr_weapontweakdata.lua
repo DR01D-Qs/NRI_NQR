@@ -1438,7 +1438,8 @@ end
 	self.new_m4.crosshair.steelsight.kick_offset = 0.1
 	self.new_m4.shake = {
 	    fire_multiplier = 1,
-	    	fire_steelsight_multiplier = -1 }
+	    fire_steelsight_multiplier = -1
+	}
 	self.new_m4.weapon_hold = "m4"
 	self.new_m4.animations = {
 	    reload = "reload",
@@ -1509,6 +1510,8 @@ end
     self.victor.sounds.fire = nil
     self.victor.has_description = nil
     self.victor.shot_anim_mul = 1.25
+    self.victor_crew.CLIP_AMMO_MAX = 30
+	self.victor_crew.auto.fire_rate = self.victor.fire_mode_data.fire_rate
 
     self.ak74.caliber = "5.45x39"
     self.ak74.weight = 32
@@ -1715,10 +1718,11 @@ end
     self.tecci.rise_factor = 0
     self.tecci.eq_fr = {1,28,12}
     --self.tecci.anim_no_full = true
-    self.tecci.weapon_hold = "m4"
-    self.tecci.eq_fr = self.m16.eq_fr
-    self.tecci.timers = self.m16.timers
-    self.tecci.r_no_bullet_clbk = self.m16.r_no_bullet_clbk
+    self.tecci.animations.reload_name_id = "m4"
+    self.tecci.weapon_hold = self.new_m4.weapon_hold
+    self.tecci.eq_fr = self.new_m4.eq_fr
+    self.tecci.timers = self.new_m4.timers
+    self.tecci.r_no_bullet_clbk = self.new_m4.r_no_bullet_clbk
 
     self.komodo.caliber = "5.56x45"
     self.komodo.weight = 31
@@ -1939,6 +1943,7 @@ end
     self.hcar.r_no_bullet_clbk = true
     self.hcar.FIRE_MODE = "single"
     self.hcar.CAN_TOGGLE_FIREMODE = false
+	self.hcar_crew.usage = "is_sniper"
 
 
 
@@ -3583,8 +3588,16 @@ end
             if self[wep].CAN_TOGGLE_FIREMODE then self[wep].FIRE_MODE = "single" end
         end
 
-        if string.find(wep or "", "npc") then
-            
+        if string.find(wep or "", "_crew") and self[wep] and self[string.gsub(wep, "_crew", "")] then
+			local crewless = self[string.gsub(wep, "_crew", "")]
+            local category = crewless.categories and crewless.categories[1]
+
+            local lookup = {
+                assault_rifle = "is_rifle",
+            }
+            self[wep].usage = lookup[category] or self[wep].usage
+            self[wep].use_data = crewless.use_data or self[wep].use_data
+            self[wep].selection_index = crewless.selection_index or self[wep].selection_index
         end
     end
 
@@ -3797,6 +3810,7 @@ end
 		animation_param = "melee_fireaxe",
 		player_blood_effect = true
 	}
+
 --
 
 end)
@@ -3957,13 +3971,13 @@ function WeaponTweakData:nqr_rise(ammotype_data, barrel, weight, name)
 		or (wep_tweak.action=="blowback" and 2)
 		or (wep_tweak.action~="moving_barrel" and wep_tweak.action~="roller_delayed" and 3)
 	) or 1
-	--local secondary_factor = ((wep_tweak.use_data.selection_index==1) and 2 or 1)
+	local secondary_factor = ((wep_tweak.use_data.selection_index==1) and 1 or 0.75)
     local rise_factor = wep_tweak.rise_factor or 1
 
 	local rise = (
-        ((self:nqr_energy(ammotype_data, barrel)/(math.sqrt(weight)))*(1+rise_factor*0.2))
+        ((self:nqr_energy(ammotype_data, barrel)/(math.sqrt(weight)))*(1+rise_factor*0.2*secondary_factor))
         * action_factor
-        --* secondary_factor
+        
     ) * 0.005
 
 	return rise

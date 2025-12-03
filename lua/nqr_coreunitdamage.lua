@@ -19,6 +19,6 @@ Hooks:PostHook(CoreBodyDamage, "init", "nqr_CoreBodyDamage:init", function (self
 	and self._endurance.bullet
 	and self._endurance.bullet._endurance
 	then
-		self._endurance.bullet._endurance.bullet = math.round(math.random(5, 10))
+		self._endurance.bullet._endurance.bullet = 8 --math.round(math.random(5, 10))
 	end
 end)

@@ -2,6 +2,7 @@ function FPCameraPlayerBase:play_sound(unit, event)
 	local lookup = {
 		m4_equip = "primary_steel_sight_exit",--"primary_steel_sight_enter",
 		m4_unequip_a = "pistol_steel_sight_exit",--"primary_steel_sight_exit",
+		foley_run_m4_02 = "",
 	}
 	local event = lookup[event] or event
 	if alive(self._parent_unit) then
@@ -304,7 +305,7 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 		local plr = managers.player:player_unit():movement():current_state()
 
 		local wallpush_ignores = {}
-		local testray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets"))
+		local testray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets_no_criminals"))
 		if testray and testray.unit
 		and (
 			testray.unit:base() and testray.unit:base()._thrower_unit
@@ -315,7 +316,7 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 			table.insert(wallpush_ignores, testray.unit)
 			--for i, k in pairs(testray.unit:unit_data()) do managers.mission._fading_debug_output:script().log(tostring(i)..": "..tostring(k), Color.white) end
 		end
-		local ray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets"), "ignore_unit", wallpush_ignores)
+		local ray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets_no_criminals"), "ignore_unit", wallpush_ignores)
 		--if ray then managers.mission._fading_debug_output:script().log(tostring(ray.unit), Color.white) end
 
 		plr._wall_push = nil
@@ -364,6 +365,10 @@ function FPCameraPlayerBase:play_redirect(redirect_name, speed, offset_time)
 
 	if speed then
 		self._unit:anim_state_machine():set_speed(result, math.max(0, speed))
+	end
+
+	if redirect_name==Idstring("stop_running") then
+		self._parent_unit:sound():play("foley_run_m4_02")
 	end
 
 	return result

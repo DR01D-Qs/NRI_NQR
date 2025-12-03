@@ -158,6 +158,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		sound_done = "bar_bag_generic_finished",
 		action_text_id = "hud_action_nqr_corpse_loot",
 		interact_dont_interupt_on_distance = true,
+		no_contour = true,
 	}
 
     local job = Global.level_data and Global.level_data.level_id
@@ -167,6 +168,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		chca = { apartment_saw = { interact_distance = 200 }, gen_int_saw_jammed = { interact_distance = 200 }, gen_int_saw_upgrade = { interact_distance = 200 } },
 		brb = { cas_screw_down = { interact_distance = 155 } },
 		pal = { c4_diffusible = { timer = 3 } },
+		sand = { atm_interaction = { interact_distance = 170, interact_dont_interupt_on_distance = true } },
+		dah = { ignite_flare = { interact_distance = 300 }, use_flare = { interact_distance = 300 }, place_flare = { interact_distance = 300 } },
 	}
 	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k) do self[i][u] = j end end
 

@@ -291,10 +291,10 @@ function GroupAIStateBesiege:_upd_assault_task()
 
 	if task_data.phase == "anticipation" then
 		if task_spawn_allowance <= 0 then
-			print("spawn_pool empty: -----------FADE-------------")
+			--[[print("spawn_pool empty: -----------FADE-------------")
 
 			task_data.phase = "fade"
-			task_data.phase_end_t = t + self._tweak_data.assault.fade_duration
+			task_data.phase_end_t = t + self._tweak_data.assault.fade_duration]]
 		elseif task_data.phase_end_t < t or self._drama_data.zone == "high" then
 			self._assault_number = self._assault_number + 1
 

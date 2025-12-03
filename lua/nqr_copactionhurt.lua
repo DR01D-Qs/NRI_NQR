@@ -487,8 +487,9 @@ function CopActionHurt:init(action_desc, common_data)
 		self._machine:set_parameter(redir_res, "var" .. tostring(variant), 1)
 	elseif action_type == "death" and (self._ext_anim.run or self._ext_anim.sprint or self._ext_anim.ragdoll) and self:_start_ragdoll() then
 		self.update = self._upd_ragdolled
-    elseif action_type == "death" and self._ext_movement.bleedouted then
-		self:force_ragdoll()
+		--if self._ext_movement.bleedouted then self:force_ragdoll() end
+    --elseif action_type == "death" and self._ext_movement.bleedouted then
+		--self:force_ragdoll()
 	elseif action_type == "heavy_hurt" and not crouching and (self._ext_anim.run or self._ext_anim.sprint) and self._ext_anim.move_fwd then
 		redir_res = self._ext_movement:play_redirect("heavy_hurt_run")
 
@@ -573,7 +574,7 @@ function CopActionHurt:init(action_desc, common_data)
 
 			if nr_variants then
 				variant = self:_pseudorandom(nr_variants)
-			else
+			elseif action_desc.direction_vec then
 				local fwd_dot = action_desc.direction_vec:dot(common_data.fwd)
 				local right_dot = action_desc.direction_vec:dot(common_data.right)
 				local dir_str = nil
@@ -612,7 +613,11 @@ function CopActionHurt:init(action_desc, common_data)
 						variant = self:_pseudorandom(variant)
 					end
 
-					self:_prepare_ragdoll()
+					if self._ext_movement.bleedouted then
+						self:force_ragdoll()
+					else
+						self:_prepare_ragdoll()
+					end
 				elseif action_type ~= "counter_tased" and action_type ~= "taser_tased" then
 					if old_variant and (old_info[dir_str] == 1 and old_info[height] == 1 and old_info.mod == 1 and action_type == "hurt" or old_info.hvy == 1 and action_type == "heavy_hurt") then
 						variant = old_variant

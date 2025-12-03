@@ -34,9 +34,20 @@ Hooks:PostHook( PlayerTweakData, "init", "nqr_playertweakdata", function(self)
 
 
 
+	self.damage.respawn_time_penalty = 15
+	self.damage.base_respawn_time_penalty = 60
+
     self.gravity = -(982*2)
 
 end)
+
+function PlayerTweakData:_set_normal()
+	self.damage.automatic_respawn_time = 240
+end
+
+function PlayerTweakData:_set_hard()
+	self.damage.automatic_respawn_time = 480
+end
 
 Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init_new_stances", function(self)
 

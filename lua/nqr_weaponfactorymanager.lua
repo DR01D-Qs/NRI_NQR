@@ -10,7 +10,7 @@ function WeaponFactoryManager:get_sound_switch(switch_group, factory_id, bluepri
 		part = self:_part_data(part_id, factory_id, override)
 
 		if not forbidden[part_id] and part.sound_switch and part.sound_switch[switch_group] then
-			return self:_part_data(part_id, factory_id, override).sound_switch[switch_group]
+			return part.sound_switch[switch_group]
 		end
 	end
 

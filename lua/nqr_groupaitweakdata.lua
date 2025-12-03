@@ -89,7 +89,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		crojob2 = {2,1}, --bomb dockyard
 		crojob3 = {2.2,2}, --bomb forest
 		friend = {1.5,2}, --scarface mansion
-		dah = {1.5,1}, --diamond heist
+		dah = {1.1,1}, --diamond heist
 		peta = {2,1.5}, --goatsim 1
 		peta2 = {1,2}, --goats day 2
 		welcome_to_the_jungle_1 = {1.5,0.5}, --big oil 1
@@ -113,7 +113,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		chill_combat = {1,1}, --safehouse raid
 		man = {1.1,1}, --undercover
 		jolly = {1.5,2}, --aftershock
-		branchbank = {2,1}, --bank heist
+		branchbank = {1.8,1.5}, --bank heist
 		firestarter_1 = {2,1}, --firestarter 1
 		firestarter_2 = {1.5,1}, --firestarter 2
 		firestarter_3 = {2,1}, --firestarter 3
@@ -140,7 +140,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		hvh = {0.4,1}, --cursed kill room
 		nmh = {0.9,0.5}, --no mercy
 		big = {1.5,1}, --the big bank
-		pent = {1.4,1}, --mountain master
+		pent = {1.2,1}, --mountain master
 		pines = {1.2,1.5}, --white xmas
 		gallery = {1.5,1}, --art gallery
 		alex_1 = {1.3,1.5}, --rats 1
@@ -218,8 +218,8 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		self.besiege.assault.force = { 4*force_mul*custom_force[1], 6*force_mul*custom_force[2], 8*force_mul }
 		self.besiege.assault.force_pool = { 8, 12, 16 }
 	end
-	self.besiege.assault.force_balance_mul = { 1.0, 1.5, 2.0, 3.0 }
-	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.5, 2.0, 3.0 }
+	self.besiege.assault.force_balance_mul = { 1.0, 1.5, 2.0, 2.5 }
+	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.75, 2.5, 3.25 }
 
 	local delay_mul = job_mapping[job] and job_mapping[job][2] or 1
 	self.besiege.assault.delay = { 10*delay_mul, 20*delay_mul, 30*delay_mul }
@@ -227,20 +227,20 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 	self.besiege.assault.groups = {
 		tac_swat_shotgun_rush = { 0.0, 0.0, 0.1 },
 		tac_swat_shotgun_flank = { 0.0, 0.0, 0.1 },
-		tac_swat_rifle = { 0.4, 0.3, 0.3 },
-		tac_swat_rifle_flank = { 0.4, 0.3, 0.3 },
-		tac_shield_wall_charge = { 0.0, 0.4, 0.8 },
-		tac_tazer_flanking = { 0.0, 0.4, 0.8 },
-		tac_tazer_charge = { 0.0, 0.2, 0.8 },
-		FBI_spoocs = { 0, 0.4, 0.9 },
-		tac_bull_rush = { 0, 0.3, 0.9 },
+		tac_swat_rifle = { 0.6, 0.5, 0.4 },
+		tac_swat_rifle_flank = { 0.6, 0.5, 0.4 },
+		tac_shield_wall_charge = { 0.0, 0.5, 0.9 },
+		tac_tazer_flanking = { 0.0, 0.5, 0.9 },
+		tac_tazer_charge = { 0.0, 0.5, 0.9 },
+		FBI_spoocs = { 0, 0.5, 0.9 },
+		tac_bull_rush = { 0, 0.5, 0.9 },
 	}
 	self.besiege.assault.groups.single_spooc = { 0, 0, 0 }
 	self.besiege.assault.groups.Phalanx = { 0, 0, 0 }
 	if difficulty_index == 2 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.1 }
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.0, 0.05 }
 	elseif difficulty_index == 4 then
-		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.1, 0.1 }
+		self.besiege.assault.groups.tac_swat_shotgun_rush = { 0.0, 0.0, 0.05 }
 		self.besiege.assault.groups.tac_tazer_flanking = { 0.0, 0.2, 0.4 }
 		self.besiege.assault.groups.tac_tazer_charge = { 0.0, 0.2, 0.4 }
 	end
