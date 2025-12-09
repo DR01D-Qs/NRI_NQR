@@ -141,12 +141,13 @@ tweak_data.projectiles.rocket_ray_frag.fire_dot_data = {
 	dot_trigger_max_distance = 3000,
 	dot_tick_period = 0.5
 }
-tweak_data.projectiles.rocket_ray_frag.sound_event_impact_duration = 1
-tweak_data.projectiles.rocket_ray_frag.burn_duration = 3
+tweak_data.projectiles.rocket_ray_frag.sound_event_impact_duration = 4
+tweak_data.projectiles.rocket_ray_frag.burn_duration = 12
 tweak_data.projectiles.rocket_ray_frag.burn_tick_period = 0.5
 
 for i, k in pairs(tweak_data.projectiles) do
 	k.range = k.range and k.range*2
+	k.burn_duration = k.burn_duration and k.burn_duration*2
 end
 
 tweak_data.scene_poses.weapon.scout = nil

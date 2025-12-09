@@ -9,7 +9,7 @@ function ElementDifficulty:init(...)
 	local lookup = {
 		pent = { diff_85 = 0.75, diff_20 = 0.01, diff_10 = 0.25, diff_085 = 0.75, },
 	}
-	self._values.difficulty = 1
+	self._values.difficulty = (lookup[job] and lookup[job][self._editor_name]) or self._values.difficulty
 end
 
 function ElementDifficulty:on_executed(instigator)

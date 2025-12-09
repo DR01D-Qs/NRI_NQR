@@ -54,6 +54,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			1-(w[3]+w[4]+w[5]+w[6]+w[7])*sha_mul
 		},
 	}
+--
 
 	self.level_tree[1].upgrades={ "body_armor1", "frag_com", "nin", "concussion", "fir_com", "dada_com" }
 	self.level_tree[7].upgrades={ "body_armor2", "moneybundle" }

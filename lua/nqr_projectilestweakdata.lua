@@ -29,6 +29,7 @@ Hooks:PostHook( BlackMarketTweakData, "_init_projectiles", "nqr_projectilestweak
     self.projectiles.concussion.repeat_expire_t = 1.5
     self.projectiles.concussion.impact_detonation = true
 
+    self.projectiles.smoke_screen_grenade.throwable = nil
     self.projectiles.smoke_screen_grenade.ability = nil
     self.projectiles.smoke_screen_grenade.base_cooldown = nil
     self.projectiles.smoke_screen_grenade.max_amount = 3
@@ -78,6 +79,8 @@ Hooks:PostHook( BlackMarketTweakData, "_init_projectiles", "nqr_projectilestweak
     self.projectiles.poison_gas_grenade.throwable = nil
     self.projectiles.poison_gas_grenade.max_amount = 3
     self.projectiles.poison_gas_grenade.no_shouting = nil
+
+    self.projectiles.xmas_snowball.throwable = nil
 
 
 

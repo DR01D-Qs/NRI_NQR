@@ -3379,7 +3379,7 @@ end
     self.gre_m79.animations = { equip_id = "equip_gre_m79", recoil_steelsight = true }
     self.gre_m79.feed_system = "break_action"
     self.gre_m79.bolt_release = "none"
-    self.gre_m79.bolt_release_ratio = { 0.5, 0.3 }
+    self.gre_m79.bolt_release_ratio = { 0.7, 0.5 }
     self.gre_m79.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
     --11 13
 
@@ -3409,6 +3409,9 @@ end
     self.slap.feed_system = "break_action"
     self.slap.timers.reload_empty = self.slap.timers.reload_empty+0.6
     self.slap.timers.reload_not_empty = self.slap.timers.reload_empty
+	self.slap.bolt_release = "none"
+    self.slap.bolt_release_ratio = { 0.9, 0.6 }
+    self.slap.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 
     self.china.weight = 37
     self.china.caliber = "40x46mm"

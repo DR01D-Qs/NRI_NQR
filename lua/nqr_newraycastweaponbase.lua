@@ -1680,7 +1680,6 @@ function NewRaycastWeaponBase:update_bolting(t, reloading)
 				end]]
 
 			if self.r_expire_t and open_reload then
-				log(self:get_ammo_remaining_in_clip())
 				if not self.r_stage and not (bolting_stage_t2 < t) then
 					self._is_bolting = 1
 				elseif bolt_opened then

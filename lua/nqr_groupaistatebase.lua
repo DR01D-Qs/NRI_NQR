@@ -195,7 +195,8 @@ end
 
 
 function GroupAIStateBase:spawn_one_teamAI(is_drop_in, char_name, pos, rotation, start)
-	if not managers.groupai:state():team_ai_enabled() or not self._ai_enabled or not managers.criminals:character_taken_by_name(char_name) and 1 <= managers.criminals:nr_AI_criminals() then
+	local job = Global.level_data and Global.level_data.level_id
+	if not managers.groupai:state():team_ai_enabled() or not self._ai_enabled or not managers.criminals:character_taken_by_name(char_name) and (job=="short2_stage2b" and 2 or 1) <= managers.criminals:nr_AI_criminals() then
 		return
 	end
 

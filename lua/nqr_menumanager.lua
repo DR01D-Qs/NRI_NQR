@@ -5,6 +5,20 @@ NQR._settings_path = SavePath .. "NQR_Savefile.txt"
 
 
 
+Hooks:PostHook(MenuManager, "init", "nqr_MenuManager:init", function(self, is_start_menu)
+	if not (managers.menu and managers.menu._registered_menus.menu_main) then return end
+
+	for i, k in pairs(managers.menu._registered_menus.menu_main.logic._data._nodes.main._items) do
+		if k._parameters.name=="story_missions" then
+			k._enabled = false
+			k._parameters.help_id = "menu_wip"
+			break
+		end
+	end
+end)
+
+
+
 function MenuCrimeNetFiltersInitiator:modify_node(original_node, data)
 	local node = original_node
 

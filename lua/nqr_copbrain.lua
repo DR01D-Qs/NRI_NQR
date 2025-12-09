@@ -1,6 +1,6 @@
 function CopBrain:action_request(new_action_data)
 	local new_action_data = new_action_data or {}
-	if new_action_data.variant=="hands_up" and new_action_data.blocks then
+	if (new_action_data.variant=="hands_up" or new_action_data.variant=="hands_back") and new_action_data.blocks then
 		new_action_data.blocks.heavy_hurt = nil
 		new_action_data.blocks.hurt = nil
 		new_action_data.blocks.light_hurt = nil

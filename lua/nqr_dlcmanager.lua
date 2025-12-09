@@ -1,0 +1,1 @@
+function GenericDLCManager:has_xmas_snowball() return end

@@ -496,7 +496,9 @@ end
 
 --INFINITE BODYBAGS
 function PlayerManager:_set_body_bags_amount(body_bags_amount)
-	self._local_player_body_bags = 69
+	local job = Global.level_data and Global.level_data.level_id
+
+	self._local_player_body_bags = job=="short1_stage1" and 1 or 69
 end
 
 

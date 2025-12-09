@@ -65,7 +65,7 @@ function LocalizationManager:text(string_id, macros)
 			return_string = string.gsub(return_string, "150", "15")
 			return_string = string.gsub(return_string, self:text("menu_difficulty_very_hard"), string.capitalize(self:text("menu_difficulty_hard")))
 		elseif string.find(str_id, "menu_cg22_post_objective_3_desc") then
-			return_string = string.gsub(return_string, "1000", "10")
+			return_string = string.gsub(return_string, "1000", "5")
 		elseif string.find(str_id, "menu_aru_job_3_obj_desc") then
 			return_string = string.gsub(return_string, self:text("bm_w_erma"), self:text("bm_w_ching"))
 		elseif string.find(str_id, "menu_aru_job_4_obj_desc") then

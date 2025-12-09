@@ -9317,7 +9317,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_gre_m32_mag_body.visibility = { { objects = { g_gre_lod0 = false } } }
     self.parts.wpn_fps_gre_m32_mag_body.stats = {}
     self.parts.wpn_fps_gre_m32_mag.visibility = { { objects = { g_cylinder_lod0 = false, g_casing_1_lod0 = false, g_casing_2_lod0 = false, g_casing_3_lod0 = false, g_casing_4_lod0 = false, g_casing_5_lod0 = false, g_casing_6_lod0 = false, g_casing_07_lod0 = false, } } }
-    self.parts.wpn_fps_gre_m32_mag.stats = { concealment = 0, weight = 0, mag_amount = { 6, 9, 12 }, CLIP_AMMO_MAX = 6 }
+    self.parts.wpn_fps_gre_m32_mag.stats = { concealment = 8, weight = 0, mag_amount = { 6, 9, 12 }, CLIP_AMMO_MAX = 6 }
     self.parts.wpn_fps_gre_m32_no_stock.pcs = nil
     --self.parts.wpn_fps_gre_m32_no_stock.name_id = self.parts.wpn_fps_remove_s.name_id
     --self.parts.wpn_fps_gre_m32_no_stock.stats = { concealment = 0, weight = 0 }
@@ -9343,8 +9343,8 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
     self.parts.wpn_fps_gre_m79_barrel.stats = { concealment = 0, weight = 0, barrel_length = 14.5 }
     self.parts.wpn_fps_gre_m79_barrel_short.stats = { concealment = 0, weight = 0, barrel_length = 8 }
     self.parts.wpn_fps_gre_m79_barrelcatch.stats = { concealment = 0, weight = 0 }
-    self.parts.wpn_fps_gre_m79_grenade.stats = { concealment = 0, weight = 0, mag_amount = { 6, 9, 12 } }
-    self.parts.wpn_fps_gre_m79_grenade_whole.stats = { concealment = 0, weight = 0, mag_amount = { 6, 9, 12 } }
+    self.parts.wpn_fps_gre_m79_grenade.stats = { concealment = 8, weight = 0, mag_amount = { 6, 9, 12 } }
+    self.parts.wpn_fps_gre_m79_grenade_whole.stats = { concealment = 8, weight = 0, mag_amount = { 6, 9, 12 } }
     self.parts.wpn_fps_gre_m79_sight_up.stats = { concealment = 0, weight = 0, zoom = 1 }
     self.parts.wpn_fps_gre_m79_stock.stats = { concealment = 0, weight = 0, shouldered = true }
     self.parts.wpn_fps_gre_m79_stock_short.stats = { concealment = 0, weight = 0 }

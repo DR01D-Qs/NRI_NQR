@@ -912,7 +912,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 
 	self.stances.slap.standard.shoulders.translation = Vector3(-2.627, -10.619, 0.187)
 	self.stances.slap.standard.shoulders.rotation = Rotation(-3.3781e-005, -0.000599726, -3)
-	self.stances.slap.steelsight.shoulders.translation = Vector3(-11.097, -4.619, 1.837)
+	self.stances.slap.steelsight.shoulders.translation = Vector3(-11.097, -8.619, 1.837)
 	self.stances.slap.steelsight.shoulders.rotation = Rotation(-3.37758e-005, -0.000599141, -1.5)
 	self.stances.slap.crouched.shoulders.translation = Vector3(-2.62695, -13.619, 3.187)
 	self.stances.slap.crouched.shoulders.rotation = Rotation(-3.37758e-005, -0.000599136, -1)

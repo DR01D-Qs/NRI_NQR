@@ -1,6 +1,36 @@
 function PlayerInventory:need_ammo()
+	local refillable = nil
+
 	for _, weapon in pairs(self._available_selections) do
-		if not weapon.unit:base():ammo_full() then
+		local caliber_class = (
+			weapon.unit:base()
+			and weapon.unit:base()._caliber
+			and tweak_data.weapon.calibers[weapon.unit:base()._caliber]
+			and tweak_data.weapon.calibers[weapon.unit:base()._caliber].class
+		)
+		local conv_ammo = caliber_class=="rifle" or caliber_class=="shotgun" or caliber_class=="pistol"
+		local is_special = weapon.unit:base():is_special()
+		refillable = refillable or (conv_ammo and not is_special)
+
+		if conv_ammo and not is_special and not weapon.unit:base():ammo_full() then
+			return true
+		end
+	end
+
+	return false, nil, not refillable and "not_refillable"
+end
+
+function PlayerInventory:need_special_ammo()
+	for _, weapon in pairs(self._available_selections) do
+		local caliber_class = (
+			weapon.unit:base()
+			and weapon.unit:base()._caliber
+			and tweak_data.weapon.calibers[weapon.unit:base()._caliber]
+			and tweak_data.weapon.calibers[weapon.unit:base()._caliber].class
+		)
+		local conv_ammo = caliber_class=="rifle" or caliber_class=="shotgun" or caliber_class=="pistol"
+
+		if not conv_ammo and not weapon.unit:base():ammo_full() then
 			return true
 		end
 	end

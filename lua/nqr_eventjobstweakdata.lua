@@ -3,20 +3,10 @@ Hooks:PostHook(EventJobsTweakData, "init", "nqr_EventJobsTweakData:init", functi
 	for i, k in pairs(self.challenges) do
 		if k.id=="cg22_1" then
 			k.objectives = {
-				self:_choice({
-					tweak_data.safehouse:_progress("cg22_personal_1", 10, {
-						name_id = "menu_cg22_personal_1",
-						desc_id = "menu_cg22_personal_1_desc"
-					}),
-					tweak_data.safehouse:_progress("cg22_post_objective_1", 200, {
-						name_id = "menu_cg22_post_objective_1",
-						desc_id = "menu_cg22_post_objective_1_desc"
-					})
-				}, 1, {
-					name_id = "menu_cg22_1_choice_obj",
-					choice_id = "cg22_personal_1",
+				tweak_data.safehouse:_progress("cg22_post_objective_1", 200, {
+					name_id = "menu_cg22_post_objective_1",
 					desc_id = "menu_cg22_post_objective_1_desc"
-				})
+				}),
 			}
 		elseif k.id=="cg22_2" then
 			k.objectives = {
@@ -42,7 +32,7 @@ Hooks:PostHook(EventJobsTweakData, "init", "nqr_EventJobsTweakData:init", functi
 						name_id = "menu_cg22_personal_3",
 						desc_id = "menu_cg22_personal_3_desc"
 					}),
-					tweak_data.safehouse:_progress("cg22_post_objective_3", 10, {
+					tweak_data.safehouse:_progress("cg22_post_objective_3", 5, {
 						name_id = "menu_cg22_post_objective_3",
 						desc_id = "menu_cg22_post_objective_3_desc"
 					})

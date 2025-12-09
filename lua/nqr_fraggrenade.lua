@@ -49,13 +49,36 @@ function FragGrenade:clbk_impact(tag, unit, body, other_unit, other_body, positi
 	and ((proj_tweak.launch_speed * 2 * self._existing_t) < proj_tweak.arming_distance)
 	then
         self._detonated = true
-
         self._despawn_t = proj_bmtweak and proj_bmtweak.physic_effect==Idstring("physic_effects/anti_gravitate") and 0 or 2
 
 		return
     end
 
 	self:_detonate(tag, unit, body, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity, new_velocity, direction, damage, ...)
+end
+
+function FragGrenade:_on_collision(col_ray)
+	local reflect = col_ray and col_ray.unit:vehicle() and col_ray.unit:vehicle():is_active()
+	reflect = managers.modifiers:modify_value("FragGrenade:ShouldReflect", reflect, col_ray and col_ray.unit, self._unit)
+
+	local proj_tweak = tweak_data.projectiles[self._tweak_projectile_entry]
+	local proj_bmtweak = tweak_data.blackmarket.projectiles[self._tweak_projectile_entry]
+
+    if not self._detonated and self._existing_t
+	and (proj_tweak and proj_tweak.arming_distance and proj_tweak.launch_speed)
+	and ((proj_tweak.launch_speed * 2 * self._existing_t) < proj_tweak.arming_distance)
+	then
+        if col_ray then
+            CoreSerialize.string_to_classtable("InstantBulletBase"):on_collision(col_ray, self._weapon_unit or self._unit, self._thrower_unit, self._damage, false)
+        end
+
+        self._detonated = true
+        self._unit:set_slot(0)
+
+        return
+    end
+
+	self:_detonate()
 end
 
 function FragGrenade:_detonate(tag, unit, body, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity, new_velocity, direction, damage, ...)
@@ -124,13 +147,11 @@ function IncendiaryBurstGrenade:_detonate(tag, unit, body, other_unit, other_bod
 	local range = self._range
 	local slot_mask = managers.slot:get_mask("explosion_targets")
 
-	managers.fire:give_local_player_dmg(pos, range, self._damage, self:thrower_unit())
+	managers.fire:give_local_player_dmg(pos, range, self._player_damage, self:thrower_unit())
 	managers.explosion:play_sound_and_effects(pos, normal, range, self._custom_params)
-	managers.explosion:client_damage_and_push(pos, normal, nil, self._damage, range, self._curve_pow)
 
 	local params = {
 		player_damage = 0,
-		is_molotov = "fir_com",
 		hit_pos = pos,
 		range = range,
 		collision_slotmask = slot_mask,
@@ -140,15 +161,17 @@ function IncendiaryBurstGrenade:_detonate(tag, unit, body, other_unit, other_bod
 		alert_radius = self._alert_radius,
 		user = self:thrower_unit() or self._unit,
 		owner = self._unit,
-		fire_dot_data = self._fire_dot_data
+		dot_data = self._dot_data
 	}
 	local hit_units, splinters = managers.fire:detect_and_give_dmg(params)
 
-	managers.network:session():send_to_peers_synched("sync_unit_event_id_16", self._unit, "base", GrenadeBase.EVENT_IDS.detonate)
+	if self._unit:id() ~= -1 and managers.network:session() then
+		managers.network:session():send_to_peers_synched("sync_unit_event_id_16", self._unit, "base", GrenadeBase.EVENT_IDS.detonate)
+	end
 
-	self.burn_stop_time = TimerManager:game():time() + self._fire_dot_data.dot_length + 1
+	local destruction_delay = self._dot_data and self._dot_data.dot_length + 1
 
-	self._unit:set_visible(false)
+	self:_handle_hiding_and_destroying(true, destruction_delay)
 end
 function IncendiaryBurstGrenade:_detonate_on_client()
 	if self._detonated then
@@ -159,8 +182,13 @@ function IncendiaryBurstGrenade:_detonate_on_client()
 	local pos = self._unit:position()
 	local range = self._range
 
-	managers.fire:give_local_player_dmg(pos, range, self._damage, self:thrower_unit())
-	managers.explosion:explode_on_client(pos, math.UP, nil, self._damage, range, self._curve_pow, self._custom_params)
+	managers.fire:give_local_player_dmg(pos, range, self._player_damage, self:thrower_unit())
+	managers.explosion:play_sound_and_effects(pos, math.UP, range, self._custom_params)
+	managers.fire:client_damage_and_push(pos, math.UP, nil, self._damage, range, self._curve_pow)
+
+	local destruction_delay = self._dot_data and self._dot_data.dot_length + 1
+
+	self:_handle_hiding_and_destroying(true, destruction_delay)
 end
 
 

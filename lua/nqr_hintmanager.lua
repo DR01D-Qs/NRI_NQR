@@ -1,3 +1,23 @@
+function HintManager:init()
+	if not Global.hint_manager then
+		Global.hint_manager = {
+			hints = {}
+		}
+
+		self:_parse_hints()
+	end
+
+	Global.hint_manager.hints.not_refillable = {
+        trigger_count = 0,
+		text_id = "hint_not_refillable",
+    	event = "stinger_feedback_positive",
+	}
+
+	self._cooldown = {}
+end
+
+
+
 function HintManager:_show_hint(id, time, params)
 	local hint = self:hint(id)
 

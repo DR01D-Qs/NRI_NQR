@@ -166,6 +166,62 @@ end
 
 
 
+function RaycastWeaponBase:is_special()
+	local categories = self:categories()
+
+	for i, k in pairs(categories or {}) do
+		return tweak_data.gui.buy_weapon_category_aliases[k]=="wpn_special"
+	end
+
+	return false
+end
+
+
+
+function RaycastWeaponBase:add_ammo_from_bag(available, special)
+	local function process_ammo(ammo_base, amount_available)
+		local caliber_class = (
+			self._caliber
+			and tweak_data.weapon.calibers[self._caliber]
+			and tweak_data.weapon.calibers[self._caliber].class
+		)
+		local conv_ammo = caliber_class=="rifle" or caliber_class=="shotgun" or caliber_class=="pistol"
+		local is_special = self:is_special()
+		local special_check = (special and conv_ammo) or (not special and (not conv_ammo or is_special))
+
+		if ammo_base:get_ammo_max() == ammo_base:get_ammo_total() or special_check then
+			return 0
+		end
+
+		local ammo_max = ammo_base:get_ammo_max()
+		local ammo_total = ammo_base:get_ammo_total()
+		local wanted = 1 - ammo_total / ammo_max
+		local can_have = math.min(wanted, amount_available)
+
+		ammo_base:set_ammo_total(math.min(ammo_max, ammo_total + math.ceil(can_have * ammo_max)))
+		print(wanted, can_have, math.ceil(can_have * ammo_max), ammo_base:get_ammo_total())
+
+		return can_have
+	end
+
+	local can_have = process_ammo(self, available)
+	available = available - can_have
+
+	for _, gadget in ipairs(self:get_all_override_weapon_gadgets()) do
+		if gadget and gadget.ammo_base then
+			local ammo = process_ammo(gadget:ammo_base(), available)
+			can_have = can_have + ammo
+			available = available - ammo
+
+			gadget:on_add_ammo_from_bag()
+		end
+	end
+
+	return can_have
+end
+
+
+
 function RaycastWeaponBase:calculate_ammo_max_per_clip()
 	return (self._CLIP_AMMO_MAX or tweak_data.weapon[self._name_id].CLIP_AMMO_MAX) * (self.AKIMBO and 2 or 1)
 end

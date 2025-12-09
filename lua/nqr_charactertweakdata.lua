@@ -14604,6 +14604,7 @@
 
 
 function CharacterTweakData:_presets(tweak_data)
+	local job = Global.level_data and Global.level_data.level_id
 
 	local presets = { hurt_severities = {} }
 
@@ -14763,6 +14764,7 @@ function CharacterTweakData:_presets(tweak_data)
 		{ none = 0, light = 0.0, moderate = 0.5, heavy = 0.5, health_limit = 1.0, },
 	} }
 	presets.gang_member_damage.MIN_DAMAGE_INTERVAL = 0
+	if job=="short2_stage2b" then presets.gang_member_damage.base_respawn_time_penalty = 0 end
 
 
 

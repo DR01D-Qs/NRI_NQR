@@ -403,3 +403,24 @@ function DrivingInteractionExt:can_interact(player)
 
 	return can_interact
 end
+
+
+
+AmmoBagInteractionExt = AmmoBagInteractionExt or class(UseInteractionExt)
+
+function AmmoBagInteractionExt:_interact_blocked(player)
+	local need, skip_hint, custom_hint = player:inventory():need_ammo()
+	return not need, skip_hint, custom_hint
+end
+
+
+
+GrenadeCrateInteractionExt = GrenadeCrateInteractionExt or class(UseInteractionExt)
+
+function GrenadeCrateInteractionExt:_interact_blocked(player)
+	if not managers.blackmarket:equipped_grenade_allows_pickups() and not player:inventory():need_special_ammo() then
+		return true, false, "ability_no_grenade_pickup" --todo
+	end
+
+	return managers.player:got_max_grenades() and not player:inventory():need_special_ammo()
+end

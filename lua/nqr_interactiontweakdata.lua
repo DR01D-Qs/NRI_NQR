@@ -170,6 +170,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		pal = { c4_diffusible = { timer = 3 } },
 		sand = { atm_interaction = { interact_distance = 170, interact_dont_interupt_on_distance = true } },
 		dah = { ignite_flare = { interact_distance = 300 }, use_flare = { interact_distance = 300 }, place_flare = { interact_distance = 300 } },
+		short2_stage2b = { gen_pku_cocaine = { timer = false } },
 	}
 	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k) do self[i][u] = j end end
 

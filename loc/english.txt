@@ -45,6 +45,7 @@
 
 	"hud_int_nqr_corpse_loot" : "Hold $BTN_INTERACT; to loot some ammo",
 	"hint_found_no_ammo" : "Found no ammo",
+	"hint_not_refillable" : "No ammo for your weapons",
 	"hud_action_nqr_corpse_loot" : "Looting ammo",
 
 
