@@ -2579,13 +2579,13 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_m4_m_drum.pcs = {}
 	self.parts.wpn_fps_upg_m4_m_drum.name_id = "bm_wp_fps_upg_m4_m_drum"
 	self.parts.wpn_fps_upg_m4_m_drum.stats = { concealment = 48, weight = 10, mag_amount = { 1, 1, 2 }, CLIP_AMMO_MAX = { ["5.56x45"] = 100, [".300 BLK"] = 100, [".50 Beo"] = 8 }, retention = false }
-	self.parts.wpn_fps_upg_m4_m_l5.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10 } }
-	self.parts.wpn_fps_upg_m4_m_pmag.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10 } }
-	self.parts.wpn_fps_upg_m4_m_quad.stats = { concealment = 18, weight = 3, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { ["5.56x45"] = 60, [".300 BLK"] = 60, [".50 Beo"] = 5 }, retention = false }
-	self.parts.wpn_fps_upg_m4_m_straight.stats = { concealment = 6, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 20, [".300 BLK"] = 20, [".50 Beo"] = 7 } }
-	self.parts.wpn_fps_m4_uupg_m_std.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10 } }
-	self.parts.wpn_fps_m4_uupg_m_strike.stats = { concealment = 11, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = {  ["5.56x45"] = 37, [".300 BLK"] = 37,[".50 Beo"] = 12 } }
-	self.parts.wpn_fps_m4_upg_m_quick.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10 } }
+	self.parts.wpn_fps_upg_m4_m_l5.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10, ["5.45x39"] = 30 } }
+	self.parts.wpn_fps_upg_m4_m_pmag.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10, ["5.45x39"] = 30 } }
+	self.parts.wpn_fps_upg_m4_m_quad.stats = { concealment = 18, weight = 3, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { ["5.56x45"] = 60, [".300 BLK"] = 60, [".50 Beo"] = 5, ["5.45x39"] = 60 }, retention = false }
+	self.parts.wpn_fps_upg_m4_m_straight.stats = { concealment = 6, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 20, [".300 BLK"] = 20, [".50 Beo"] = 7, ["5.45x39"] = 20 } }
+	self.parts.wpn_fps_m4_uupg_m_std.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10, ["5.45x39"] = 30 } }
+	self.parts.wpn_fps_m4_uupg_m_strike.stats = { concealment = 11, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = {  ["5.56x45"] = 37, [".300 BLK"] = 37,[".50 Beo"] = 12, ["5.45x39"] = 37 } }
+	self.parts.wpn_fps_m4_upg_m_quick.stats = { concealment = 8, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["5.56x45"] = 30, [".300 BLK"] = 30, [".50 Beo"] = 10, ["5.45x39"] = 30 } }
 
 	self.parts.wpn_fps_m4_uupg_fg_rail.pcs = {}
 	self.parts.wpn_fps_m4_uupg_fg_rail.rails = { "top", "side", "bottom" }
@@ -6023,6 +6023,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_smg_mp5_m_drum.pcs = {}
 	self.parts.wpn_fps_smg_mp5_m_drum.name_id = "bm_wp_mp5_m_drum"
 	self.parts.wpn_fps_smg_mp5_m_drum.stats = { concealment = 18, weight = 5, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = 70, retention = false } --roughly
+	self.parts.wpn_fps_smg_mp5_m_std.pcs = {}
 	self.parts.wpn_fps_smg_mp5_m_std.stats = { concealment = 6, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 30 }
 	self.parts.wpn_fps_smg_mp5_m_straight.pcs = nil
 	self.parts.wpn_fps_smg_mp5_m_straight.stats = {}
@@ -7382,6 +7383,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_sho_sko12_body_grip.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_sko12_body_lower.stats = { concealment = 0, weight = 0, length = 10 }
 	self.parts.wpn_fps_sho_sko12_body_upper.stats = { concealment = 0, weight = 0 }
+	self.parts.wpn_fps_sho_sko12_conversion.is_a_unlockable = nil
 	self.parts.wpn_fps_sho_sko12_conversion.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_sko12_drag_handle.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_sko12_fg_railed.unit = fantom_unit
@@ -7402,7 +7404,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.unit = "units/pd2_dlc_pxp2/weapons/wpn_fps_sho_sko12_pts/wpn_fps_sho_sko12_ns_stiletto_conversion"
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.name_id = "bm_wp_sko12_ns_stiletto"
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.pcs = {}
-	self.parts.wpn_fps_sho_sko12_ns_stiletto.is_a_unlockable = true
+	--self.parts.wpn_fps_sho_sko12_ns_stiletto.is_a_unlockable = true
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.dlc = "pxp2"
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.texture_bundle_folder = "pxp2"
 	self.parts.wpn_fps_sho_sko12_ns_stiletto.stats = { concealment = 1, weight = 1, length = 1, md_code = {0,1,0,1,0} }

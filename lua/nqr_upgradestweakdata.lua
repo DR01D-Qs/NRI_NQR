@@ -446,8 +446,6 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 	table.delete(self.level_tree[0].upgrades, "peacemaker")
 	table.delete(self.level_tree[0].upgrades, "coach")
 
-
-
 	--self.definitions.wpn_prj_jav = nil
 	table.delete(self.level_tree[41].upgrades, "wpn_prj_jav")
 
@@ -457,6 +455,14 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 	self.definitions.peacemaker.free = true
 
     self.definitions.model70.dlc = nil
+
+
+
+	for i, k in pairs(self.level_tree) do
+		for u, j in pairs(k.upgrades or {}) do
+			if not self.definitions[j] then table.delete(self.level_tree[i].upgrades, j) end
+		end
+	end
 
 
 
