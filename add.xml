@@ -31,7 +31,6 @@
 	<model path="units\payday2\weapons\wpn_fps_ass_m4_pts\wpn_fps_para_b_short" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_1911\wpn_fps_pis_1911" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_b92fs_ptsq\wpn_fps_pis_beretta_co_co1" force="true"/>
-	<model path="units\payday2\weapons\wpn_fps_pis_g17\wpn_fps_pis_g17" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g17_pts\wpn_fps_pis_g17_body_standard" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g17_pts\wpn_fps_pis_g17_b_standard" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c\wpn_fps_pis_g18c" force="true"/>
@@ -39,7 +38,7 @@
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c_pts\wpn_fps_pis_g18c_frame" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c_pts\wpn_fps_pis_g18c_m_mag_17rnd" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c_pts\wpn_fps_pis_g18c_m_mag_33rnd" force="true"/>
-	<model path="units\payday2\weapons\wpn_fps_pis_g22c\wpn_fps_pis_g22c" force="true"/>
+	<model path="units\payday2\weapons\wpn_fps_pis_g22c_pts\wpn_fps_pis_g22c_b_long" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_big" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_railed" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_small" force="true"/>
@@ -61,6 +60,7 @@
 	<model path="units\pd2_dlc2\weapons\wpn_fps_upg_o_acog\wpn_fps_upg_o_acog" force="true"/>
 	<model path="units\pd2_dlc_afp\weapons\wpn_fps_pis_beer_pts\wpn_fps_pis_beer_b_std" force="true"/>
 	<model path="units\pd2_dlc_afp\weapons\wpn_fps_pis_czech\wpn_fps_pis_czech" force="true"/>
+	<model path="units\pd2_dlc_afp\weapons\wpn_fps_pis_x_czech\wpn_fps_pis_x_czech" force="true"/>
 	<model path="units\pd2_dlc_akm4_modpack\weapons\wpn_fps_upg_ass_m16_fg_stag\wpn_fps_upg_ass_m16_fg_stag" force="true"/>
 	<model path="units\pd2_dlc_akm4_modpack\weapons\wpn_fps_upg_ass_m4_fg_lvoa\wpn_fps_upg_ass_m4_fg_lvoa" force="true"/>
 	<model path="units\pd2_dlc_akm4_modpack\weapons\wpn_fps_upg_ass_m4_fg_moe\wpn_fps_upg_ass_m4_fg_moe" force="true"/>
@@ -254,10 +254,11 @@
 	<object path="units/pd2_dlc_gage_assault/weapons/wpn_fps_ass_famas/wpn_fps_ass_famas" force="true"/>
 	<object path="units/pd2_dlc_dragan/weapons/wpn_fps_ass_vhs/wpn_fps_ass_vhs" force="true"/>
 	<object path="units/pd2_dlc_chico/weapons/wpn_fps_ass_contraband/wpn_fps_ass_contraband" force="true"/>
-	
-	
-	
-		<object path="units/payday2/characters/civ_male_bank_manager_1/civ_male_bank_manager_1" force="true"/>
+	<object path="units/payday2/weapons/wpn_fps_pis_b92fs/wpn_fps_pis_beretta" force="true"/>
+
+
+
+	<object path="units/payday2/characters/civ_male_bank_manager_1/civ_male_bank_manager_1" force="true"/>
 	<object path="units/payday2/characters/civ_female_bank_1/civ_female_bank_1" force="true"/>
 	<object path="units/payday2/characters/civ_female_casual_1/civ_female_casual_1" force="true"/>
 	<object path="units/payday2/characters/civ_female_casual_2/civ_female_casual_2" force="true"/>
@@ -474,5 +475,7 @@
 	<object path="units/pd2_dlc_usm2/characters/ene_male_marshal_shield_2/ene_male_marshal_shield_2" force="true"/>
 	<object path="units/pd2_dlc_vip/characters/ene_vip_1/ene_vip_1" force="true"/>
 	<object path="units/pd2_dlc_vip/characters/ene_phalanx_1/ene_phalanx_1" force="true"/>
+	
+	<unit path="units/pd2_dlc_friend/weapons/wpn_third_ray_fired_rocket/wpn_third_ray_fired_rocket" force="true"/>
 
 </table>

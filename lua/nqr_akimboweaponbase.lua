@@ -12,6 +12,35 @@ end
 
 
 
+function AkimboWeaponBase:_do_update_bullet_objects(weapon_base, ammo_func, is_second_gun)
+	if weapon_base._bullet_objects then
+		for i, objects in pairs(weapon_base._bullet_objects) do
+			for _, object in ipairs(objects) do
+				local ammo_base = weapon_base:ammo_base()
+				local ammo = (ammo_base[ammo_func](ammo_base) - self:get_chamber()) * 0.5
+
+				if is_second_gun then
+					ammo = math.ceil(ammo)
+				else
+					ammo = math.floor(ammo)
+				end
+
+				object[1]:set_visibility(i <= ammo)
+			end
+		end
+	end
+end
+
+function AkimboWeaponBase:_update_bullet_objects(ammo_func)
+	self:_do_update_bullet_objects(self, ammo_func, self._fire_second_gun_next)
+
+	if alive(self._second_gun) then
+		self:_do_update_bullet_objects(self._second_gun:base(), ammo_func, not self._fire_second_gun_next)
+	end
+end
+
+
+
 function AkimboWeaponBase:_sound_singleshot()
 	if self._firing_muted then
 		return

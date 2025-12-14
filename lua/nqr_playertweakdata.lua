@@ -61,7 +61,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.ksg.crouched.shoulders.translation = Vector3(-1.346, -23.469, -1.311)
 	self.stances.ksg.crouched.shoulders.rotation = Rotation(-4.34929e-005, -5.76868e-005, -1.15)
 
-	self.stances.cobray.steelsight.shoulders.translation = Vector3(-9.27771, -7.45, 5.83447)
+	self.stances.cobray.steelsight.shoulders.translation = Vector3(-9.27771, -8.45, 5.83447)
 	self.stances.cobray.standard.shoulders.translation = Vector3(0.72229, -2.44963, 1.834)
 
 	self.stances.basset.standard.shoulders.translation = Vector3(-5.841, -7.028, 0.169)
@@ -77,7 +77,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.boot.crouched.shoulders.rotation = Rotation(-0.000912031, -0.000168076, -1)
 
 	self.stances.baka.standard.shoulders.translation = Vector3(-2.33502, 2.08721, 1.787)
-	self.stances.baka.steelsight.shoulders.translation = Vector3(-8.681, -17.646, 4.787)
+	self.stances.baka.steelsight.shoulders.translation = Vector3(-8.681, -19.646, 4.787)
 	self.stances.baka.steelsight.shoulders.rotation = Rotation(-0.115, -0.012, -0.633)
 	self.stances.baka.crouched.shoulders.translation = Vector3(-7.215, -4.913, 3.017)
 
@@ -487,7 +487,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.gre_m79.steelsight.shoulders.translation = Vector3(-10.8141, -9.538, 5.2255)
 	self.stances.gre_m79.standard.shoulders.translation = Vector3(0.185923, -7.53816, 0.725)
 
-	self.stances.mac10.steelsight.shoulders.translation = Vector3(-8.6814, -17.646, 3.13712)
+	self.stances.mac10.steelsight.shoulders.translation = Vector3(-8.6814, -18.646, 3.13712)
 	self.stances.mac10.standard.shoulders.translation = Vector3(-0.681, -13.646, 0.137)
 	self.stances.mac10.standard.shoulders.rotation = Rotation(-0.105352, -0.012, -0.633)
 
@@ -501,7 +501,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.maxim9.crouched.shoulders.rotation = Rotation(-0.107768, 0.689, -1.628)
 
 	self.stances.sr2.standard.shoulders.translation = Vector3(-2.4607, 2.46388, 1.831)
-	self.stances.sr2.steelsight.shoulders.translation = Vector3(-9.4607, -2.536, 5.33089)
+	self.stances.sr2.steelsight.shoulders.translation = Vector3(-9.4607, 0.464, 5.33089)
 
 	self.stances.aug.steelsight.shoulders.translation = Vector3(-8.83927, -4.893, 4.31838)
 	self.stances.aug.standard.shoulders.translation = Vector3(-0.339274, 1.10662, 0.818)
@@ -556,7 +556,7 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.tec9.standard.shoulders.rotation = Rotation(-5.01609e-005, -0.000580993, -3)
 	self.stances.tec9.crouched.shoulders.translation = Vector3(-7.048, -7.994, 1.434)
 	self.stances.tec9.crouched.shoulders.rotation = Rotation(-5.01609e-005, -0.000580993, -1)
-	self.stances.tec9.steelsight.shoulders.translation = Vector3(-11.0476, -6.994, 4.43413)
+	self.stances.tec9.steelsight.shoulders.translation = Vector3(-11.0476, -5.994, 4.43413)
 
 	self.stances.scout.standard.shoulders.translation = Vector3(2.44481, 5.8, 0.445)
 	self.stances.scout.steelsight.shoulders.translation = Vector3(-7.96527, 4.926, 3.072)

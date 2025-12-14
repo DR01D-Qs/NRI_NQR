@@ -209,6 +209,14 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		["akmsu_crew"] = "units/payday2/weapons/wpn_fps_smg_akmsu/wpn_fps_smg_akmsu_npc",
 		["tecci"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci",
 		["tecci_crew"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci_npc",
+		["glock_17"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17",
+		["glock_17_crew"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17_npc",
+		["g22c"] = "units/payday2/weapons/wpn_fps_pis_g22c/wpn_fps_pis_g22c",
+		["g22c_crew"] = "units/payday2/weapons/wpn_fps_pis_g22c/wpn_fps_pis_g22c_npc",
+		["x_g17"] = "units/pd2_dlc_butcher_mods/weapons/wpn_fps_pis_x_g17/wpn_fps_pis_x_g17",
+		["x_g17_crew"] = "units/pd2_dlc_butcher_mods/weapons/wpn_fps_pis_x_g17/wpn_fps_pis_x_g17_npc",
+		["x_g22c"] = "units/pd2_dlc_butcher_mods/weapons/wpn_fps_pis_x_g22c/wpn_fps_pis_x_g22c",
+		["x_g22c_crew"] = "units/pd2_dlc_butcher_mods/weapons/wpn_fps_pis_x_g22c/wpn_fps_pis_x_g22c_npc",
 	}
 	for i, k in pairs(to_load) do
 		if type(i)=="string" and i==self._name_id or type(i)~="string" then 

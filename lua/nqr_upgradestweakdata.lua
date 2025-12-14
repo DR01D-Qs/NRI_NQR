@@ -427,103 +427,20 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		for u, j in pairs(k) do table.insert(lvl_swaps[i], j) end
 	end
 
-	local aki_origs = {
-        "glock_17",
-        "glock_18c",
-        "g22c",
-        "g26",
-        "colt_1911",
-        "beer",
-        "b92fs",
-        "breech",
-        "c96",
-        "czech",
-        "deagle",
-        "holt",
-        "hs2000",
-        "legacy",
-        "m1911",
-        "maxim9",
-        "p226",
-        "packrat",
-        "pl14",
-        "ppk",
-        "shrew",
-        "sparrow",
-        "stech",
-        "type54",
-        "usp",
-        "mac10",
-        "pm9",
-        "scorpion",
-        "baka",
-        "mp9",
-        "tec9",
-        "cobray",
-        "sr2",
-        "new_raging_bull",
-        "korth",
-        "chinchilla",
-        "model3",
-        "mateba",
-        "judge",
-    }
-    local aki_weps = {
-        "x_g17",
-        "x_g18c",
-        "x_g22c",
-        "jowi",
-        "x_1911",
-        "x_beer",
-        "x_b92fs",
-        "x_breech",
-        "x_c96",
-        "x_czech",
-        "x_deagle",
-        "x_holt",
-        "x_hs2000",
-        "x_legacy",
-        "x_m1911",
-        "x_maxim9",
-        "x_p226",
-        "x_packrat",
-        "x_pl14",
-        "x_ppk",
-        "x_shrew",
-        "x_sparrow",
-        "x_stech",
-        "x_type54",
-        "x_usp",
-        "x_mac10",
-        "x_pm9",
-        "x_scorpion",
-        "x_baka",
-        "x_mp9",
-        "x_tec9",
-        "x_cobray",
-        "x_sr2",
-        "x_rage",
-        "x_korth",
-        "x_chinchilla",
-        "x_model3",
-        "x_2006m",
-        "x_judge",
-    }
-	local aki_lookup = {}
-	for i, k in pairs(aki_origs) do aki_lookup[k] = aki_weps[i] end
+
 
 	for i, k in pairs(lvl_swaps) do
 		for u, j in pairs(k) do
 			for y, h in pairs(self.level_tree) do
 				table.delete(h.upgrades, j)
-				if aki_lookup[j] then table.delete(h.upgrades, aki_lookup[j]) end
+				if aki_id_lookup[j] then table.delete(h.upgrades, aki_id_lookup[j]) end
 			end
 
 			self.level_tree[i] = self.level_tree[i] or {}
 			self.level_tree[i].upgrades = self.level_tree[i].upgrades or {}
 			table.insert(self.level_tree[i].upgrades, j)
 
-			if aki_lookup[j] then table.insert(self.level_tree[i].upgrades, aki_lookup[j]) end
+			if aki_id_lookup[j] then table.insert(self.level_tree[i].upgrades, aki_id_lookup[j]) end
 		end
 	end
 	table.delete(self.level_tree[0].upgrades, "peacemaker")

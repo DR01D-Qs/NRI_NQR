@@ -15,6 +15,13 @@ Hooks:PostHook(MenuManager, "init", "nqr_MenuManager:init", function(self, is_st
 			break
 		end
 	end
+	for i, k in pairs(managers.menu._registered_menus.menu_main.logic._data._nodes.lobby._items) do
+		if k._parameters.name=="story_missions" then
+			k._enabled = false
+			k._parameters.help_id = "menu_wip"
+			break
+		end
+	end
 end)
 
 
