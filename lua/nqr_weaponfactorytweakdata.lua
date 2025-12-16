@@ -6023,7 +6023,6 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_smg_mp5_m_drum.pcs = {}
 	self.parts.wpn_fps_smg_mp5_m_drum.name_id = "bm_wp_mp5_m_drum"
 	self.parts.wpn_fps_smg_mp5_m_drum.stats = { concealment = 18, weight = 5, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = 70, retention = false } --roughly
-	self.parts.wpn_fps_smg_mp5_m_std.pcs = {}
 	self.parts.wpn_fps_smg_mp5_m_std.stats = { concealment = 6, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 30 }
 	self.parts.wpn_fps_smg_mp5_m_straight.pcs = nil
 	self.parts.wpn_fps_smg_mp5_m_straight.stats = {}
