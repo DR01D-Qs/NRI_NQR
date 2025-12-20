@@ -69,6 +69,20 @@ end
 
 
 
+function BlackMarketManager:weapon_unlocked(weapon_id)
+	local data = Global.blackmarket_manager.weapons[weapon_id]
+
+	if data.func_based and not self[data.func_based](self) then
+		return false
+	end
+
+	if data.level and (data.level > managers.experience:current_level()) then data.unlocked = false end
+
+	return data.unlocked
+end
+
+
+
 function BlackMarketManager:is_crew_item_unlocked(item) end
 
 
@@ -337,8 +351,12 @@ end
 	for level, data in pairs(tweak_data.upgrades.level_tree) do
 		if data.upgrades then
 			for _, upgrade in ipairs(data.upgrades) do
-				log(upgrade)
 				local def = tweak_data.upgrades.definitions[upgrade]
+
+				if not def then
+				log(upgrade)
+
+				end
 
 				if def and def.armor_id then
 					armor_level_data[def.armor_id] = level

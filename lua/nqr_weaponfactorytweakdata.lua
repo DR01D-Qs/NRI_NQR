@@ -5360,7 +5360,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_snp_mosin_iron_sight.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_snp_mosin_m_standard.bullet_objects = { amount = 1, prefix = "g_bullet" }
 	self.parts.wpn_fps_snp_mosin_m_standard.stats = { concealment = 3, weight = 0, mag_amount = { 3, 6, 9 }, CLIP_AMMO_MAX = 5 }
-	self.parts.wpn_fps_snp_mosin_ns_bayonet.stats = { concealment = 6, weight = 3 }
+	self.parts.wpn_fps_snp_mosin_ns_bayonet.stats = { concealment = 6, weight = 3, length = 15, min_damage = 4, max_damage = 4, min_damage_effect = 1.75, max_damage_effect = 1.75, }
 	self.parts.wpn_fps_snp_mosin_rail.pcs = {} --todo a_o
 	self.parts.wpn_fps_snp_mosin_rail.name_id = "bm_wp_mosin_sightrail"
 	self.parts.wpn_fps_snp_mosin_rail.type = "ironsight"
@@ -7008,6 +7008,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_sho_aa12_bolt.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_aa12_dh.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_aa12_mag_drum.stats = { concealment = 38, weight = 10, mag_amount = { 1, 1, 1 }, CLIP_AMMO_MAX = 20, retention = false }
+	self.parts.wpn_fps_sho_aa12_mag_straight.bullet_objects = { amount = 1, prefix = "g_bullet" }
 	self.parts.wpn_fps_sho_aa12_mag_straight.stats = { concealment = 10, weight = 3, mag_amount = { 2, 3, 4 }, CLIP_AMMO_MAX = 8 }
 	self.wpn_fps_sho_aa12.adds = {}
 	table.addto_dict(self.wpn_fps_sho_aa12.override, overrides_shotgun_sps_sound)

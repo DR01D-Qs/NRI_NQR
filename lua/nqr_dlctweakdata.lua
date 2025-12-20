@@ -3,7 +3,13 @@ function GenericDLCManager:has_nqr_dlc() return true end
 Hooks:PostHook( DLCTweakData, "init", "nqr_DLCTweakData_init", function(self)
 	for i, k in pairs(self) do
 		for u, j in pairs(k.content and k.content.loot_drops or {}) do
-			if j.type_items=="weapon_mods" then self[i].content.loot_drops[u].amount = 0 end
+			if j.type_items=="weapon_mods" then
+				self[i].content.loot_drops[u].amount = 0
+
+				if k.dlc=="has_achievement" then
+					self[i].content.loot_drops[u] = nil
+				end
+			end
 
 			for o, l in pairs(j) do
 				if type(l)=="table" then

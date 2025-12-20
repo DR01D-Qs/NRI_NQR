@@ -213,10 +213,10 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 
 	if difficulty_index <= 2 then
 		self.besiege.assault.force = { 3*force_mul*custom_force[1], 5*force_mul*custom_force[2], 7*force_mul }
-		self.besiege.assault.force_pool = { 6, 10, 14 }
+		self.besiege.assault.force_pool = { 8, 12, 16 }
 	else
 		self.besiege.assault.force = { 4*force_mul*custom_force[1], 6*force_mul*custom_force[2], 8*force_mul }
-		self.besiege.assault.force_pool = { 8, 12, 16 }
+		self.besiege.assault.force_pool = { 10, 14, 18 }
 	end
 	self.besiege.assault.force_balance_mul = { 1.0, 1.5, 2.0, 2.5 }
 	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.75, 2.5, 3.25 }

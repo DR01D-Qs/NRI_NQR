@@ -10,37 +10,17 @@ Hooks:PostHook(EventJobsTweakData, "init", "nqr_EventJobsTweakData:init", functi
 			}
 		elseif k.id=="cg22_2" then
 			k.objectives = {
-				self:_choice({
-					tweak_data.safehouse:_progress("cg22_personal_2", 50, {
-						name_id = "menu_cg22_personal_2",
-						desc_id = "menu_cg22_personal_2_desc"
-					}),
-					tweak_data.safehouse:_progress("cg22_post_objective_2", 15, {
-						name_id = "menu_cg22_post_objective_2",
-						desc_id = "menu_cg22_post_objective_2_desc"
-					})
-				}, 1, {
-					name_id = "menu_cg22_2_choice_obj",
-					choice_id = "cg22_personal_2",
-					desc_id = "menu_cg22_post_objective_2_desc"
-				})
+				tweak_data.safehouse:_progress("cg22_personal_2", 50, {
+					name_id = "menu_cg22_personal_2",
+					desc_id = "menu_cg22_personal_2_desc_nqr"
+				}),
 			}
 		elseif k.id=="cg22_3" then
 			k.objectives = {
-				self:_choice({
-					tweak_data.safehouse:_progress("cg22_personal_3", 15, {
-						name_id = "menu_cg22_personal_3",
-						desc_id = "menu_cg22_personal_3_desc"
-					}),
-					tweak_data.safehouse:_progress("cg22_post_objective_3", 5, {
-						name_id = "menu_cg22_post_objective_3",
-						desc_id = "menu_cg22_post_objective_3_desc"
-					})
-				}, 1, {
-					name_id = "menu_cg22_3_choice_obj",
-					choice_id = "cg22_personal_3",
-					desc_id = "menu_cg22_post_objective_3_desc"
-				})
+				tweak_data.safehouse:_progress("cg22_personal_3", 15, {
+					name_id = "menu_cg22_personal_3",
+					desc_id = "menu_cg22_personal_3_desc_nqr"
+				}),
 			}
 		elseif k.id=="aru_2" then
 			k.objectives = {

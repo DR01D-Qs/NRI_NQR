@@ -26,20 +26,12 @@ function NewRaycastWeaponBase:spawn_magazine_unit(pos, rot, hide_bullets)
 	local mag_data = nil
 	local mag_list = managers.weapon_factory:get_parts_from_weapon_by_type_or_perk("magazine", self._factory_id, self._blueprint)
 	local mag_id = mag_list and mag_list[1]
-
-	if not mag_id then
-		return
-	end
-
-	mag_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mag_id, self._factory_id, self._blueprint)
-	local bullet_objects = mag_data and mag_data.bullet_objects
-	self._parts[mag_id].bullet_objects = bullet_objects
-
+	if not mag_id then return end
 	local part_data = self._parts[mag_id]
 
-	if not mag_data or not part_data then
-		return
-	end
+	mag_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mag_id, self._factory_id, self._blueprint)
+	if not mag_data or not part_data then return end
+	local bullet_objects = mag_data.bullet_objects
 
 	pos = pos or Vector3()
 	rot = rot or Rotation()
@@ -53,21 +45,25 @@ function NewRaycastWeaponBase:spawn_magazine_unit(pos, rot, hide_bullets)
 		mag_unit:set_material_config(new_material_config_ids, true)
 	end
 
-	if hide_bullets and part_data.bullet_objects then
-		local prefix = part_data.bullet_objects.prefix
+	if hide_bullets and bullet_objects then
+		local prefix = bullet_objects.prefix
 
-		for i = 1, part_data.bullet_objects.amount do
-			local target_object = prefix~="g_bullet" and mag_unit:get_object(Idstring(prefix .. i)) or (mag_unit:get_object(Idstring(prefix))
+		for i = 1, bullet_objects.amount do
+			local target_object = prefix~="g_bullet" and mag_unit:get_object(Idstring(prefix .. i)) or (
+				mag_unit:get_object(Idstring(prefix))
 				or mag_unit:get_object(Idstring("g_bullet_lod0"))
 				or mag_unit:get_object(Idstring("g_bullet_recoil"))
 				or mag_unit:get_object(Idstring("g_bullets"))
+				or mag_unit:get_object(Idstring("g_bullet_01"))
 			)
 			local target_object2 = prefix=="g_bullet" and (mag_unit:get_object(Idstring("g_shell")) or mag_unit:get_object(Idstring("g_shell_lod0")))
 
-			local ref_object = prefix~="g_bullet" and part_data.unit:get_object(Idstring(prefix .. i)) or (part_data.unit:get_object(Idstring(prefix))
+			local ref_object = prefix~="g_bullet" and part_data.unit:get_object(Idstring(prefix .. i)) or (
+				part_data.unit:get_object(Idstring(prefix))
 				or part_data.unit:get_object(Idstring("g_bullet_lod0"))
 				or part_data.unit:get_object(Idstring("g_bullet_recoil"))
 				or part_data.unit:get_object(Idstring("g_bullets"))
+				or part_data.unit:get_object(Idstring("g_bullet_01"))
 			)
 			local ref_object2 = prefix=="g_bullet" and (part_data.unit:get_object(Idstring("g_shell")) or part_data.unit:get_object(Idstring("g_shell_lod0")))
 
@@ -188,6 +184,7 @@ function NewRaycastWeaponBase:drop_magazine_object()
 		if part and part.type == "magazine" then
 			local pos = part_data.unit:position()
 			local rot = part_data.unit:rotation()
+			local vel = part_data.unit:velocity()
 			local dropped_mag = self:spawn_magazine_unit(pos, rot, true)
 			local mag_size = w_td_crew and w_td_crew.pull_magazine_during_reload or "medium"
 
@@ -199,9 +196,9 @@ function NewRaycastWeaponBase:drop_magazine_object()
 			local dropped_col = World:spawn_unit(NewRaycastWeaponBase.magazine_collisions[mag_size][1], tmp_vec2, part_data.unit:rotation())
 
 			dropped_col:link(NewRaycastWeaponBase.magazine_collisions[mag_size][2], dropped_mag)
-			mvec3_set(tmp_vec3, -rot:z())
+			mvec3_set(tmp_vec3, self._name_id=="ching" and rot:z() or -rot:z())
 			mvec3_mul(tmp_vec3, 100)
-			dropped_col:push(20, tmp_vec3)
+			dropped_col:push(self._name_id=="ching" and 2 or 20, tmp_vec3)
 			managers.enemy:add_magazine(dropped_mag, dropped_col)
 		end
 	end

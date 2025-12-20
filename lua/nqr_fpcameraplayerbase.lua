@@ -482,7 +482,7 @@ function FPCameraPlayerBase:enter_shotgun_reload_loop(unit, state, ...)
 
 		if wep_tweak.r_ffs then
 			wep_base:tweak_data_anim_play("reload_enter", speed_multiplier, wep_tweak.r_enter/30)
-		else
+		elseif not (wep_tweak.r_anim_swap==wep_base.r_anim_swap) then
 			wep_base:tweak_data_anim_play("reload", speed_multiplier)
 		end
 		self._unit:anim_state_machine():set_speed(Idstring(state), speed_multiplier)
@@ -497,7 +497,14 @@ function FPCameraPlayerBase:anim_clbk_check_bullet_object()
 		local weapon = self._parent_unit:inventory():equipped_unit()
 		local wep_base = weapon:base()
 		local funny_exception = (
-			wep_base._name_id=="r700" and (wep_base:get_ammo_remaining_in_clip()-wep_base:get_chamber())==0
+			(
+				wep_base._name_id=="r700" 
+				or wep_base._name_id=="shrew"
+				or wep_base._name_id=="g26"
+				or wep_base._name_id=="mac10"
+				or wep_base._name_id=="baka"
+	 		) and (wep_base:get_ammo_remaining_in_clip()-wep_base:get_chamber())<=0
+			or wep_base._name_id=="ching"
 			--or csc and shs
 		)
 

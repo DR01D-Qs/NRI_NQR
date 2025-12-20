@@ -74,6 +74,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [1] = {
 		}, [2] = {
 			"model3",
+			"push",
 		}, [3] = {
 		}, [4] = {
 		}, [5] = {

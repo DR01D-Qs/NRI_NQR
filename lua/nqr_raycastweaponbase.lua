@@ -932,6 +932,7 @@ function RaycastWeaponBase:fire(from_pos, direction, dmg_mul, shoot_player, spre
 
 			if wep_tweak.effects and wep_tweak.effects.magazine_empty then
 				self:_spawn_tweak_data_effect("magazine_empty")
+				self:set_mag_visibility(false)
 			end
 
 			self:set_magazine_empty(true)

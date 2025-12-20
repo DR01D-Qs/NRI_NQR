@@ -69,6 +69,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 						or type_part.unit:get_object(Idstring("g_bullet_lod0"))
 						or type_part.unit:get_object(Idstring("g_bullet_recoil"))
 						or type_part.unit:get_object(Idstring("g_bullets"))
+						or type_part.unit:get_object(Idstring("g_bullet_01"))
 					)
 					local object2 = type_part.unit:get_object(Idstring("g_shell")) or type_part.unit:get_object(Idstring("g_shell_lod0"))
 					if object then
@@ -186,7 +187,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 	end
 
 	local to_load = {
-		"units/pd2_dlc_peta/weapons/wpn_fps_shot_m37/wpn_fps_shot_m37",
+		"units/pd2_dlc_mxw/weapons/wpn_fps_shot_m1897/wpn_fps_shot_m1897",
 		"units/pd2_dlc_lawp/weapons/wpn_fps_shot_ultima/wpn_fps_sho_ultima",
 		"units/pd2_dlc_grv/weapons/wpn_fps_snp_siltstone/wpn_fps_snp_siltstone",
 
@@ -691,6 +692,7 @@ function NewRaycastWeaponBase:can_magdrop()
 		or wep_tweak.feed_system=="break_action"
 		or wep_tweak.feed_system=="clip_loader"
 		or wep_tweak.feed_system=="backpack"
+		or (wep_tweak.feed_system=="ejecting_mag" and self:clip_empty())
 	)
 end
 

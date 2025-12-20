@@ -315,10 +315,12 @@ function PlayerStandard:update(t, dt)
 	--local last_round = wep_base:ammo_base():get_ammo_remaining_in_clip()<=(wep_base.AKIMBO and 1 or 0)
 
 	if not self:_is_reloading() then
-		if ((not no_lock) or wep_tweak.feed_system=="ejecting_mag" or wep_base.delayed_t1==-1)
+		if ((not no_lock) or wep_base.delayed_t1==-1)
 		and not wep_base:is_category("revolver")
 		and not wep_tweak.dao
 		and not wep_tweak.dao_delayed
+		--and not wep_tweak.feed_system=="ejecting_mag"
+		and not wep_base.r_offset
 		then
 			local offset = wep_tweak.feed_system=="tube_fed" and 2/30 or 1/30
 			local reload_anim = wep_tweak.feed_system=="tube_fed" and "fire" or "reload"
@@ -335,7 +337,7 @@ function PlayerStandard:update(t, dt)
 			end
 		end
 
-		if wep_base.r_offset and table.contains(wep_base.r_cycle or {}, "r_bolt_release_1") then
+		if wep_base.r_offset and (table.contains(wep_base.r_cycle or {}, "r_bolt_release_1") or wep_tweak.feed_system=="ejecting_mag") then
 			local offset = wep_base.r_offset
 			local reload_anim = wep_base:use_shotgun_reload() and "reload_enter" or wep_base.r_not_empty and "reload_not_empty" or "reload"
 			wep_base:tweak_data_anim_stop("fire")
@@ -1596,7 +1598,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	local empty_reload = wep_base:clip_empty() and 1 or 0
 	local reload_prefix = wep_base:reload_prefix() or ""
 	local reload_name_id = wep_tweak.r_anim_swap or wep_tweak.animations.reload_name_id or wep_base.name_id
-	local reload_anim = (is_reload_not_empty and wep_base:clip_not_empty()) and "reload_not_empty" or "reload"
+	local reload_anim = (is_reload_not_empty) and "reload_not_empty" or "reload"
 	local reload_ids = Idstring(string.format("%s%s_%s", reload_prefix, reload_anim, reload_name_id))
 	local reload_tweak = is_reload_not_empty and (wep_tweak.timers.reload_not_empty or 2.2) or (wep_tweak.timers.reload_empty or 2.6)
 	local true_enter_tweak = wep_tweak.r_enter and (wep_tweak.r_enter/30) or wep_base:_first_shell_reload_expire_t(is_reload_not_empty)
@@ -1852,7 +1854,7 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	end
 	if wep_tweak.r_no_bullet_clbk and r_show_mag_t>0 then
 		--self._state_data.r_show_mag_t = t + math.max(r_show_mag_t, wep_base.r_time*0.0)
-		self._state_data.r_show_mag_t = t + wep_base.r_time*0.5
+		self._state_data.r_show_mag_t = t + r_show_mag_t --wep_base.r_time*0.5
 	else
 		self._state_data.r_show_mag_t = nil
 	end
@@ -1860,8 +1862,13 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 	Application:trace("PlayerStandard:_start_action_reload( t ): ", reload_ids)
 	wep_base:start_reload()
 	self._ext_network:send("reload_weapon", empty_reload, speed_multiplier)
-	--wep_base:check_bullet_objects()
-	if wep_base.r_stage and r_cycle[wep_base.r_stage]=="r_get_new_mag_in" then wep_base:predict_bullet_objects() end
+	if wep_base.r_stage then
+		if r_cycle[wep_base.r_stage]=="r_get_new_mag_in" then
+			wep_base:predict_bullet_objects()
+		end
+	else
+		wep_base:check_bullet_objects()
+	end
 
 	local is_revolver = wep_base:is_category("revolver")
 	if is_revolver then
@@ -2037,7 +2044,9 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 				if wep_base:get_ammo_remaining_in_clip()>0 then wep_base._started_reload_empty = nil end
 			end
 
-			if wep_tweak.action~="pump_action" and wep_tweak.action~="lever_action" then self._state_data.reload_exit_expire_t = t + wep_base.r_steps["r_ending"] end
+			if (wep_tweak.action~="pump_action" and wep_tweak.action~="lever_action") or wep_tweak.force_anim_reload_transition then
+				self._state_data.reload_exit_expire_t = t + wep_base.r_steps["r_ending"]
+			end
 
 			self._state_data.reload_enter_expire_t = nil
 			self._state_data.reload_expire_t = nil
@@ -2092,6 +2101,7 @@ function PlayerStandard:_interupt_action_reload(t)
 	local wep_base = self._equipped_unit:base()
 	--if not self:_is_reloading() then return end
 	self._magdrop_t = nil
+	self._state_data.reload_exit_expire_t = nil
 	if not self._state_data.reload_expire_t then wep_base:interupt_bolting(true) return end
 
 	local t = t or TimerManager:game():time()
@@ -2782,6 +2792,16 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 	end
 
 	return col_ray
+end
+function PlayerStandard:_calc_melee_hit_ray(t, sphere_cast_radius)
+	local melee_entry = managers.blackmarket:equipped_melee_weapon()
+	local range = tweak_data.blackmarket.melee_weapons[melee_entry].stats.range or 175
+	local wep_base = self._equipped_unit:base()
+	range = managers.blackmarket:equipped_bayonet(wep_base.name_id) and (wep_base._length*2.54)+10 or range
+	local from = self._unit:movement():m_head_pos()
+	local to = from + self._unit:movement():m_head_rot():y() * range
+
+	return self._unit:raycast("ray", from, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
 end
 function PlayerStandard:_check_melee_dot_damage(col_ray, defense_data, melee_entry)
 	if not defense_data or defense_data.type == "death" then

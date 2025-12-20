@@ -1900,11 +1900,12 @@ end
 	self.ching.weight = 43
 	self.ching.rise_factor = 2
 	self.ching.feed_system = "ejecting_mag"
-	self.ching.mag_release = "doublebutton"
+	self.ching.mag_release = "pushbutton"
+	self.ching.timers.reload_empty = self.ching.timers.reload_empty - 0.1
 	self.ching.bolt_release = "half"
-	self.ching.bolt_release_ratio = { 2, 1 }
-	self.ching.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
-	self.ching.custom_cycle_2 = { "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release" }
+	self.ching.bolt_release_ratio = { 1.7, 1.0 }
+	self.ching.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_get_new_mag_in_2", "r_bolt_release_2" }
+	self.ching.custom_cycle_2 = { "r_keep_old_mag", "r_get_new_mag_in", "r_get_new_mag_in_2", "r_bolt_release" }
 	self.ching.eq_fr = {0,8,12}
 	self.ching.r_ass = 1/30
 	self.ching.r_no_bullet_clbk = true
@@ -2343,6 +2344,7 @@ end
 	self.supernova.r_enter = self.r870.r_enter
 	self.supernova.r_shell = self.r870.r_shell
 	self.supernova.r_anim_swap = "r870"
+	self.supernova.force_anim_reload_transition = true
 	self.supernova.eq_fr = self.m1897.eq_fr
 	self.supernova.use_shotgun_reload = true
 
@@ -2646,7 +2648,7 @@ end
 	self.p90.rise_factor = 0
 	self.p90.action = "blowback"
 	self.p90.bullpup = true
-	self.p90.mag_release = "doublebutton"
+	self.p90.mag_release = "pushbutton"
 	self.p90.bolt_release = "none"
 	self.p90.timers.reload_not_empty = 2.6
 	self.p90.eq_fr = {1,12,13}

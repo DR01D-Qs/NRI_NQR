@@ -58,6 +58,9 @@
 	"menu_l_global_value_tar" : "This is a Breaking News 2018 item!",
 	"menu_l_global_value_rvd" : "This is a Reservoir Dogs item!",
 
+	"menu_cg22_personal_2_desc_nqr" : "Kill a total of 50 enemies with the North Star rifle on any difficulty.",
+	"menu_cg22_personal_3_desc_nqr" : "Kill a total of 15 special enemies with the North Star rifle on any difficulty.",
+
 	"menu_dmr" : "DMR",
 	"menu_machine_pistol" : "Machine Pistol",
 	"menu_akimbo_machine_pistol" : "Akimbo Machine Pistol",
