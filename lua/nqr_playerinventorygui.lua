@@ -184,7 +184,7 @@ function PlayerInventoryGui:select_join_stinger()
 	end)
 end
 
-function PlayerInventoryGui:_update_legends(name)
+--[[function PlayerInventoryGui:_update_legends(name)
 	local box = self._boxes_by_name[name]
 
 	if box and box.clbks then
@@ -303,7 +303,7 @@ function PlayerInventoryGui:_update_legends(name)
 			self._legends.hide_all:set_right(x)
 		end
 	end
-end
+end]]
 
 function PlayerInventoryGui:_round_everything()
 	if alive(self._panel) then
