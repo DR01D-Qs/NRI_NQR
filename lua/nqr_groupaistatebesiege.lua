@@ -92,7 +92,9 @@ function GroupAIStateBesiege:_perform_group_spawning(spawn_task, force, use_last
 					nr_units_spawned = nr_units_spawned + 1
 
 					if spawn_task.ai_task then
-						spawn_task.ai_task.force_spawned = spawn_task.ai_task.force_spawned + 1
+						if spawn_task.ai_task.phase=="build" or spawn_task.ai_task.phase=="sustain" then
+							spawn_task.ai_task.force_spawned = spawn_task.ai_task.force_spawned + 1
+						end
 						spawned_unit:brain()._logic_data.spawned_in_phase = spawn_task.ai_task.phase
 					end
 
@@ -290,12 +292,7 @@ function GroupAIStateBesiege:_upd_assault_task()
 	local task_spawn_allowance = force_pool - (self._hunt_mode and 0 or task_data.force_spawned)
 
 	if task_data.phase == "anticipation" then
-		if task_spawn_allowance <= 0 then
-			--[[print("spawn_pool empty: -----------FADE-------------")
-
-			task_data.phase = "fade"
-			task_data.phase_end_t = t + self._tweak_data.assault.fade_duration]]
-		elseif task_data.phase_end_t < t or self._drama_data.zone == "high" then
+		if task_data.phase_end_t < t or self._drama_data.zone == "high" then
 			self._assault_number = self._assault_number + 1
 
 			managers.mission:call_global_event("start_assault")

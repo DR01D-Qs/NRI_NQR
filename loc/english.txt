@@ -141,6 +141,7 @@
 	"bm_wp_upg_cal_9x19" : "9x19 Caliber Conversion",
 	"bm_wp_upg_cal_40sw" : ".40 S&W Caliber Conversion",
 	"bm_wp_upg_cal_45acp" : ".45 ACP Caliber Conversion",
+	"bm_wp_upg_cal_45lc" : ".45 LC Caliber Conversion",
 	"bm_wp_upg_cal_50beo" : ".50 Beo Caliber Conversion",
 	"bm_wp_upg_cal_300blk" : ".300 BLK Caliber Conversion",
 	"bm_wp_upg_cal_762x39" : "7.62x39 Caliber Conversion",

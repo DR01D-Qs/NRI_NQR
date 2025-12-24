@@ -1910,6 +1910,7 @@ end
 	self.ching.r_ass = 1/30
 	self.ching.r_no_bullet_clbk = true
 	self.ching.shot_anim_steelsight = true
+	self.ching.flip_magdrop_dir = true
 
 	self.sbl.caliber = ".45-70"
 	self.sbl.weight = 33
@@ -2550,6 +2551,7 @@ end
 	self.sub2000.r_no_bullet_clbk = true
 	self.sub2000.anim_equip_swap = "stop_running"
 	self.sub2000.anim_unequip_swap = "start_running"
+	self.sub2000.anim_sprint_t = 15/30
 	self.sub2000.has_description = true
 	self.sub2000.desc_id = "bm_w_folding_gun_desc"
 
@@ -2694,6 +2696,7 @@ end
 	self.mac10.eq_fr = {1,14,12}
 	self.mac10.r_no_bullet_clbk = true
 	self.mac10.anim_no_full = true
+	self.mac10.r_ass = 1/30
 
 	self.baka.caliber = "9x19"
 	self.baka.weight = 19
@@ -2744,14 +2747,16 @@ end
 	self.fmg9.fire_mode_data.fire_rate = 0.05455
 	self.fmg9.timers.reload_not_empty = 2.35
 	self.fmg9.timers.reload_empty = 3.6
-	self.fmg9.bolt_release = "quarter"
+	self.fmg9.bolt_release = "none"
 	self.fmg9.eq_fr = {0,9,12} --{1,43,16}
 	self.fmg9.r_no_bullet_clbk = true
-	--self.fmg9.shot_anim_hands_offset = 1
+	self.fmg9.shot_anim_hands_offset = 3/30
 	self.fmg9.anim_equip_swap = "stop_running"
 	self.fmg9.anim_unequip_swap = "start_running"
+	self.fmg9.anim_sprint_t = 13/30
 	self.fmg9.has_description = true
 	self.fmg9.desc_id = "bm_w_folding_gun_desc"
+	self.fmg9.anim_no_full = true
 
 	self.sr2.caliber = "9x21"
 	self.sr2.weight = 16
@@ -2899,8 +2904,7 @@ end
 	self.czech.action = "moving_barrel"
 	self.czech.eq_fr = self.beer.eq_fr
 	self.czech.shot_anim_mul = 1.75
-	self.czech.timers.reload_not_empty = 1.5
-	self.czech.timers.reload_empty = 2.1
+	self.czech.timers = self.glock_17.timers
 	self.czech.weapon_hold = "glock"
 	self.czech.animations.reload_name_id = "glock"
 	self.czech.anim_reload_mul = 0.95
@@ -3103,10 +3107,8 @@ end
 	self.new_raging_bull.feed_system = "cylinder_open"
 	self.new_raging_bull.timers.reload_not_empty = 2.1
 	self.new_raging_bull.timers.reload_empty = self.new_raging_bull.timers.reload_not_empty
-	--self.new_raging_bull.shell_ejection = "effects/payday2/particles/weapons/shells/shell_9mm"
-	--self.new_raging_bull.mag_release = "doublebutton"
 	self.new_raging_bull.bolt_release = "none"
-	self.new_raging_bull.bolt_release_ratio = { 1.2, 1.0 }
+	self.new_raging_bull.bolt_release_ratio = { 1.2, 0.9 }
 	self.new_raging_bull.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	--self.new_raging_bull.r_anim_swap = "chinchilla"
 	self.new_raging_bull.shot_anim_hands = 1.2
@@ -3122,7 +3124,7 @@ end
 	self.korth.timers.reload_not_empty = 2.85
 	self.korth.timers.reload_empty = self.korth.timers.reload_not_empty
 	self.korth.bolt_release = "none"
-	self.korth.bolt_release_ratio = { 1.2, 0.5 }
+	self.korth.bolt_release_ratio = { 1.2, 0.6 }
 	self.korth.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.korth.weapon_hold = "raging_bull"
 	--self.korth.force_anim_reload_transition = true
@@ -3139,7 +3141,7 @@ end
 	self.mateba.weight = 12
 	self.mateba.feed_system = "cylinder_open"
 	self.mateba.bolt_release = "none"
-	self.mateba.bolt_release_ratio = { 1.0, 1.0 }
+	self.mateba.bolt_release_ratio = { 0.9, 0.7 }
 	self.mateba.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.mateba.shot_anim_hands = self.new_raging_bull.shot_anim_hands
 	self.mateba.eq_fr = self.new_raging_bull.eq_fr
@@ -3149,8 +3151,10 @@ end
 	self.chinchilla.weight = 14
 	self.chinchilla.rise_factor = 2
 	self.chinchilla.feed_system = "cylinder_open"
+	self.chinchilla.timers.reload_not_empty = 2.9
+	self.chinchilla.timers.reload_empty = self.korth.timers.reload_not_empty
 	self.chinchilla.bolt_release = "none"
-	self.chinchilla.bolt_release_ratio = { 0.7, 0.5 }
+	self.chinchilla.bolt_release_ratio = { 0.8, 0.6 }
 	self.chinchilla.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.chinchilla.shot_anim_hands = self.new_raging_bull.shot_anim_hands
 	self.chinchilla.eq_fr = self.new_raging_bull.eq_fr
@@ -3185,7 +3189,7 @@ end
 	self.model3.timers.reload_not_empty = 2.2
 	self.model3.timers.reload_empty = self.model3.timers.reload_not_empty
 	self.model3.bolt_release = "none"
-	self.model3.bolt_release_ratio = { 1.0, 0.5 }
+	self.model3.bolt_release_ratio = { 1.0, 0.6 }
 	self.model3.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.model3.weapon_hold = "raging_bull"
 	self.model3.shot_anim_hip = true
@@ -3200,7 +3204,7 @@ end
 	self.judge.timers.reload_empty = self.new_raging_bull.timers.reload_not_empty
 	self.judge.shot_anim_hands = self.new_raging_bull.shot_anim_hands
 	self.judge.bolt_release = "none"
-	self.judge.bolt_release_ratio = { 1.6, 1.0 }
+	self.judge.bolt_release_ratio = self.new_raging_bull.bolt_release_ratio
 	self.judge.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.judge.eq_fr = self.new_raging_bull.eq_fr
 	self.judge.r_no_bullet_clbk = true
@@ -3211,7 +3215,7 @@ end
 	self.rsh12.timers.reload_not_empty = self.new_raging_bull.timers.reload_not_empty
 	self.rsh12.timers.reload_empty = self.new_raging_bull.timers.reload_not_empty
 	self.rsh12.bolt_release = "none"
-	self.rsh12.bolt_release_ratio = self.judge.bolt_release_ratio
+	self.rsh12.bolt_release_ratio = self.new_raging_bull.bolt_release_ratio
 	self.rsh12.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.rsh12.shot_anim_hands = self.new_raging_bull.shot_anim_hands
 	self.rsh12.eq_fr = self.new_raging_bull.eq_fr
@@ -3225,12 +3229,20 @@ end
 ------AKIMBO
 	self.x_g18c.timers.reload_not_empty = self.x_g18c.timers.reload_not_empty-0.07
 
+	self.x_chinchilla.weapon_hold = "x_judge"
+	self.x_chinchilla.timers = { reload_not_empty = 3.45, reload_empty = 3.45, unequip = 0.5, equip = 0.5 }
+	self.x_rage.animations.reload_name_id = "x_chinchilla"
+    self.x_rage.animations.second_gun_versions = { reload = "reload" }
+	self.x_rage.anim_reload_mul = self.new_raging_bull.timers.reload_empty/self.x_chinchilla.timers.reload_empty
+	self.x_rage.timers = self.x_chinchilla.timers
+	self.x_judge.animations.reload_name_id = self.x_rage.animations.reload_name_id
+    self.x_judge.animations.second_gun_versions = self.x_rage.animations.second_gun_versions
+	self.x_judge.anim_reload_mul = self.x_rage.anim_reload_mul
+	self.x_judge.timers = self.x_rage.timers
 	self.x_2006m.animations.reload_name_id = "x_chinchilla"
-	self.x_judge.animations.reload_name_id = "x_chinchilla"
-	--self.x_2006m.animations.second_gun_versions = self.x_rage.animations.second_gun_versions or {}
-	--self.x_2006m.animations.second_gun_versions.reload = "reload"
-	--self.x_judge.sounds.fire = "judge_fire"
-	--self.x_judge.sounds.fire_single = nil
+    self.x_2006m.animations.second_gun_versions = { reload = "reload" }
+	self.x_2006m.anim_reload_mul = self.mateba.timers.reload_empty/self.x_chinchilla.timers.reload_empty
+	self.x_2006m.timers = self.x_chinchilla.timers
 	self.x_sr2.sounds = self.sr2.sounds
 	self.x_deagle.sounds = self.deagle.sounds
 	if self.x_lemming then self.x_lemming.has_description = nil end
@@ -3330,7 +3342,7 @@ end
 			and table.contains(aki_wep and aki_wep.categories or {}, "machine_pistol") then
 				aki_wep.weapon_hold = self.x_g18c.weapon_hold
 				aki_wep.animations.reload_name_id = "x_g18c"
-				aki_wep.anim_reload_mul = 0.6
+				aki_wep.anim_reload_mul = sng_wep.timers.reload_empty/self.x_g18c.timers.reload_empty
 				aki_wep.timers = self.x_g18c.timers
 			end
 		end
@@ -3565,7 +3577,8 @@ end
 				assault_rifle = "is_rifle",
 			}
 			self[wep].usage = lookup[category] or self[wep].usage
-			self[wep].use_data = crewless.use_data or self[wep].use_data
+			self[wep].use_data = self[wep].use_data or {}
+			self[wep].use_data.selection_index = crewless.use_data and crewless.use_data.selection_index or self[wep].use_data.selection_index
 			self[wep].selection_index = crewless.selection_index or self[wep].selection_index
 		end
 	end

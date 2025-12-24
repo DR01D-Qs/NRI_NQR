@@ -1861,6 +1861,13 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 
 
 --AMMO
+	self.nqr.all_shotgun_ammotypes = {
+		"wpn_fps_upg_a_custom_free",
+		"wpn_fps_upg_a_slug",
+		"wpn_fps_upg_a_piercing",
+		"wpn_fps_upg_a_dragons_breath",
+	}
+
 	self.parts.wpn_fps_upg_cal_9x19 = {
 		unit = "units/payday2/weapons/wpn_upg_dummy/wpn_upg_dummy",
 		third_unit = "units/payday2/weapons/wpn_upg_dummy/wpn_upg_dummy",
@@ -1881,10 +1888,16 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_cal_45acp.name_id = "bm_wp_upg_cal_45acp"
 	self.parts.wpn_fps_upg_cal_45acp.stats = { caliber = ".45 ACP" }
 
+	self.parts.wpn_fps_upg_cal_45lc = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
+	self.parts.wpn_fps_upg_cal_45lc.name_id = "bm_wp_upg_cal_45lc"
+	self.parts.wpn_fps_upg_cal_45lc.forbids = { "wpn_fps_upg_a_subfmj" }
+	table.addto(self.parts.wpn_fps_upg_cal_45lc.forbids, self.nqr.all_shotgun_ammotypes)
+	self.parts.wpn_fps_upg_cal_45lc.stats = { caliber = ".45 LC" }
+
 	self.parts.wpn_fps_upg_cal_50beo = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
 	self.parts.wpn_fps_upg_cal_50beo.name_id = "bm_wp_upg_cal_50beo"
-	self.parts.wpn_fps_upg_cal_50beo.forbids = {}
-	table.addto(self.parts.wpn_fps_upg_cal_50beo.forbids, {"wpn_fps_upg_a_slug", "wpn_fps_upg_a_piercing", "wpn_fps_upg_a_dragons_breath", "wpn_fps_upg_a_subfmj"})
+	self.parts.wpn_fps_upg_cal_50beo.forbids = { "wpn_fps_upg_a_subfmj" }
+	table.addto(self.parts.wpn_fps_upg_cal_50beo.forbids, self.nqr.all_shotgun_ammotypes)
 	self.parts.wpn_fps_upg_cal_50beo.stats = { caliber = ".50 Beo" }
 
 	self.parts.wpn_fps_upg_cal_300blk = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
@@ -1919,8 +1932,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_cal_410 = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
 	self.parts.wpn_fps_upg_cal_410.name_id = "bm_wp_upg_cal_410"
 	self.parts.wpn_fps_upg_cal_410.shell_eject = "effects/payday2/particles/weapons/shells/shell_slug"
-	self.parts.wpn_fps_upg_cal_410.forbids = {}
-	table.addto(self.parts.wpn_fps_upg_cal_410.forbids, {"wpn_fps_upg_a_subfmj"})
+	self.parts.wpn_fps_upg_cal_410.forbids = { "wpn_fps_upg_a_subfmj" }
 	self.parts.wpn_fps_upg_cal_410.stats = { caliber = ".410 bore" }
 
 	self.parts.wpn_fps_upg_cal_12g = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
@@ -1961,13 +1973,6 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_cal_default.name_id = "bm_wp_upg_cal_default"
 	self.parts.wpn_fps_upg_cal_default.pcs = nil
 	self.parts.wpn_fps_upg_cal_default.stats = {}
-
-	self.nqr.all_shotgun_ammotypes = {
-		"wpn_fps_upg_a_custom_free",
-		"wpn_fps_upg_a_slug",
-		"wpn_fps_upg_a_piercing",
-		"wpn_fps_upg_a_dragons_breath",
-	}
 --
 
 
@@ -8653,6 +8658,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 
 
 ----REVOLVER
+	local default_revolver_magdrop = {
+		parent = "g_bullets", effect = "effects/payday2/particles/weapons/shells/shell_revolver_dump",
+	}
 	self.parts.wpn_fps_pis_judge_b_standard.type = "barrel"
 	self.parts.wpn_fps_pis_judge_b_standard.stats = { concealment = 0, weight = 0, barrel_length = 2.5 }
 	self.parts.wpn_fps_pis_judge_b_legend.type = "barrel"
@@ -8705,6 +8713,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	table.insert(self.wpn_fps_pis_judge.uses_parts, "wpn_fps_pis_rage_g_ergo")
 	table.insert(self.wpn_fps_pis_judge.uses_parts, "wpn_fps_pis_rsh12_g_standard")
 	table.insert(self.wpn_fps_pis_judge.uses_parts, "wpn_fps_pis_rsh12_g_wood")
+	table.insert(self.wpn_fps_pis_judge.uses_parts, "wpn_fps_upg_cal_45lc")
 	--table.addto(self.wpn_fps_pis_judge.uses_parts, self.nqr.all_pistol_gadgets)
 
 	self.parts.wpn_fps_pis_chinchilla_b_standard.sub_type = "ironsight"
@@ -8725,6 +8734,8 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_chinchilla_m_loader.visibility = { { objects = { g_cartridge_1 = false, g_cartridge_2 = false, g_cartridge_3 = false, g_cartridge_4 = false, g_cartridge_5 = false, g_cartridge_6 = false, g_bullet_1 = false, g_bullet_2 = false, g_bullet_3 = false, g_bullet_4 = false, g_bullet_5 = false, g_bullet_6 = false } } }
 	self.parts.wpn_fps_pis_chinchilla_m_loader.stats = {}
 	self.parts.wpn_fps_pis_chinchilla_m_bullets.reload_objects = nil
+	self.parts.wpn_fps_pis_chinchilla_m_bullets.magdrop_effect = deep_clone(default_revolver_magdrop)
+	self.parts.wpn_fps_pis_chinchilla_m_bullets.magdrop_effect.parent = "g_cartridge_1"
 	self.parts.wpn_fps_pis_chinchilla_m_bullets.visibility = { { objects = { g_speedloader = false } } }
 	self.parts.wpn_fps_pis_chinchilla_m_bullets.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
 	self.parts.wpn_fps_pis_chinchilla_cylinder.type = "upper_reciever2"
@@ -8770,12 +8781,16 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_korth_m_6.reload_objects = nil
 	self.parts.wpn_fps_pis_korth_m_6.adds = { "wpn_fps_pis_korth_m_body", "wpn_fps_pis_korth_m_loader" }
 	self.parts.wpn_fps_pis_korth_m_6.override = { wpn_fps_pis_korth_m_body = { unit = self.parts.wpn_fps_pis_korth_m_8.unit } }
+	self.parts.wpn_fps_pis_korth_m_6.magdrop_effect = deep_clone(default_revolver_magdrop)
+	self.parts.wpn_fps_pis_korth_m_6.magdrop_effect.parent = "g_rod"
 	self.parts.wpn_fps_pis_korth_m_6.visibility = { { objects = { g_rod = false, g_cylinder = false, g_lock = false, g_speedloader = false } } }
 	self.parts.wpn_fps_pis_korth_m_6.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 8 }
 	self.parts.wpn_fps_pis_korth_m_8.unit = "units/pd2_dlc_pxp2/weapons/wpn_fps_pis_korth_pts/wpn_fps_pis_korth_m_6"
 	self.parts.wpn_fps_pis_korth_m_8.reload_objects = nil
 	self.parts.wpn_fps_pis_korth_m_8.adds = { "wpn_fps_pis_korth_m_body", "wpn_fps_pis_korth_m_loader" }
 	self.parts.wpn_fps_pis_korth_m_8.forbids = { "wpn_fps_upg_cal_44mag" }
+	self.parts.wpn_fps_pis_korth_m_8.magdrop_effect = deep_clone(default_revolver_magdrop)
+	self.parts.wpn_fps_pis_korth_m_8.magdrop_effect.parent = "g_rod"
 	self.parts.wpn_fps_pis_korth_m_8.visibility = { { objects = { g_rod = false, g_cylinder = false, g_lock = false, g_speedloader = false } } }
 	self.parts.wpn_fps_pis_korth_m_8.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
 	self.wpn_fps_pis_korth.override.wpn_fps_upg_o_eotech = { a_obj = "a_o_2" }
@@ -8817,6 +8832,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_2006m_m_body.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_2006m_m_standard.type = "magazine"
 	self.parts.wpn_fps_pis_2006m_m_standard.adds = { "wpn_fps_pis_2006m_m_body", "wpn_fps_pis_2006m_m_loader" }
+	self.parts.wpn_fps_pis_2006m_m_standard.magdrop_effect = deep_clone(default_revolver_magdrop)
 	self.parts.wpn_fps_pis_2006m_m_standard.visibility = { { objects = { g_hinge_lod0 = false, g_mag_lod0 = false, g_ejector_lod0 = false, g_loader_lod0 = false } } }
 	self.parts.wpn_fps_pis_2006m_m_standard.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
 	self.wpn_fps_pis_2006m.adds = {}
@@ -8843,11 +8859,13 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_rage_m_body.stats = {}
 	self.parts.wpn_fps_pis_rage_body_standard.type = "magazine"
 	self.parts.wpn_fps_pis_rage_body_standard.adds = { "wpn_fps_pis_rage_m_body" }
+	self.parts.wpn_fps_pis_rage_body_standard.magdrop_effect = deep_clone(default_revolver_magdrop)
 	self.parts.wpn_fps_pis_rage_body_standard.visibility = { { objects = { g_hammer = false, g_lock = false, g_cylinder = false, g_cylinder_smooth = false, g_body = false, g_sight = false } } }
 	self.parts.wpn_fps_pis_rage_body_standard.stats = { concealment = 3, weight = 1, length = 6, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
 	self.parts.wpn_fps_pis_rage_body_smooth.type = "magazine"
 	self.parts.wpn_fps_pis_rage_body_smooth.adds = { "wpn_fps_pis_rage_m_body" }
 	self.parts.wpn_fps_pis_rage_body_smooth.override = { wpn_fps_pis_rage_m_body = { unit = self.parts.wpn_fps_pis_rage_body_smooth.unit } }
+	self.parts.wpn_fps_pis_rage_body_smooth.magdrop_effect = deep_clone(default_revolver_magdrop)
 	self.parts.wpn_fps_pis_rage_body_smooth.visibility = { { objects = { g_hammer = false, g_lock = false, g_cylinder = false, g_cylinder_smooth = false, g_body = false, g_sight = false } } }
 	self.parts.wpn_fps_pis_rage_body_smooth.stats = { concealment = 3, weight = 1, length = 6, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
 	self.parts.wpn_fps_pis_rage_extra.internal_part = nil
@@ -8905,6 +8923,8 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_model3_m_body.stats = {}
 	self.parts.wpn_fps_pis_model3_cylinder.adds = { "wpn_fps_pis_model3_m_body" }
 	self.parts.wpn_fps_pis_model3_cylinder.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 6 }
+	self.parts.wpn_fps_pis_model3_m_bullets.magdrop_effect = deep_clone(default_revolver_magdrop)
+	self.parts.wpn_fps_pis_model3_m_bullets.magdrop_effect.parent = "g_bullet_01"
 	self.parts.wpn_fps_pis_model3_m_bullets.stats = {}
 	self.parts.wpn_fps_pis_model3_dh_hammer.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_model3_ejector.stats = { concealment = 0, weight = 0 }
@@ -8984,35 +9004,64 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 			local aki_anim_overrides = deep_clone(self[i].override or {})
 			for u, j in pairs(self[k].override or {}) do
 				if j.animations then
-					aki_anim_overrides[u] = aki_anim_overrides[u] or {}
-					aki_anim_overrides[u].animations = j.animations
+					if j.animations.reload then
+						aki_anim_overrides[u] = aki_anim_overrides[u] or {}
+						aki_anim_overrides[u].animations = j.animations
+					else
+						self[k].override[u].animations = nil
+					end
 				end
 			end
 			self[k].override = deep_clone(aki_anim_overrides)
 		end
 	end
 
+	local aki_anim_override = {
+		reload_left = "reload",
+		fire = "recoil",
+		reload_not_empty = "reload_not_empty",
+		reload = "reload",
+		reload_not_empty_left = "reload_not_empty",
+		magazine_empty = "last_recoil",
+	}
+
 	table.swap(self.wpn_fps_smg_x_mac10.default_blueprint, "wpn_fps_smg_mac10_s_fold", "wpn_fps_remove_s")
+	self.wpn_fps_smg_x_mac10.override.wpn_fps_smg_mac10_body_mac10 = { animations = aki_anim_override }
+	self.wpn_fps_smg_x_mac10.override.wpn_fps_smg_mac10_body_ris = { animations = aki_anim_override }
 
 	table.delete(self.wpn_fps_smg_x_scorpion.uses_parts, "wpn_fps_smg_scorpion_s_unfolded")
+	self.wpn_fps_smg_x_scorpion.override.wpn_fps_smg_scorpion_body_standard = { animations = aki_anim_override }
 
 	table.delete(self.wpn_fps_smg_x_baka.uses_parts, "wpn_fps_smg_baka_s_unfolded")
+	self.wpn_fps_smg_x_baka.override.wpn_fps_smg_baka_body_standard = { animations = aki_anim_override }
 
 	table.swap(self.wpn_fps_smg_x_mp9.default_blueprint, "wpn_fps_smg_mp9_s_fold", "wpn_fps_remove_s")
 	table.insert(self.wpn_fps_smg_x_mp9.uses_parts, "wpn_fps_remove_vg")
+	self.wpn_fps_smg_x_mp9.override.wpn_fps_smg_mp9_body_mp9 = { animations = aki_anim_override }
 
 	table.delete(self.wpn_fps_smg_x_tec9.uses_parts, "wpn_fps_smg_tec9_s_unfolded")
+	self.wpn_fps_smg_x_tec9.override.wpn_fps_smg_tec9_b_long = { animations = aki_anim_override }
+	self.wpn_fps_smg_x_tec9.override.wpn_fps_smg_tec9_b_standard = { animations = aki_anim_override }
 
 	table.swap(self.wpn_fps_smg_x_cobray.default_blueprint, "wpn_fps_smg_cobray_s_standard", "wpn_fps_remove_s")
+	self.wpn_fps_smg_x_cobray.animations = aki_anim_override
 
 	table.delete(self.wpn_fps_smg_x_sr2.uses_parts, "wpn_fps_smg_sr2_s_unfolded")
 	table.insert(self.wpn_fps_smg_x_sr2.uses_parts, "wpn_fps_remove_vg")
+	self.wpn_fps_smg_x_sr2.override.wpn_fps_smg_sr2_body_lower = { animations = aki_anim_override }
 
 	self.wpn_fps_pis_x_g17.regression = "x_g17"
 	self.wpn_fps_pis_x_g17.unit = self.wpn_fps_pis_x_g18c.unit
 
 	self.wpn_fps_pis_x_g22c.regression = "x_g22c"
 	self.wpn_fps_pis_x_g22c.unit = self.wpn_fps_pis_x_g18c.unit
+
+	self.wpn_fps_pis_x_2006m.override.wpn_fps_pis_2006m_body_standard.animations = nil
+	self.wpn_fps_pis_x_2006m.override.wpn_fps_pis_2006m_m_standard.animations = nil
+	self.wpn_fps_pis_x_2006m.override.wpn_fps_pis_2006m_m_loader = { unit = fantom_unit }
+
+	--self.wpn_fps_pis_x_judge.override = self.wpn_fps_pis_x_g18c.unit
+
 
 
 	for i, k in pairs(self) do

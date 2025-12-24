@@ -182,6 +182,11 @@ function NewRaycastWeaponBase:drop_magazine_object()
 		local part = tweak_data.weapon.factory.parts[part_id]
 
 		if part and part.type == "magazine" then
+			if part and part.magdrop_effect then
+				World:effect_manager():spawn({ effect = Idstring(part.magdrop_effect.effect), parent = part_data.unit:get_object(Idstring(part.magdrop_effect.parent)) })
+			end
+			if self:is_category("revolver") then return end
+
 			local pos = part_data.unit:position()
 			local rot = part_data.unit:rotation()
 			local vel = part_data.unit:velocity()
@@ -196,9 +201,9 @@ function NewRaycastWeaponBase:drop_magazine_object()
 			local dropped_col = World:spawn_unit(NewRaycastWeaponBase.magazine_collisions[mag_size][1], tmp_vec2, part_data.unit:rotation())
 
 			dropped_col:link(NewRaycastWeaponBase.magazine_collisions[mag_size][2], dropped_mag)
-			mvec3_set(tmp_vec3, self._name_id=="ching" and rot:z() or -rot:z())
+			mvec3_set(tmp_vec3, self:weapon_tweak_data().flip_magdrop_dir and rot:z() or -rot:z())
 			mvec3_mul(tmp_vec3, 100)
-			dropped_col:push(self._name_id=="ching" and 2 or 20, tmp_vec3)
+			dropped_col:push(self:weapon_tweak_data().flip_magdrop_dir and 2 or 20, tmp_vec3)
 			managers.enemy:add_magazine(dropped_mag, dropped_col)
 		end
 	end

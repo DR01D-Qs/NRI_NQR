@@ -17,10 +17,13 @@ local mvec_move_dir_normalized = Vector3()
 function PlayerStandard:get_animation(anim)
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
-	local anim = (
-		anim=="equip" and wep_tweak.anim_equip_swap
-		or anim=="unequip" and wep_tweak.anim_unequip_swap
-	) or anim
+
+	if anim=="unequip" and wep_tweak.anim_unequip_swap then
+		self:_play_running_enter_anim(managers.player:player_timer():time()) return Idstring("")
+	elseif anim=="equip" then
+		anim = wep_tweak.anim_equip_swap or anim
+	end
+
 	return PlayerStandard._current_anim_state[2][anim] or PlayerStandard.ANIM_STATES.standard[anim]
 end
 
@@ -547,7 +550,6 @@ function PlayerStandard:_start_action_unequip_weapon(t, data, mul)
 
 	if not self._equip_weapon_expire_t0 then
 		self._ext_camera:play_redirect(self:get_animation("unequip"), anim_spd)
-		if wep_tweak.anim_unequip_swap then self:_play_running_enter_anim(t, anim_spd) end
 	else
 		self._unequip_weapon_expire_t = 0
 	end
@@ -639,11 +641,11 @@ function PlayerStandard:_check_use_item(t, input)
 		local action_forbidden =
 		self._use_item_expire_t
 		or self:_interacting()
-		or self:_changing_weapon()
+		--or self:_changing_weapon()
 		or self:_is_throwing_projectile()
 		or self:_is_meleeing()
 		or not self._movement_equipped
-		or not self._wall_equipped
+		--or not self._wall_equipped
 
 		if not action_forbidden and managers.player:can_use_selected_equipment(self._unit) then
 			self:_start_action_use_item(t)
@@ -735,7 +737,6 @@ end
 function PlayerStandard:_play_unequip_animation(speed_multiplier)
 	local wep_tweak = self._equipped_unit:base():weapon_tweak_data()
 	self._ext_camera:play_redirect(self:get_animation("unequip"), speed_multiplier)
-	if wep_tweak.anim_unequip_swap then self:_play_running_enter_anim(Application:time(), speed_multiplier) end
 end
 
 --NEW FUNCTION: REEQUIP FORCED
@@ -1628,7 +1629,12 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 		(not is_reload_not_empty and wep_tweak.custom_cycle_2) or
 		{ "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release" }
 	)
-	if is_akimbo then r_cycle = { "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release", } end
+	if is_akimbo then
+		r_cycle = wep_tweak.custom_cycle and wep_tweak.custom_cycle[1]=="r_bolt_release_1"
+		and { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2", }
+		or { "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release", }
+	end
+	local anim_reload_mul = wep_tweak.anim_reload_mul or 1
 
 	if wep_base._is_bolting==2 then
 		if r_cycle[#r_cycle]=="r_bolt_release_2" then
@@ -1750,8 +1756,8 @@ function PlayerStandard:_start_action_reload(t, magdrop)
 
 	if not wep_base:use_shotgun_reload() then
 		self._ext_camera:play_redirect(reload_ids, speed_multiplier, offset)
-		if not wep_base:tweak_data_anim_play(reload_anim, speed_multiplier*(wep_tweak.anim_reload_mul or 1), math.max(wep_tweak.r_ass or 0, offset)) then
-			wep_base:tweak_data_anim_play("reload", speed_multiplier*(wep_tweak.anim_reload_mul or 1), math.max(wep_tweak.r_ass or 0, offset))
+		if not wep_base:tweak_data_anim_play(reload_anim, speed_multiplier*anim_reload_mul, math.max(wep_tweak.r_ass or 0, offset*anim_reload_mul)) then
+			wep_base:tweak_data_anim_play("reload", speed_multiplier*anim_reload_mul, math.max(wep_tweak.r_ass or 0, offset*anim_reload_mul))
 			Application:trace("PlayerStandard:_start_action_reload( t ): ", reload_anim)
 		end
 	elseif not wep_base.r_doubleload then
@@ -2113,6 +2119,7 @@ function PlayerStandard:_interupt_action_reload(t)
 	local r_stage = wep_base.r_stage
 	local r_cycle = wep_base.r_cycle
 	local r_steps = wep_base.r_steps
+	local anim_reload_mul = wep_tweak.anim_reload_mul or 1
 	wep_base:tweak_data_anim_stop("reload_enter")
 	wep_base:tweak_data_anim_stop("reload")
 	wep_base:tweak_data_anim_stop("reload_not_empty")
@@ -2134,6 +2141,7 @@ function PlayerStandard:_interupt_action_reload(t)
 				if wep_base._second_gun then wep_base._second_gun:base():set_mag_visibility(false) end
 			else
 				wep_base:set_mag_visibility(false)
+				if wep_base._second_gun then wep_base._second_gun:base():set_mag_visibility(false) end
 			end
 
 			r_stage = r_cycle[r_stage]=="r_get_new_mag_in" and r_stage or (r_stage+1) --table.get_vector_index(r_cycle, "r_get_new_mag_in")
@@ -2150,7 +2158,7 @@ function PlayerStandard:_interupt_action_reload(t)
 				offset = offset + r_steps[ r_cycle[i] ]
 			end
 			offset = offset * wep_base._current_reload_speed_multiplier
-			wep_base.r_offset = offset
+			wep_base.r_offset = offset*anim_reload_mul
 		end
 	else
 		local time = wep_base.r_time - ((self._state_data.reload_expire_t or 0) - t)
@@ -3423,8 +3431,6 @@ function PlayerStandard:_update_movement(t, dt)
 
 	self._unit:movement().move_speed = self._last_velocity_xy
 
-
-
 	if self._running_enter_end_t and t>self._running_enter_end_t then
 		self._running_enter_end_t = nil
 		self._ext_camera:play_redirect(self:get_animation("start_running"), 0, 15/30)
@@ -3472,7 +3478,7 @@ function PlayerStandard:_check_movement_equipped(t)
 
 		self._wall_unequip_t = nil
 		self._wall_unequip = nil
-		self._running_enter_end_t = nil
+		--self._running_enter_end_t = nil
 		self._running_exit_start_t = nil	
 		return
 	end
@@ -3518,11 +3524,17 @@ function PlayerStandard:_check_movement_equipped(t)
 
 
 
-	if self:_changing_weapon() or self:_is_throwing_grenade() or self:_is_throwing_projectile() or not self._movement_equipped then
+	if self:_changing_weapon()
+	or self:is_deploying()
+	or self:_is_throwing_grenade()
+	or self:_is_throwing_projectile()
+	or not self._movement_equipped
+	--or self._running
+	then
 		self._wall_equipped = true
 		self._wall_unequip_t = nil
 		self._wall_unequip = nil
-		self._running_enter_end_t = nil
+		self._running_enter_end_t = self:is_deploying() and self._running_enter_end_t or nil
 		self._running_exit_start_t = nil	
 		return
 	end
@@ -3560,11 +3572,14 @@ function PlayerStandard:_is_movement_equipped()
 end
 function PlayerStandard:_play_running_enter_anim(t, mul)
 	local mul = mul or 1
+	local wep_base = self._equipped_unit:base()
+	local wep_tweak = wep_base:weapon_tweak_data()
+
 	if not self._running_enter_end_t and not (self._running and not self._end_running_expire_t) then
 		self._ext_camera:play_redirect(self:get_animation("start_running"), mul)
 	end
 	self._running_exit_start_t = nil
-	self._running_enter_end_t = t + (self._running_enter_end_t and (self._running_enter_end_t - t) or ((15/30)/mul))
+	self._running_enter_end_t = t + (self._running_enter_end_t and (self._running_enter_end_t - t) or ((wep_tweak.anim_sprint_t or 14/30)/mul))
 end
 function PlayerStandard:_play_running_exit_anim(t, mul)
 	local mul = mul or 1
@@ -4338,18 +4353,26 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 				local amount_civ = amount * managers.player:upgrade_value("player", "civ_intimidation_mul", 1) * managers.player:team_upgrade_value("player", "civ_intimidation_mul", 1)
 
 				for _, char in pairs(char_table) do
-					if char.unit_type ~= unit_type_camera and char.unit_type ~= unit_type_teammate and (not is_whisper_mode or not char.unit:movement():cool()) then
-						local not_ass = not (
-							managers.groupai:state()
-							and managers.groupai:state()._task_data
-							and managers.groupai:state()._task_data.assault
-							and managers.groupai:state()._task_data.assault.phase=="build"
-							and managers.groupai:state()._task_data.assault.phase=="sustain"
+					local not_ass = char.unit_type~=unit_type_civilian and not (
+						managers.groupai:state()
+						and managers.groupai:state()._task_data
+						and managers.groupai:state()._task_data.assault
+						and (
+							managers.groupai:state()._task_data.assault.phase=="build"
+							or managers.groupai:state()._task_data.assault.phase=="sustain"
 						)
-						local not_bleedout = not (char.unit:movement() and char.unit:movement().bleedouted)
-						local int_amount = char.unit_type == unit_type_civilian and amount_civ or amount or 0
+					)
+					local not_bleedout = not (char.unit:movement() and char.unit:movement().bleedouted)
+					local int_amount = char.unit_type == unit_type_civilian and amount_civ or amount or 0
 
-						if prime_target_key == char.unit:key() and not_ass and not_bleedout then
+					if (char.unit_type ~= unit_type_camera
+					and char.unit_type ~= unit_type_teammate
+					and (not is_whisper_mode or not char.unit:movement():cool()))
+					and not_ass and not_bleedout
+					then
+						log(managers.groupai:state()._task_data.assault.phase)
+						log(not_ass)
+						if prime_target_key == char.unit:key() then
 							voice_type = char.unit:brain():on_intimidated(int_amount, self._unit) or voice_type
 						elseif not primary_only and char.unit_type ~= unit_type_enemy then
 							char.unit:brain():on_intimidated(int_amount * char.inv_wgt / max_inv_wgt, self._unit)

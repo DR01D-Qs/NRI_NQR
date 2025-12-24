@@ -193,6 +193,12 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 
 		["deagle"] = "units/pd2_dlc_rota/weapons/wpn_fps_sho_rota/wpn_fps_sho_rota",
 		["x_deagle"] = "units/pd2_dlc_rota/weapons/wpn_fps_sho_rota/wpn_fps_sho_rota",
+		["rsh12"] = "units/pd2_dlc_pxp3/weapons/wpn_fps_snp_contender/wpn_fps_snp_contender",
+		["x_rsh12"] = "units/pd2_dlc_pxp3/weapons/wpn_fps_snp_contender/wpn_fps_snp_contender",
+		["x_rsh12"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
+		["x_rage"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
+		["x_judge"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
+		["x_2006m"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["contraband"] = "units/pd2_dlc_spa/weapons/wpn_fps_snp_tti/wpn_fps_snp_tti",
 
 		--regressions
@@ -452,6 +458,16 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	end
 	self._current_stats.total_ammo_mod = parts_stats.totalammo or 0
 
+	local caliber_data = tweak_data.weapon.calibers[self._current_stats.caliber] or tweak_data.weapon.calibers["9x19"]
+	local ammotype_data = nil
+	if self._current_stats.ammotype and self._current_stats.ammotype~="Default" then
+		for i, k in pairs(caliber_data) do
+			if k.name==self._current_stats.ammotype then ammotype_data = k break end
+		end
+	end
+	ammotype_data = ammotype_data or caliber_data[1]
+	self._current_stats.ammotype = ammotype_data.name or "Default"
+
 	--[[if stats.concealment then --placeholder
 		stats.suspicion = 1.6 --math.clamp(wep_tweak_default.stats.concealment - base_stats.concealment - (parts_stats.concealment or 0), 1, wep_tweak_default.stats.concealment)
 		self._current_stats.suspicion = stats.suspicion --wep_tweak_default.stats.concealment--[stats.suspicion]
@@ -631,6 +647,7 @@ end
 
 function NewRaycastWeaponBase:predict_bullet_objects()
 	self:set_mag_visibility(true)
+	if self._second_gun then self._second_gun:base():set_mag_visibility(true) end
 	self:_update_bullet_objects("get_ammo_total")
 end
 function NewRaycastWeaponBase:check_bullet_objects()
@@ -1453,13 +1470,10 @@ function NewRaycastWeaponBase:do_magdrop(fresh_mag)
 		self:set_ammo_total(math.max(self:get_ammo_total() - 1, 0))
 		managers.hud:set_ammo_amount(self:selection_index(), self:ammo_info())
 
-		if not self:is_category("revolver") then self:drop_magazine_object() end
+		self:drop_magazine_object()
 
 		return
 	end
-
-	if not self:is_category("revolver") then self:drop_magazine_object() end
-	if self._second_gun then self._second_gun:base():drop_magazine_object() end
 
 	local amount_to_deduct = fresh_mag and self:get_ammo_max_per_clip() or (math.max(self:get_ammo_remaining_in_clip()-self:get_chamber(), 0))
 	self:set_ammo_total(math.max(self:get_ammo_total()-amount_to_deduct, 0))
@@ -1467,7 +1481,13 @@ function NewRaycastWeaponBase:do_magdrop(fresh_mag)
 	managers.hud:set_ammo_amount(self:selection_index(), self:ammo_info())
 
 	--managers.mission._fading_debug_output:script().log(tostring("csc"), Color.white)
+
+	self:drop_magazine_object()
 	self:set_mag_visibility(false)
+	if self._second_gun then
+		self._second_gun:base():drop_magazine_object()
+		self._second_gun:base():set_mag_visibility(false)
+	end
 end
 
 --RELOAD_SPEED_MULTIPLIER: -

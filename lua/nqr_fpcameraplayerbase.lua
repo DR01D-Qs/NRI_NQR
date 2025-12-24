@@ -276,6 +276,15 @@ end
 
 
 
+function FPCameraPlayerBase:show_weapon()
+	if alive(self._parent_unit) then
+		self._parent_unit:inventory():show_equipped_unit()
+		managers.player:player_unit():movement():current_state():_stance_entered()
+	end
+end
+
+
+
 --GUN LENGTH SYSTEM
 Hooks:PostHook(FPCameraPlayerBase, "clbk_stance_entered", "nqr_FPCameraPlayerBase:clbk_stance_entered", function(self, new_shoulder_stance, new_head_stance, new_vel_overshot, new_fov, new_shakers, stance_mod, duration_multiplier, duration, head_duration_multiplier, head_duration)
 	self._current_stance = new_shoulder_stance
@@ -482,7 +491,7 @@ function FPCameraPlayerBase:enter_shotgun_reload_loop(unit, state, ...)
 
 		if wep_tweak.r_ffs then
 			wep_base:tweak_data_anim_play("reload_enter", speed_multiplier, wep_tweak.r_enter/30)
-		elseif not (wep_tweak.r_anim_swap==wep_base.r_anim_swap) then
+		elseif not (wep_tweak.r_anim_swap and wep_tweak.r_anim_swap==wep_base.r_anim_swap) then
 			wep_base:tweak_data_anim_play("reload", speed_multiplier)
 		end
 		self._unit:anim_state_machine():set_speed(Idstring(state), speed_multiplier)
