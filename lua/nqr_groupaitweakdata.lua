@@ -97,11 +97,11 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		welcome_to_the_jungle_2 = {1.3,1.2}, --big oil 2
 		cane = {1,1.2}, --santa's workshop
 		brb = {0.8,1.5}, --brooklyn bank
-		mus = {1.1,1.5}, --the diamond
+		mus = {1.0,1.5}, --the diamond
 		run = {1.2,1}, --heat street
 		bph = {0.7,0.7}, --hell's island
 		glace = {0.6,1}, --green bridge
-		pbr = {1.1,1.5}, --beneath the mountain
+		pbr = {1.0,1.5}, --beneath the mountain
 		pbr2 = {0.7,2}, --birth of sky
 		dinner = {0.9,2}, --slaughterhouse
 		born = {1.2,1.5}, --biker 1

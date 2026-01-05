@@ -1,3 +1,22 @@
+function NewNPCRaycastWeaponBase:setup(setup_data)
+	self._autoaim = setup_data.autoaim
+	self._alert_events = setup_data.alert_AI and {} or nil
+	self._alert_size = tweak_data.weapon[self._name_id].alert_size
+	self._alert_fires = {}
+	self._suppression = tweak_data.weapon[self._name_id].suppression
+	self._bullet_slotmask = (setup_data.hit_slotmask or self._bullet_slotmask) - World:make_slot_mask(16)
+	self._character_slotmask = managers.slot:get_mask("raycastable_characters")
+	self._hit_player = setup_data.hit_player and true or false
+	self._setup = setup_data
+	self._part_stats = managers.weapon_factory:get_stats(self._factory_id, self._blueprint)
+
+	if self._assembly_complete then
+		self:_chk_has_charms(self._parts, setup_data)
+	end
+end
+
+
+
 function NewNPCRaycastWeaponBase:_get_spread(user_unit)
 	local weapon_tweak = tweak_data.weapon[self:non_npc_name_id()]
 

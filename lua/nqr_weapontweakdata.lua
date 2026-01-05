@@ -2340,6 +2340,7 @@ end
 	self.supernova.action = "pump_action"
 	self.supernova.feed_system = "tube_fed"
 	self.supernova.fire_mode_data.fire_rate = 0.6
+	self.supernova.alt_fire_data = nil
 	self.supernova.shot_anim_hands = 18
 	self.supernova.r_can_doubleload = true
 	self.supernova.r_enter = self.r870.r_enter
@@ -2350,7 +2351,7 @@ end
 	self.supernova.use_shotgun_reload = true
 
 	self.ksg.caliber = "12 gauge"
-	self.ksg.weight = 31
+	self.ksg.weight = 32
 	self.ksg.rise_factor = 0
 	self.ksg.bullpup = true
 	self.ksg.action = "pump_action"
@@ -3930,7 +3931,7 @@ function WeaponTweakData:nqr_spread(ammotype_data, barrel, name)
 
 	local spread = (400+proj_weight)^(1/(10+(barrel))) * action_factor
 	--spread = spread * (1+(proj_amount*0.1)-0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
-	spread = spread * (1+((proj_amount^(1*0.8))-1)*0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
+	spread = spread * (1+((proj_amount^(1*0.7))-1)*0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
 
 	--local result_spread = (300+proj_weight)^(1/(10+(barrel))) * action_factor
 	--result_spread = result_spread * (1+(proj_amount*0.2)-0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.2 or 1.4)

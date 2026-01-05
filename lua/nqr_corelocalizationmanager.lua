@@ -70,6 +70,10 @@ function LocalizationManager:text(string_id, macros)
 			return_string = string.gsub(return_string, self:text("bm_w_erma"), self:text("bm_w_ching"))
 		elseif string.find(str_id, "menu_aru_job_4_obj_desc") then
 			return_string = string.gsub(return_string, self:text("bm_w_ching"), self:text("bm_w_erma"))
+		elseif string.find(str_id, "bm_wskn_deagle_bling_desc") then
+			return_string = return_string:gsub("%s*[^%.]+%.$", "")
+		elseif string.find(str_id, "bm_wskn_ak74_rodina_desc") then
+			return_string = return_string:gsub("%s*[^%.]+%.$", "")
 		end
 	end
 

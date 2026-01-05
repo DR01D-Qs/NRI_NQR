@@ -370,9 +370,11 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 
 	self.stances.r870.standard.shoulders.translation = Vector3(-4.725, 1.677, 2.228)
 	self.stances.r870.standard.shoulders.rotation = Rotation(-0.107601, 0.0861551, -3.628)
-	self.stances.r870.steelsight.shoulders.translation = Vector3(-10.7253, 2.677, 5.228)
+	self.stances.r870.steelsight.shoulders.translation = Vector3(-10.716, -2.324, 5.223) --Vector3(-10.7253, 2.677, 5.228)
 --	self.stances.r870.crouched.shoulders.translation = Vector3(-4.725, -1.323, 2.228)
 --	self.stances.r870.crouched.shoulders.rotation = Rotation(-0.107601, 0.0861552, -1.628)
+	self.stances.serbu.steelsight.shoulders.translation = self.stances.r870.steelsight.shoulders.translation
+	self.stances.serbu.standard.shoulders.translation = self.stances.r870.standard.shoulders.translation
 
 	self.stances.x_mp9.steelsight.shoulders.translation = Vector3(0, -8.943, -2.251)
 	self.stances.x_mp9.steelsight.shoulders.rotation = Rotation(0.39, 8.32429e-006, 1.70755e-006)
@@ -515,9 +517,6 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.judge.steelsight.shoulders.translation = Vector3(-8.61421, -20.886, 3.407)
 --	self.stances.judge.crouched.shoulders.translation = Vector3(-2.614, -15.886, -10.172)
 --	self.stances.judge.crouched.shoulders.rotation = Rotation(-0.106842, 0.690637, -10.617)
-
-	self.stances.serbu.steelsight.shoulders.translation = Vector3(-10.716, -4.324, 5.223)
-	self.stances.serbu.standard.shoulders.translation = Vector3(-3.21602, -2.32356, 1.223)
 
 	self.stances.x_g18c.standard.shoulders.translation = Vector3(0, -16.943, -2.751)
 	self.stances.x_g18c.standard.shoulders.rotation = Rotation(0.39, 8.32429e-006, 1.70755e-006)

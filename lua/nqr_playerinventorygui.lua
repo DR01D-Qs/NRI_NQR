@@ -1694,12 +1694,14 @@ function PlayerInventoryGui:_update_info_weapon_cosmetics(name, cosmetics)
 			self._stats_texts[stat.name].mods:set_text(mods_stats[stat.name].value == 0 and "" or (mods_stats[stat.name].value > 0 and "+" or "") .. format_round(mods_stats[stat.name].value, stat.round_value))
 			self._stats_texts[stat.name].skill:set_text(skill_stats[stat.name].skill_in_effect and (skill_stats[stat.name].value > 0 and "+" or "") .. format_round(skill_stats[stat.name].value, stat.round_value) or "")
 
-			if base < value then
-				self._stats_texts[stat.name].total:set_color(stat.inverted and tweak_data.screen_colors.stats_negative or tweak_data.screen_colors.stats_positive)
-			elseif value < base then
-				self._stats_texts[stat.name].total:set_color(stat.inverted and tweak_data.screen_colors.stats_positive or tweak_data.screen_colors.stats_negative)
-			else
-				self._stats_texts[stat.name].total:set_color(tweak_data.screen_colors.text)
+			if type(base)=="number" and type(value)=="number" then
+				if base < value then
+					self._stats_texts[stat.name].total:set_color(stat.inverted and tweak_data.screen_colors.stats_negative or tweak_data.screen_colors.stats_positive)
+				elseif value < base then
+					self._stats_texts[stat.name].total:set_color(stat.inverted and tweak_data.screen_colors.stats_positive or tweak_data.screen_colors.stats_negative)
+				else
+					self._stats_texts[stat.name].total:set_color(tweak_data.screen_colors.text)
+				end
 			end
 
 			--if stat.percent then
@@ -4405,8 +4407,8 @@ function PlayerInventoryGui:_get_mods_stats(name, base_stats, equipped_mods, bon
 					index = math.clamp(base_stats[stat.name].index + mods_stats[stat.name].index, 1, #tweak_stats[stat_name])
 				end
 
-				mods_stats[stat.name].value = stat.index and index or tweak_stats[stat_name][index] * tweak_data.gui.stats_present_multiplier
-				local offset = math.min(tweak_stats[stat_name][1], tweak_stats[stat_name][#tweak_stats[stat_name]]) * tweak_data.gui.stats_present_multiplier
+				mods_stats[stat.name].value = stat.index and index or tweak_stats[stat_name][index] --* tweak_data.gui.stats_present_multiplier
+				local offset = math.min(tweak_stats[stat_name][1], tweak_stats[stat_name][#tweak_stats[stat_name]]) --* tweak_data.gui.stats_present_multiplier
 
 				--if stat.offset then
 				--	mods_stats[stat.name] = mods_stats[stat.name] - offset
@@ -4440,7 +4442,7 @@ function PlayerInventoryGui:_get_mods_stats(name, base_stats, equipped_mods, bon
 						--	max_stat = max_stat - offset
 						--end
 
-						local new_value = (max_stat - modded_value) * tweak_data.gui.stats_present_multiplier
+						local new_value = (max_stat - modded_value) --* tweak_data.gui.stats_present_multiplier
 
 						if mod ~= 0 and (tweak_stats[stat_name][1] < modded_value or modded_value < tweak_stats[stat_name][#tweak_stats[stat_name]]) then
 							new_value = (new_value + mods_stats[stat.name].value / mod) / 2
@@ -4510,8 +4512,8 @@ function PlayerInventoryGui:_get_melee_weapon_stats(name)
 		end
 
 		if stat.name == "damage" then
-			local base_min = stats_data.min_damage * tweak_data.gui.stats_present_multiplier
-			local base_max = stats_data.max_damage * tweak_data.gui.stats_present_multiplier
+			local base_min = stats_data.min_damage --* tweak_data.gui.stats_present_multiplier
+			local base_max = stats_data.max_damage --* tweak_data.gui.stats_present_multiplier
 			local dmg_mul = managers.player:upgrade_value("player", "melee_" .. tostring(tweak_data.blackmarket.melee_weapons[name].stats.weapon_type) .. "_damage_multiplier", 1)
 			local skill_mul = dmg_mul * ((has_non_special and has_special and math.max(non_special, special) or 0) + 1) - 1
 			local skill_min = skill_mul
@@ -4653,7 +4655,7 @@ function PlayerInventoryGui:_get_armor_stats(name)
 			local base = tweak_data.player.damage.HEALTH_INIT
 			local mod = managers.player:health_skill_addend()
 			base_stats[stat.name] = {
-				value = (base + mod) * tweak_data.gui.stats_present_multiplier
+				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
 				value = base_stats[stat.name].value * managers.player:health_skill_multiplier() - base_stats[stat.name].value
@@ -4678,10 +4680,10 @@ function PlayerInventoryGui:_get_armor_stats(name)
 			mod = mod + mel_base_stats.weight.value + mel_mods_stats.weight.value
 
 			base_stats[stat.name] = {
-				value = (base + mod) * tweak_data.gui.stats_present_multiplier
+				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
-				value = (base_stats[stat.name].value + managers.player:body_armor_skill_addend(name) * tweak_data.gui.stats_present_multiplier) * managers.player:body_armor_skill_multiplier(name) - base_stats[stat.name].value
+				value = (base_stats[stat.name].value + managers.player:body_armor_skill_addend(name) --[[* tweak_data.gui.stats_present_multiplier]]) * managers.player:body_armor_skill_multiplier(name) - base_stats[stat.name].value
 			}
 		elseif stat.name == "concealment" then
 			base_stats[stat.name] = {
@@ -4709,7 +4711,7 @@ function PlayerInventoryGui:_get_armor_stats(name)
 			local base = 0
 			local mod = managers.player:body_armor_value("movement", upgrade_level)
 			base_stats[stat.name] = {
-				value = (base + mod) * tweak_data.gui.stats_present_multiplier
+				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
 			}
 		elseif stat.name == "dodge" then
 			local base = 0
@@ -4737,10 +4739,10 @@ function PlayerInventoryGui:_get_armor_stats(name)
 			local mod_value = base / mod - base_value
 			local skill_value = base / mod / skill - base_value - mod_value + managers.player:upgrade_value("player", "damage_shake_addend", 0)
 			base_stats[stat.name] = {
-				value = (base_value + mod_value) * tweak_data.gui.stats_present_multiplier
+				value = (base_value + mod_value) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
-				value = skill_value * tweak_data.gui.stats_present_multiplier
+				value = skill_value --* tweak_data.gui.stats_present_multiplier
 			}
 		elseif stat.name == "stamina" then
 			local stamina_data = tweak_data.player.movement_state.stamina

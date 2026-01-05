@@ -323,7 +323,7 @@ function PlayerStandard:update(t, dt)
 		and not wep_tweak.dao
 		and not wep_tweak.dao_delayed
 		--and not wep_tweak.feed_system=="ejecting_mag"
-		and not wep_base.r_offset
+		--and not wep_base.r_offset
 		then
 			local offset = wep_tweak.feed_system=="tube_fed" and 2/30 or 1/30
 			local reload_anim = wep_tweak.feed_system=="tube_fed" and "fire" or "reload"
@@ -344,6 +344,8 @@ function PlayerStandard:update(t, dt)
 			local offset = wep_base.r_offset
 			local reload_anim = wep_base:use_shotgun_reload() and "reload_enter" or wep_base.r_not_empty and "reload_not_empty" or "reload"
 			wep_base:tweak_data_anim_stop("fire")
+			wep_base:tweak_data_anim_stop("reload")
+			wep_base:tweak_data_anim_stop("reload_left")
 			wep_base:tweak_data_anim_play(reload_anim, 1, offset, true)
 		elseif wep_base:is_category("revolver") then
 			if wep_base.delayed_t1==0 then
@@ -358,7 +360,7 @@ function PlayerStandard:update(t, dt)
 		end
 	end
 
-	--managers.mission._fading_debug_output:script().log(tostring(wep_base.chamber_state), Color.white)
+	--managers.mission._fading_debug_output:script().log(tostring(wep_base.r_offset), Color.white)
 
 	local weight = wep_base._current_stats.weight or 10
 	local shouldered = wep_base._current_stats.shouldered
@@ -4353,13 +4355,14 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 				local amount_civ = amount * managers.player:upgrade_value("player", "civ_intimidation_mul", 1) * managers.player:team_upgrade_value("player", "civ_intimidation_mul", 1)
 
 				for _, char in pairs(char_table) do
-					local not_ass = char.unit_type~=unit_type_civilian and not (
+					local not_ass = char.unit_type~=unit_type_enemy or not (
 						managers.groupai:state()
 						and managers.groupai:state()._task_data
 						and managers.groupai:state()._task_data.assault
 						and (
 							managers.groupai:state()._task_data.assault.phase=="build"
 							or managers.groupai:state()._task_data.assault.phase=="sustain"
+							or managers.groupai:state()._task_data.assault.phase=="fade"
 						)
 					)
 					local not_bleedout = not (char.unit:movement() and char.unit:movement().bleedouted)
@@ -4370,8 +4373,6 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table, amoun
 					and (not is_whisper_mode or not char.unit:movement():cool()))
 					and not_ass and not_bleedout
 					then
-						log(managers.groupai:state()._task_data.assault.phase)
-						log(not_ass)
 						if prime_target_key == char.unit:key() then
 							voice_type = char.unit:brain():on_intimidated(int_amount, self._unit) or voice_type
 						elseif not primary_only and char.unit_type ~= unit_type_enemy then

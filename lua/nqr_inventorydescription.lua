@@ -270,7 +270,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 					if part_data.stats[i] then
 						if i=="barrel_length" then
 							if mods_stats.barrel_length.value==base_stats.barrel_length.value then
-								mods_stats.barrel_length.value = mods_stats.barrel_length.value - part_data.stats.barrel_length
+								mods_stats.barrel_length.value = 0
 							end
 						else
 							mods_stats[i].value = mods_stats[i].value - part_data.stats[i]
@@ -312,7 +312,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 					if stats_mag==base_stats.magazine.value then
 						mag_dflt = stats_mag
 						mag_main = 0
-					elseif part_data.type~="magazine" and part_data.type~="barrel" and part_data.type~="exclusive_set" then
+					elseif part_data.type~="magazine" and part_data.type~="barrel" and part_data.type~="exclusive_set" or part_data.stats.mag_ext then
 						mag_ext = stats_mag
 					elseif stats_mag then
 						mag_dflt = stats_mag
@@ -324,7 +324,9 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 			end
 		end
 		mods_stats.magazine.value = mag_main + mag_ext
-		mods_stats.length.value = mods_stats.length.value + (mods_stats.barrel_length.value or 0)
+		mods_stats.length.value = mods_stats.length.value + (
+			mods_stats.barrel_length.value~=0 and mods_stats.barrel_length.value-base_stats.barrel_length.value or 0
+		)
 
 		local main_total_ammo = 0
 		local added_total_ammo = 0
@@ -494,6 +496,13 @@ function WeaponDescription._get_weapon_mod_stats(mod_name, weapon_name, base_sta
 					elseif part_data.stats.totalammo then
 						mod[stat.name] = part_data.stats[stat.name]
 					end
+				elseif stat.name == "barrel_length" then
+					if part_data.stats.barrel_length then
+						mod[stat.name] = part_data.stats.barrel_length
+						if part_data.stats.barrel_length~=base_stats.barrel_length.value then
+							mod.length = part_data.stats.barrel_length - base_stats.barrel_length.value
+						end
+					end
 				else
 					if type(mod[stat.name])~="string" and type(curr_stats[stat.name].value)~="string" then
 						mod[stat.name] = curr_stats[stat.name].value + (part_data.stats[stat.name] or 0)
@@ -602,14 +611,14 @@ function WeaponDescription._get_skill_stats(name, category, slot, base_stats, mo
 
 				if stat.name == "damage" then
 					multiplier = managers.blackmarket:damage_multiplier(name, weapon_tweak.categories, silencer, detection_risk, nil, blueprint)
-					modifier = math.floor(managers.blackmarket:damage_addend(name, weapon_tweak.categories, silencer, detection_risk, nil, blueprint) * tweak_data.gui.stats_present_multiplier * multiplier)
+					modifier = math.floor(managers.blackmarket:damage_addend(name, weapon_tweak.categories, silencer, detection_risk, nil, blueprint) --[[* tweak_data.gui.stats_present_multiplier]] * multiplier)
 				elseif stat.name == "spread" then
 					local fire_mode = single_mod and "single" or auto_mod and "auto" or weapon_tweak.FIRE_MODE or "single"
 					multiplier = managers.blackmarket:accuracy_multiplier(name, weapon_tweak.categories, silencer, nil, nil, fire_mode, blueprint, nil, is_single_shot)
-					modifier = managers.blackmarket:accuracy_addend(name, weapon_tweak.categories, base_index, silencer, nil, fire_mode, blueprint, nil, is_single_shot) * tweak_data.gui.stats_present_multiplier
+					modifier = managers.blackmarket:accuracy_addend(name, weapon_tweak.categories, base_index, silencer, nil, fire_mode, blueprint, nil, is_single_shot) --* tweak_data.gui.stats_present_multiplier
 				elseif stat.name == "recoil" then
 					multiplier = managers.blackmarket:recoil_multiplier(name, weapon_tweak.categories, silencer, blueprint)
-					modifier = managers.blackmarket:recoil_addend(name, weapon_tweak.categories, base_index, silencer, blueprint, nil, is_single_shot) * tweak_data.gui.stats_present_multiplier
+					modifier = managers.blackmarket:recoil_addend(name, weapon_tweak.categories, base_index, silencer, blueprint, nil, is_single_shot) --* tweak_data.gui.stats_present_multiplier
 				elseif stat.name == "suppression" then
 					multiplier = managers.blackmarket:threat_multiplier(name, weapon_tweak.categories, silencer)
 				elseif stat.name == "concealment" then
@@ -635,14 +644,14 @@ function WeaponDescription._get_skill_stats(name, category, slot, base_stats, mo
 				end
 
 				if modifier ~= 0 then
-					local offset = math.min(tweak_stats[stat.name][1], tweak_stats[stat.name][#tweak_stats[stat.name]]) * tweak_data.gui.stats_present_multiplier
+					local offset = math.min(tweak_stats[stat.name][1], tweak_stats[stat.name][#tweak_stats[stat.name]]) --* tweak_data.gui.stats_present_multiplier
 
 					if stat.revert then
 						modifier = -modifier
 					end
 
 					if stat.percent then
-						local max_stat = stat.index and #tweak_stats[stat.name] or math.max(tweak_stats[stat.name][1], tweak_stats[stat.name][#tweak_stats[stat.name]]) * tweak_data.gui.stats_present_multiplier
+						local max_stat = stat.index and #tweak_stats[stat.name] or math.max(tweak_stats[stat.name][1], tweak_stats[stat.name][#tweak_stats[stat.name]]) --* tweak_data.gui.stats_present_multiplier
 
 						if stat.offset then
 							max_stat = max_stat - offset

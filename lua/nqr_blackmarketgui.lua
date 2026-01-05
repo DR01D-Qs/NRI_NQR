@@ -2547,8 +2547,8 @@ function BlackMarketGui:_get_melee_weapon_stats(name)
 		}
 
 		if stat.name == "damage" then
-			local base_min = stats_data.min_damage * tweak_data.gui.stats_present_multiplier
-			local base_max = stats_data.max_damage * tweak_data.gui.stats_present_multiplier
+			local base_min = stats_data.min_damage --* tweak_data.gui.stats_present_multiplier
+			local base_max = stats_data.max_damage --* tweak_data.gui.stats_present_multiplier
 			local dmg_mul = managers.player:upgrade_value("player", "melee_" .. tostring(tweak_data.blackmarket.melee_weapons[name].stats.weapon_type) .. "_damage_multiplier", 1)
 			local skill_mul = dmg_mul * ((has_non_special and has_special and math.max(non_special, special) or 0) + 1) - 1
 			local skill_min = skill_mul
@@ -2690,16 +2690,16 @@ function BlackMarketGui:_get_armor_stats(name)
 			local base = 0 --tweak_data.player.damage.ARMOR_INIT
 			local mod = managers.player:body_armor_value("armor", upgrade_level)*50
 			base_stats[stat.name] = {
-				value = (base + mod) * tweak_data.gui.stats_present_multiplier
+				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
-				value = (base_stats[stat.name].value + managers.player:body_armor_skill_addend(name) * tweak_data.gui.stats_present_multiplier) * managers.player:body_armor_skill_multiplier(name) - base_stats[stat.name].value
+				value = (base_stats[stat.name].value + managers.player:body_armor_skill_addend(name) --[[* tweak_data.gui.stats_present_multiplier]]) * managers.player:body_armor_skill_multiplier(name) - base_stats[stat.name].value
 			}
 		elseif stat.name == "health" then
 			local base = tweak_data.player.damage.HEALTH_INIT
 			local mod = managers.player:health_skill_addend()
 			base_stats[stat.name] = {
-				value = (base + mod) * tweak_data.gui.stats_present_multiplier
+				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
 				value = base_stats[stat.name].value * managers.player:health_skill_multiplier() - base_stats[stat.name].value
@@ -2741,10 +2741,10 @@ function BlackMarketGui:_get_armor_stats(name)
 			local mod_value = base / mod - base_value
 			local skill_value = base / mod / skill - base_value - mod_value + managers.player:upgrade_value("player", "damage_shake_addend", 0)
 			base_stats[stat.name] = {
-				value = (base_value + mod_value) * tweak_data.gui.stats_present_multiplier
+				value = (base_value + mod_value) --* tweak_data.gui.stats_present_multiplier
 			}
 			skill_stats[stat.name] = {
-				value = skill_value * tweak_data.gui.stats_present_multiplier
+				value = skill_value --* tweak_data.gui.stats_present_multiplier
 			}
 		elseif stat.name == "stamina_drain" then
 			local stamina_data = tweak_data.player.movement_state.stamina
@@ -3017,6 +3017,7 @@ function BlackMarketGui:update_info_text()
 
 			if price > 0 then
 				updated_texts[2].text = "##" .. managers.localization:to_upper_text(slot_data.not_moddable and "st_menu_cost" or "st_menu_value") .. " " .. managers.experience:cash_string(price) .. "##"
+				.."   "..(string.match(managers.localization:to_upper_text("menu_st_req_level_skill_switch"), "(.*) ") or managers.localization:to_upper_text("menu_st_req_level_skill_switch"))..": "..(slot_data.level or 0)
 
 				table.insert(resource_color, slot_data.can_afford and tweak_data.screen_colors.text or tweak_data.screen_colors.important_1)
 			end
@@ -3263,7 +3264,7 @@ function BlackMarketGui:update_info_text()
 			local amount = managers.player:body_armor_value("skill_max_health_store", upgrade_level, 1)
 			local multiplier = managers.player:upgrade_value("player", "armor_max_health_store_multiplier", 1)
 			updated_texts[2].text = managers.localization:to_upper_text("bm_menu_armor_max_health_store", {
-				amount = format_round(amount * multiplier * tweak_data.gui.stats_present_multiplier)
+				amount = format_round(amount * multiplier --[[* tweak_data.gui.stats_present_multiplier]])
 			})
 			updated_texts[2].below_stats = true
 		end
@@ -4084,7 +4085,7 @@ function BlackMarketGui:update_info_text()
 
 		updated_texts[4].text = managers.localization:text(slot_data.name .. "_desc")
 	elseif identifier == self.identifiers.weapon_cosmetic then
-		updated_texts[1].text = managers.localization:to_upper_text("bm_menu_steam_item_name", {
+		updated_texts[1].text = managers.localization:text("bm_menu_steam_item_name", {
 			type = managers.localization:text("bm_menu_" .. slot_data.category),
 			name = slot_data.name_localized
 		})
@@ -4196,7 +4197,7 @@ function BlackMarketGui:update_info_text()
 		updated_texts[4].below_stats = true
 	elseif identifier == self.identifiers.inventory_tradable then
 		if slot_data.name ~= "empty" then
-			updated_texts[1].text = managers.localization:to_upper_text("bm_menu_steam_item_name", {
+			updated_texts[1].text = managers.localization:text("bm_menu_steam_item_name", {
 				type = managers.localization:text("bm_menu_" .. slot_data.category),
 				name = slot_data.name_localized
 			})
@@ -5877,7 +5878,7 @@ function BlackMarketGui:show_stats()
 
 				for name, column in pairs(self._stats_texts[stat.name]) do column:set_alpha(stat_changed and 1 or 0.5) end
 
-				local mag_override = tweak_parts and (tweak_parts.type=="magazine" or tweak_parts.type=="barrel" or tweak_parts.type=="exclusive_set") and stat.name=="magazine"
+				local mag_override = tweak_parts and (tweak_parts.type=="magazine" or tweak_parts.type=="barrel" or tweak_parts.type=="exclusive_set" and (tweak_parts.stats and not tweak_parts.stats.mag_ext)) and stat.name=="magazine"
 				equip_to_draw = (type(equip)=="number" or type(equip)=="number") and (equip==0 and "" or (equip>0 and ((stat.override or mag_override) and "=" or "+") or "")..format_round(equip, stat.round_value)) or format_round(equip, stat.round_value)
 				chosen_to_draw = (type(chosen)=="number" or type(chosen)=="number") and (chosen==0 and "" or (chosen>0 and ((stat.override or mag_override) and "=" or "+") or "")..format_round(chosen, stat.round_value)) or format_round(chosen, stat.round_value)
 
@@ -9018,4 +9019,694 @@ function BlackMarketGuiSlotItem:init(main_panel, data, x, y, w, h)
 
 	self:deselect(true)
 	self:set_highlight(false, true)
+end
+
+
+
+function BlackMarketGui:mouse_moved(o, x, y)
+	if managers.menu_scene and managers.menu_scene:input_focus() then
+		return false
+	end
+
+	if not self._enabled then
+		return
+	end
+
+	if self._renaming_item then
+		return true, "link"
+	end
+
+	if alive(self._no_input_panel) then
+		self._no_input = self._no_input_panel:inside(x, y) and self:input_focus() ~= true
+
+		if self._no_input then
+			return false, "arrow"
+		end
+	end
+
+	if alive(self._context_panel) then
+		local context_btns = self._context_panel:child("btns"):children()
+		local update_select = false
+
+		if not self._context_btn_selected then
+			update_select = true
+		elseif not context_btns[self._context_btn_selected]:inside(x, y) then
+			context_btns[self._context_btn_selected]:set_color(tweak_data.screen_colors.button_stage_3)
+
+			self._context_btn_selected = nil
+			update_select = true
+		end
+
+		if update_select then
+			for i, btn in ipairs(context_btns) do
+				if btn:inside(x, y) then
+					self._context_btn_selected = i
+
+					managers.menu_component:post_event("highlight")
+					btn:set_color(tweak_data.screen_colors.button_stage_2)
+
+					break
+				end
+			end
+		end
+
+		if self._context_btn_selected then
+			return true, "link"
+		end
+
+		local used = false
+		local pointer = "arrow"
+
+		if self._panel:child("back_button"):inside(x, y) then
+			used = true
+			pointer = "link"
+
+			if not self._back_button_highlighted then
+				self._back_button_highlighted = true
+
+				self._panel:child("back_button"):set_color(tweak_data.screen_colors.button_stage_2)
+				managers.menu_component:post_event("highlight")
+
+				return used, pointer
+			end
+		elseif self._back_button_highlighted then
+			self._back_button_highlighted = false
+
+			self._panel:child("back_button"):set_color(tweak_data.screen_colors.button_stage_3)
+		end
+
+		return used, pointer
+	end
+
+	if self._extra_options_data then
+		local used = false
+		local pointer = "arrow"
+		self._extra_options_data.selected = self._extra_options_data.selected or 1
+		local selected_slot = nil
+
+		for i = 1, self._extra_options_data.num_panels do
+			local option = self._extra_options_data[i]
+			local panel = option.panel
+			local image = option.image
+
+			if alive(panel) and panel:inside(x, y) then
+				if not option.highlighted then
+					option.highlighted = true
+				end
+
+				used = true
+				pointer = "link"
+			elseif option.highlighted then
+				option.highlighted = false
+			end
+
+			if alive(image) then
+				image:set_alpha((option.selected and 1 or 0.9) * (option.highlighted and 1 or 0.9))
+			end
+		end
+
+		if used then
+			return used, pointer
+		end
+	elseif self._steam_inventory_extra_data and alive(self._steam_inventory_extra_data.gui_panel) then
+		local used = false
+		local pointer = "arrow"
+		local extra_data = self._steam_inventory_extra_data
+
+		if extra_data.arrow_left:inside(x, y) then
+			if not extra_data.arrow_left_highlighted then
+				extra_data.arrow_left_highlighted = true
+
+				extra_data.arrow_left:set_color(tweak_data.screen_colors.button_stage_2)
+				managers.menu_component:post_event("highlight")
+			end
+
+			used = true
+			pointer = "link"
+		elseif extra_data.arrow_left_highlighted then
+			extra_data.arrow_left_highlighted = false
+
+			extra_data.arrow_left:set_color(tweak_data.screen_colors.button_stage_3)
+		end
+
+		if extra_data.arrow_right:inside(x, y) then
+			if not extra_data.arrow_right_highlighted then
+				extra_data.arrow_right_highlighted = true
+
+				extra_data.arrow_right:set_color(tweak_data.screen_colors.button_stage_2)
+				managers.menu_component:post_event("highlight")
+			end
+
+			used = true
+			pointer = "link"
+		elseif extra_data.arrow_right_highlighted then
+			extra_data.arrow_right_highlighted = false
+
+			extra_data.arrow_right:set_color(tweak_data.screen_colors.button_stage_3)
+		end
+
+		if used then
+			if alive(extra_data.bg) then
+				extra_data.bg:set_color(tweak_data.screen_colors.button_stage_2:with_alpha(0.2))
+				extra_data.bg:set_alpha(1)
+			end
+
+			return used, pointer
+		elseif alive(extra_data.bg) then
+			extra_data.bg:set_color(Color.black:with_alpha(0.5))
+		end
+	end
+
+	local inside_tab_area = self._tab_area_panel:inside(x, y)
+	local used = true
+	local pointer = inside_tab_area and self._highlighted == self._selected and "arrow" or "link"
+	local inside_tab_scroll = self._tab_scroll_panel:inside(x, y)
+	local update_select = false
+
+	if not self._highlighted then
+		update_select = true
+		used = false
+		pointer = "arrow"
+	elseif not inside_tab_scroll or self._tabs[self._highlighted] and not self._tabs[self._highlighted]:inside(x, y) then
+		self._tabs[self._highlighted]:set_highlight(not self._pages, not self._pages)
+
+		self._highlighted = nil
+		update_select = true
+		used = false
+		pointer = "arrow"
+	end
+
+	if update_select then
+		for i, tab in ipairs(self._tabs) do
+			update_select = inside_tab_scroll and tab:inside(x, y)
+
+			if update_select then
+				self._highlighted = i
+
+				self._tabs[self._highlighted]:set_highlight(self._selected ~= self._highlighted)
+
+				used = true
+				pointer = self._highlighted == self._selected and "arrow" or "link"
+			end
+		end
+	end
+
+	if self._tabs[self._selected] then
+		local tab_used, tab_pointer = self._tabs[self._selected]:mouse_moved(x, y)
+
+		if tab_used then
+			local x, y = self._tabs[self._selected]:selected_slot_center()
+
+			self._select_rect:set_world_center(x, y)
+			self._select_rect:stop()
+			self._select_rect_box:set_color(Color.white)
+			self._select_rect:set_visible(self._tabs[self._selected]._grid_panel:top() < y and y < self._tabs[self._selected]._grid_panel:bottom() and self._selected_slot and self._selected_slot._name ~= "empty")
+
+			used = tab_used
+			pointer = tab_pointer
+		end
+	end
+
+	if self._market_bundles then
+		local active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+		if active_bundle then
+			for key, data in pairs(active_bundle) do
+				if key ~= "panel" and (alive(data.text) and data.text:inside(x, y) or alive(data.image) and data.image:inside(x, y)) then
+					if not data.highlighted then
+						data.highlighted = true
+
+						if alive(data.image) then
+							data.image:set_alpha(1)
+						end
+
+						if alive(data.text) then
+							data.text:set_color(tweak_data.screen_colors.button_stage_2)
+						end
+
+						managers.menu_component:post_event("highlight")
+					end
+
+					if not used then
+						used = true
+						pointer = "link"
+					end
+				elseif data.highlighted then
+					data.highlighted = false
+
+					if alive(data.image) then
+						data.image:set_alpha(0.9)
+					end
+
+					if alive(data.text) then
+						data.text:set_color(tweak_data.screen_colors.button_stage_3)
+					end
+				end
+			end
+		end
+
+		if self._market_bundles.arrow_left then
+			if self._market_bundles.arrow_left:inside(x, y) then
+				if not self._market_bundles.arrow_left_highlighted then
+					self._market_bundles.arrow_left_highlighted = true
+
+					managers.menu_component:post_event("highlight")
+					self._market_bundles.arrow_left:set_color(tweak_data.screen_colors.button_stage_2)
+				end
+
+				if not used then
+					used = true
+					pointer = "link"
+				end
+			elseif self._market_bundles.arrow_left_highlighted then
+				self._market_bundles.arrow_left_highlighted = false
+
+				self._market_bundles.arrow_left:set_color(tweak_data.screen_colors.button_stage_3)
+			end
+		end
+
+		if self._market_bundles.arrow_right then
+			if self._market_bundles.arrow_right:inside(x, y) then
+				if not self._market_bundles.arrow_right_highlighted then
+					self._market_bundles.arrow_right_highlighted = true
+
+					managers.menu_component:post_event("highlight")
+					self._market_bundles.arrow_right:set_color(tweak_data.screen_colors.button_stage_2)
+				end
+
+				if not used then
+					used = true
+					pointer = "link"
+				end
+			elseif self._market_bundles.arrow_right_highlighted then
+				self._market_bundles.arrow_right_highlighted = false
+
+				self._market_bundles.arrow_right:set_color(tweak_data.screen_colors.button_stage_3)
+			end
+		end
+	end
+
+	if self._panel:child("back_button"):inside(x, y) then
+		used = true
+		pointer = "link"
+
+		if not self._back_button_highlighted then
+			self._back_button_highlighted = true
+
+			self._panel:child("back_button"):set_color(tweak_data.screen_colors.button_stage_2)
+			managers.menu_component:post_event("highlight")
+
+			return used, pointer
+		end
+	elseif self._back_button_highlighted then
+		self._back_button_highlighted = false
+
+		self._panel:child("back_button"):set_color(tweak_data.screen_colors.button_stage_3)
+	end
+
+	update_select = false
+
+	if not self._button_highlighted then
+		update_select = true
+	elseif self._btns[self._button_highlighted] and not self._btns[self._button_highlighted]:inside(x, y) then
+		self._btns[self._button_highlighted]:set_highlight(false)
+
+		self._button_highlighted = nil
+		update_select = true
+	end
+
+	if update_select then
+		for i, btn in pairs(self._btns) do
+			if not self._button_highlighted and btn:visible() and btn:inside(x, y) then
+				self._button_highlighted = i
+
+				btn:set_highlight(true)
+			else
+				btn:set_highlight(false)
+			end
+		end
+	end
+
+	if self._button_highlighted then
+		used = true
+		pointer = "link"
+	end
+
+	if self._tab_scroll_table.left and self._tab_scroll_table.left_klick then
+		local color = nil
+
+		if self._tab_scroll_table.left:inside(x, y) then
+			color = tweak_data.screen_colors.button_stage_2
+			used = true
+			pointer = "link"
+		else
+			color = tweak_data.screen_colors.button_stage_3
+		end
+
+		self._tab_scroll_table.left:set_color(color)
+	end
+
+	if self._tab_scroll_table.right and self._tab_scroll_table.right_klick then
+		local color = nil
+
+		if self._tab_scroll_table.right:inside(x, y) then
+			color = tweak_data.screen_colors.button_stage_2
+			used = true
+			pointer = "link"
+		else
+			color = tweak_data.screen_colors.button_stage_3
+		end
+
+		self._tab_scroll_table.right:set_color(color)
+	end
+
+	if self._rename_info_text then
+		local text_button = self._info_texts and self._info_texts[self._rename_info_text]
+
+		if text_button then
+			if self._slot_data and text_button:inside(x, y) then
+				if not self._rename_highlight then
+					self._rename_highlight = true
+
+					text_button:set_blend_mode("add")
+					text_button:set_color(tweak_data.screen_colors.button_stage_2)
+
+					local bg = self._info_texts_bg[self._rename_info_text]
+
+					if alive(bg) then
+						bg:set_visible(true)
+						bg:set_color(tweak_data.screen_colors.button_stage_3)
+					end
+
+					managers.menu_component:post_event("highlight")
+				end
+
+				used = true
+				pointer = "link"
+			elseif self._rename_highlight then
+				self._rename_highlight = false
+
+				text_button:set_blend_mode("normal")
+				text_button:set_color(tweak_data.screen_colors.text)
+
+				local bg = self._info_texts_bg[self._rename_info_text]
+
+				if alive(bg) then
+					bg:set_visible(false)
+					bg:set_color(Color.black)
+				end
+			end
+		end
+	end
+
+	return used, pointer
+end
+
+function BlackMarketGui:mouse_pressed(button, x, y)
+	if alive(self._context_panel) and not self._context_panel:inside(x, y) then
+		self:destroy_context_menu()
+	end
+
+	if managers.menu_scene and managers.menu_scene:input_focus() then
+		return false
+	end
+
+	if not self._enabled then
+		return
+	end
+
+	if self._renaming_item then
+		self:_stop_rename_item()
+
+		return
+	end
+
+	if self._no_input then
+		return
+	end
+
+	if alive(self._context_panel) then
+		if self._context_btn_selected and button == Idstring("0") then
+			local data = self._visible_btns[self._context_btn_selected]._data
+
+			if data.callback then
+				managers.menu_component:post_event("menu_enter")
+				data.callback(self._slot_data, self._data.topic_params)
+			end
+
+			self:destroy_context_menu()
+		end
+
+		return
+	end
+
+	if self._extra_options_data then
+		local selected_slot = nil
+
+		if button == Idstring("0") or button == Idstring("1") then
+			self._extra_options_data.selected = self._extra_options_data.selected or 1
+
+			for i = 1, self._extra_options_data.num_panels do
+				local option = self._extra_options_data[i]
+				local panel = option.panel
+
+				if alive(panel) and panel:inside(x, y) then
+					selected_slot = i
+
+					break
+				end
+			end
+		end
+
+		if selected_slot then
+			self._extra_options_data.selected = selected_slot
+
+			for i = 1, self._extra_options_data.num_panels do
+				local option = self._extra_options_data[i]
+				local box = option.box
+				local image = option.image
+				local selected = i == selected_slot
+
+				if alive(box) then
+					if selected and not option.selected then
+						option.selected = true
+
+						self:show_btns(self._selected_slot)
+						self:_update_borders()
+						self:update_info_text()
+						managers.menu_component:post_event("highlight")
+					elseif not selected then
+						option.selected = false
+					end
+
+					box:set_visible(selected)
+				end
+
+				if alive(image) then
+					image:set_alpha((option.selected and 1 or 0.9) * (option.highlighted and 1 or 0.9))
+				end
+			end
+
+			return
+		end
+	elseif self._steam_inventory_extra_data and button == Idstring("0") and alive(self._steam_inventory_extra_data.gui_panel) and not self._input_wait_t then
+		local extra_data = self._steam_inventory_extra_data
+
+		if Global.blackmarket_manager.tradable_inventory_sort > 1 and extra_data.arrow_left:inside(x, y) then
+			Global.blackmarket_manager.tradable_inventory_sort = math.max(Global.blackmarket_manager.tradable_inventory_sort - 1, 1)
+
+			extra_data.choice_text:set_text(extra_data.choices[Global.blackmarket_manager.tradable_inventory_sort or 1])
+
+			self._reload_in_t = 0.8
+			self._input_wait_t = 0.2
+
+			managers.menu:active_menu().renderer:disable_input(0.2)
+			managers.menu_component:post_event("menu_enter")
+
+			return
+		end
+
+		if Global.blackmarket_manager.tradable_inventory_sort < #tweak_data.gui.tradable_inventory_sort_list and extra_data.arrow_right:inside(x, y) then
+			Global.blackmarket_manager.tradable_inventory_sort = math.min(Global.blackmarket_manager.tradable_inventory_sort + 1, #tweak_data.gui.tradable_inventory_sort_list)
+
+			extra_data.choice_text:set_text(extra_data.choices[Global.blackmarket_manager.tradable_inventory_sort or 1])
+
+			self._reload_in_t = 0.8
+			self._input_wait_t = 0.2
+
+			managers.menu:active_menu().renderer:disable_input(0.2)
+			managers.menu_component:post_event("menu_enter")
+
+			return
+		end
+	end
+
+	local holding_shift = false
+	local scroll_button_pressed = button == Idstring("mouse wheel up") or button == Idstring("mouse wheel down")
+	local inside_tab_area = self._tab_area_panel:inside(x, y) or self._data.scroll_tab_anywhere
+
+	if inside_tab_area then
+		if button == Idstring("mouse wheel down") then
+			self:next_page(true)
+
+			return
+		elseif button == Idstring("mouse wheel up") then
+			self:previous_page(true)
+
+			return
+		end
+	elseif self._tabs[self._selected] and scroll_button_pressed then
+		local selected_slot = self._tabs[self._selected]:mouse_pressed(button, x, y)
+
+		self:on_slot_selected(selected_slot)
+
+		if selected_slot then
+			return
+		end
+	end
+
+	if button ~= Idstring("0") or button == Idstring("1") then
+		return
+	end
+
+	if self._panel:child("back_button"):inside(x, y) then
+		managers.menu:back(true)
+
+		return
+	end
+
+	if self._tab_scroll_table.left_klick and self._tab_scroll_table.left:inside(x, y) then
+		self:previous_page()
+
+		return
+	end
+
+	if self._tab_scroll_table.right_klick and self._tab_scroll_table.right:inside(x, y) then
+		self:next_page()
+
+		return
+	end
+
+	if self._market_bundles then
+		local active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+		if active_bundle then
+			if active_bundle.safe.text:inside(x, y) or active_bundle.safe.image:inside(x, y) then
+				managers.menu:open_node("inventory_tradable_container_show", {
+					{
+						container = {
+							show_only = true,
+							content = active_bundle.safe.entry,
+							drill = active_bundle.drill.entry,
+							safe = active_bundle.safe.entry,
+							num_bundles = self._market_bundles.num_bundles,
+							active_market_bundle = self._data.active_market_bundle,
+							market_bundles = self._market_bundles.market_bundles
+						}
+					}
+				})
+				managers.menu_component:post_event("menu_enter")
+
+				return
+			end
+
+			if active_bundle.drill.text and active_bundle.drill.text:inside(x, y) or active_bundle.drill.image and active_bundle.drill.image:inside(x, y) then
+				MenuCallbackHandler:steam_buy_drill(nil, {
+					drill = active_bundle.drill.entry
+				})
+				managers.menu_component:post_event("menu_enter")
+
+				return
+			end
+		end
+
+		if self._market_bundles.arrow_left and self._market_bundles.arrow_left:inside(x, y) then
+			local active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+			active_bundle.panel:hide()
+
+			self._data.active_market_bundle = self._data.active_market_bundle - 1
+
+			if self._data.active_market_bundle == 0 then
+				self._data.active_market_bundle = self._market_bundles.num_bundles
+			end
+
+			active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+			active_bundle.panel:show()
+			managers.menu_component:post_event("menu_enter")
+
+			return
+		end
+
+		if self._market_bundles.arrow_right and self._market_bundles.arrow_right:inside(x, y) then
+			local active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+			active_bundle.panel:hide()
+
+			self._data.active_market_bundle = self._data.active_market_bundle % self._market_bundles.num_bundles + 1
+			active_bundle = self._market_bundles[self._data.active_market_bundle]
+
+			active_bundle.panel:show()
+			managers.menu_component:post_event("menu_enter")
+
+			return
+		end
+	end
+
+	if self._selected_slot and self._selected_slot._equipped_rect then
+		self._selected_slot._equipped_rect:set_alpha(1)
+	end
+
+	if self._tab_scroll_panel:inside(x, y) and self._tabs[self._highlighted] and self._tabs[self._highlighted]:inside(x, y) ~= 1 then
+		if self._selected ~= self._highlighted then
+			self:set_selected_tab(self._highlighted)
+		end
+
+		return
+	elseif self._tabs[self._selected] then
+		local selected_slot = self._tabs[self._selected]:mouse_pressed(button, x, y)
+
+		self:on_slot_selected(selected_slot)
+
+		if selected_slot then
+			return
+		end
+	end
+
+	if self._rename_info_text then
+		local text_button = self._info_texts and self._info_texts[self._rename_info_text]
+
+		if self._slot_data and text_button and text_button:inside(x, y) then
+			if managers.menu:is_steam_controller() then
+				self:rename_item_with_gamepad_callback(self._slot_data)
+			else
+				local category = self._slot_data.category
+				local slot = self._slot_data.slot
+
+				self:_start_rename_item(category, slot)
+			end
+
+			return
+		end
+	end
+
+	if self._btns[self._button_highlighted] and self._btns[self._button_highlighted]:inside(x, y) then
+		local data = self._btns[self._button_highlighted]._data
+
+		if data.callback and (not self._button_press_delay or self._button_press_delay < TimerManager:main():time()) then
+			managers.menu_component:post_event("menu_enter")
+			data.callback(self._slot_data, self._data.topic_params)
+
+			self._button_press_delay = TimerManager:main():time() + 0.2
+		end
+	end
+
+	if self._selected_slot and self._selected_slot._equipped_rect then
+		self._selected_slot._equipped_rect:set_alpha(0.6)
+	end
+
+	if _G.IS_VR and button == Idstring("0") and self._selected_slot._panel:inside(x, y) then
+		self:press_first_btn(button)
+	end
 end

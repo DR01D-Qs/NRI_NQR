@@ -15,9 +15,7 @@ CopDamage._hurt_severities = {
 
 
 
-Hooks:PostHook( CopDamage, "_comment_death", "nqr_CopDamage:_comment_death", function(self, attacker, killed_unit, special_comment)
-	if attacker==managers.player:player_unit() then return end
-end)
+function CopDamage:_comment_death(...) end
 
 
 
@@ -156,7 +154,6 @@ function CopDamage:damage_simple(attack_data)
 		self:chk_killshot(attacker_unit, "shock", false, attack_data.weapon_unit and attack_data.weapon_unit:base():get_name_id())
 
 		if attacker_unit == managers.player:player_unit() then
-			self:_show_death_hint(self._unit:base()._tweak_table)
 			managers.statistics:killed(data)
 
 			if is_civilian then
@@ -485,7 +482,6 @@ function CopDamage:damage_melee(attack_data)
 		managers.statistics:killed_by_anyone(data)
 
 		if attack_data.attacker_unit == managers.player:player_unit() then
-			self:_show_death_hint(self._unit:base()._tweak_table)
 			managers.statistics:killed(data)
 
 			if not is_civlian and managers.groupai:state():whisper_mode() and managers.blackmarket:equipped_mask().mask_id == tweak_data.achievement.cant_hear_you_scream.mask then
@@ -729,10 +725,6 @@ function CopDamage:damage_bullet(attack_data)
 		end
 
 		if attack_data.attacker_unit == managers.player:player_unit() then
-			local special_comment = self:_check_special_death_conditions(attack_data.variant, attack_data.col_ray.body, attack_data.attacker_unit, attack_data.weapon_unit)
-
-			self:_show_death_hint(self._unit:base()._tweak_table)
-
 			local attacker_state = managers.player:current_state()
 			data.attacker_state = attacker_state
 
@@ -898,7 +890,6 @@ function CopDamage:damage_explosion(attack_data)
 		self:chk_killshot(attacker_unit, "explosion", false, attack_data.weapon_unit and attack_data.weapon_unit:base():get_name_id())
 
 		if attacker_unit == managers.player:player_unit() then
-			self:_show_death_hint(self._unit:base()._tweak_table)
 			managers.statistics:killed(data)
 
 			if is_civilian then

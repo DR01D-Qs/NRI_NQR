@@ -69,6 +69,153 @@ end
 
 
 
+function BlackMarketManager:_get_weapon_stats(weapon_id, blueprint, cosmetics)
+	local factory_id = managers.weapon_factory:get_factory_id_by_weapon_id(weapon_id)
+	local weapon_tweak_data = tweak_data.weapon[weapon_id] or {}
+	local weapon_stats = managers.weapon_factory:get_stats(factory_id, blueprint)
+	local bonus_stats = {}
+
+	for stat, value in pairs(weapon_tweak_data.stats) do
+		local _stat = weapon_tweak_data.stats[stat]
+
+		if type(_stat) == "number" then
+			weapon_stats[stat] = (weapon_stats[stat] or 0) + _stat
+		elseif type(_stat) == "table" then
+			local total = 0
+
+			for _, v in ipairs(_stat) do
+				total = total + v
+			end
+
+			total = total / #_stat
+			weapon_stats[stat] = (weapon_stats[stat] or 0) + total
+		end
+	end
+
+	return weapon_stats
+end
+
+function BlackMarketManager:get_weapon_icon_path(weapon_id, cosmetics)
+	local akimbo_gui_data = tweak_data.weapon[weapon_id] and tweak_data.weapon[weapon_id].akimbo_gui_data
+	local use_cosmetics = cosmetics and cosmetics.id and cosmetics.id ~= "nil" and true or false
+	local data = use_cosmetics and tweak_data.blackmarket.weapon_skins or tweak_data.weapon
+	local id = use_cosmetics and cosmetics.id or akimbo_gui_data and akimbo_gui_data.weapon_id or weapon_id
+	local path = use_cosmetics and "weapon_skins/" or "textures/pd2/blackmarket/icons/weapons/"
+	local weapon_tweak = data and id and data[id]
+	local texture_path, rarity_path = nil
+
+	if weapon_tweak then
+		local guis_catalog = "guis/"
+		local bundle_folder = weapon_tweak.texture_bundle_folder
+
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/"
+
+			if use_cosmetics then
+				guis_catalog = guis_catalog .. "cash/safes/"
+			end
+
+			guis_catalog = guis_catalog .. tostring(bundle_folder) .. "/"
+		end
+
+		local texture_name = nil
+
+		if use_cosmetics then
+			local skin_data = tweak_data.blackmarket.weapon_skins[cosmetics.id]
+			local is_cosmetic_base_weapon_id = skin_data.weapon_id == weapon_id
+
+			--if is_cosmetic_base_weapon_id then
+				texture_name = cosmetics.id .. (string.find(weapon_id or "", "x_") and ("_" .. weapon_id) or "")
+			--else
+			--	texture_name = cosmetics.id .. "_" .. weapon_id
+			--end
+		elseif not weapon_tweak.texture_name then
+			texture_name = tostring(id)
+		end
+
+		texture_path = guis_catalog .. path .. texture_name
+
+		if use_cosmetics then
+			if weapon_tweak.color then
+				rarity_path = "guis/dlcs/wcs/textures/pd2/blackmarket/icons/rarity_color"
+				texture_path = self:get_weapon_icon_path(weapon_id, nil)
+			else
+				local rarity = weapon_tweak.rarity or "common"
+				rarity_path = tweak_data.economy.rarities[rarity] and tweak_data.economy.rarities[rarity].bg_texture
+			end
+		end
+	end
+
+	return texture_path, rarity_path
+end
+
+function BlackMarketManager:set_crafted_custom_name(category, slot, custom_name)
+	local crafted_slot = self:get_crafted_category_slot(category, slot)
+
+	if crafted_slot.locked_name then
+		--return
+	end
+
+	crafted_slot.custom_name = custom_name ~= "" and custom_name
+end
+
+function BlackMarketManager:get_crafted_custom_name(category, slot, add_quotation)
+	local crafted_slot = self:get_crafted_category_slot(category, slot)
+	local cosmetics = crafted_slot and crafted_slot.cosmetics
+
+	if cosmetics and cosmetics.id and tweak_data.blackmarket.weapon_skins[cosmetics.id] and tweak_data.blackmarket.weapon_skins[cosmetics.id].unique_name_id then
+		--return
+	end
+
+	local custom_name = crafted_slot and crafted_slot.custom_name
+
+	if custom_name then
+		if add_quotation then
+			return "\"" .. custom_name .. "\""
+		end
+
+		return custom_name
+	end
+end
+
+function BlackMarketManager:get_weapon_name_by_category_slot(category, slot)
+	if category == "primaries" then
+		local forced_primary = self:forced_primary()
+
+		if forced_primary then
+			return managers.weapon_factory:get_weapon_name_by_factory_id(forced_primary.factory_id)
+		end
+	else
+		local forced_secondary = self:forced_secondary()
+
+		if forced_secondary then
+			return managers.weapon_factory:get_weapon_name_by_factory_id(forced_secondary.factory_id)
+		end
+	end
+
+	local crafted_slot = self:get_crafted_category_slot(category, slot)
+
+	if crafted_slot then
+		local cosmetics = crafted_slot.cosmetics
+		local cosmetic_name = cosmetics and cosmetics.id and tweak_data.blackmarket.weapon_skins[cosmetics.id] and tweak_data.blackmarket.weapon_skins[cosmetics.id].unique_name_id and managers.localization:text(tweak_data.blackmarket.weapon_skins[cosmetics.id].unique_name_id)
+		local custom_name = crafted_slot.custom_name or cosmetic_name
+
+		if custom_name then
+			return "\"" .. custom_name .. "\""
+		end
+
+		if cosmetic_name and crafted_slot.locked_name then
+			return utf8.to_upper(cosmetic_name)
+		end
+
+		return managers.weapon_factory:get_weapon_name_by_factory_id(crafted_slot.factory_id)
+	end
+
+	return ""
+end
+
+
+
 function BlackMarketManager:weapon_unlocked(weapon_id)
 	local data = Global.blackmarket_manager.weapons[weapon_id]
 

@@ -39,6 +39,8 @@
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c_pts\wpn_fps_pis_g18c_m_mag_17rnd" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g18c_pts\wpn_fps_pis_g18c_m_mag_33rnd" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_pis_g22c_pts\wpn_fps_pis_g22c_b_long" force="true"/>
+	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_b_short" force="true"/>
+	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_b_long" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_big" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_railed" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_shot_r870_pts\wpn_fps_shot_r870_fg_small" force="true"/>
@@ -116,6 +118,8 @@
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_hamr\wpn_fps_upg_o_hamr" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_upg_ak_mod_pts\wpn_fps_upg_ak_body_upperreceiver_zenitco" force="true"/>
 	<model path="units\pd2_dlc_osa\weapons\wpn_fps_pis_x_g18c\wpn_fps_pis_x_g18c" force="true"/>
+	<model path="units\pd2_dlc_osa\weapons\wpn_fps_smg_x_cobray\wpn_fps_smg_x_cobray" force="true"/>
+	<object path="units\pd2_dlc_osa\weapons\wpn_fps_smg_x_cobray\wpn_fps_smg_x_cobray" force="true"/>
 	<model path="units\pd2_dlc_par\weapons\wpn_fps_lmg_par_pts\wpn_fps_lmg_par_upper_reciever" force="true"/>
 	<model path="units\pd2_dlc_pim\weapons\wpn_fps_snp_desertfox\wpn_fps_snp_desertfox" force="true"/>
 	<model path="units\pd2_dlc_pim\weapons\wpn_fps_snp_desertfox_pts\wpn_fps_snp_desertfox_b_long" force="true"/>
@@ -164,6 +168,7 @@
 	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_dh_hera" force="true"/>
 	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_dh_standard" force="true"/>
 	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_s_hera" force="true"/>
+	<model path="units\payday2_cash\safes\lones\weapons\wpn_fps_ass_m14_legendary_pts\wpn_fps_ass_m14_body_upper_legendary" force="true"/>
 
 
 
@@ -171,6 +176,7 @@
 	<object path="units/pd2_dlc_spa/weapons/wpn_npc_svd_silenced/wpn_npc_svd_silenced" force="true"/>
 	<object path="units/pd2_dlc_mad/weapons/wpn_npc_svd/wpn_npc_svd" force="true"/>
 	<object path="units/pd2_dlc_usm1/weapons/wpn_npc_dmr/wpn_npc_dmr" force="true"/>
+	<material_config path="units/payday2/weapons/wpn_fps_upg_o_eotech/wpn_fps_upg_o_eotech" force="true"/>
 	<material_config path="units/pd2_dlc_pxp3/weapons/wpn_fps_upg_o_northtac/wpn_fps_upg_o_northtac_reddot" force="true"/>
 	<material_config path="units/pd2_dlc_pxp3/weapons/wpn_fps_upg_o_northtac/wpn_fps_upg_o_northtac_reddot_thq" force="true"/>
 	<material_config path="units/pd2_dlc_pxp3/weapons/wpn_fps_upg_o_northtac/wpn_fps_upg_o_northtac_reddot_cc" force="true"/>
@@ -180,6 +186,8 @@
 	<object path="units/pd2_dlc_pxp3/weapons/wpn_fps_upg_o_northtac/wpn_fps_upg_o_northtac_scope" force="true"/>
 	<material_config path="units/pd2_dlc_gage_jobs/weapons/wpn_fps_upg_o_cs/wpn_fps_upg_o_cs" force="true"/>
 	<material_config path="units/pd2_dlc_mxm/weapons/wpn_fps_upg_o_atibal/wpn_fps_upg_o_atibal_reddot" force="true"/>
+	<material_config path="units/pd2_dlc_mxm/weapons/wpn_fps_upg_o_atibal/wpn_fps_upg_o_atibal_reddot_cc" force="true"/>
+	<material_config path="units/pd2_dlc_mxm/weapons/wpn_fps_upg_o_atibal/wpn_fps_upg_o_atibal_reddot_cc_thq" force="true"/>
 	<material_config path="units/pd2_dlc_gage_historical/weapons/wpn_fps_pis_c96_pts/wpn_fps_pis_c96_sight" force="true"/>
 
 	<effect path="effects/particles/weapons/sniper_glint_marshal" force="true"/>
@@ -204,6 +212,10 @@
 	<unit path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp" load="true"/>
 	<model path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp" />
 	<object path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp" />
+	<material_config path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp" />
+	<material_config path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp_thq" />
+	<material_config path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp_cc" />
+	<material_config path="units/pd2_dlc_pim/weapons/wpn_fps_snp_desertfox_pts/wpn_fps_snp_desertfox_ns_comp_cc_thq" />
 
 	<unit path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_m_short" load="true"/>
 	<model path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_m_short" />
@@ -217,6 +229,10 @@
 	<unit path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp" load="true"/>
 	<model path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp" />
 	<object path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp" />
+	<material_config path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp" />
+	<material_config path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp_thq" />
+	<material_config path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp_cc" />
+	<material_config path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_ns_supp_cc_thq" />
 
 	<object path="units/pd2_dlc_casino/weapons/wpn_fps_ass_sub2000_pts/wpn_fps_ass_sub2000_fg_gen1" force="true"/>
 

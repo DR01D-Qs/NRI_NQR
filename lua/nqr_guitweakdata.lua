@@ -24,7 +24,7 @@ Hooks:PostHook( GuiTweakData, "init", "nqr_guitweakdata", function(self)
 		}
 	}
 
-	self.stats_present_multiplier = 1
+	--self.stats_present_multiplier = 1
 
 	--self.mod_preview_min_fov = -30
 	--self.mod_preview_max_fov = 10

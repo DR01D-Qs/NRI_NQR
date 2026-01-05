@@ -615,7 +615,10 @@ function RaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul
 			if hit_unit and hit_unit.attack_data and hit_unit.attack_data.penetration then penetration = hit_unit.attack_data.penetration end
 
 			local is_shield = col_ray.unit:in_slot(8)-- and alive(col_ray.unit:parent())
-			local is_wall = col_ray.unit:in_slot(managers.slot:get_mask("world_geometry"))
+			local is_wall = (
+				col_ray.unit:in_slot(managers.slot:get_mask("world_geometry"))
+				or col_ray.unit:in_slot(14, 17)
+			)
 
 			if is_shield then
 				local is_swat = col_ray.unit:name()==Idstring("units/payday2/characters/ene_acc_shield_small/shield_small")

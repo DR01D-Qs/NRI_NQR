@@ -216,6 +216,8 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		["akmsu_crew"] = "units/payday2/weapons/wpn_fps_smg_akmsu/wpn_fps_smg_akmsu_npc",
 		["tecci"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci",
 		["tecci_crew"] = "units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci/wpn_fps_ass_tecci_npc",
+		["serbu"] = "units/payday2/weapons/wpn_fps_shot_shorty/wpn_fps_shot_shorty",
+		["serbu_crew"] = "units/payday2/weapons/wpn_fps_shot_shorty/wpn_fps_shot_shorty_npc",
 		["glock_17"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17",
 		["glock_17_crew"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17_npc",
 		["g22c"] = "units/payday2/weapons/wpn_fps_pis_g22c/wpn_fps_pis_g22c",
@@ -604,6 +606,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	--self._recoil = ( (self._result_energy/(math.sqrt(self._weight)))*(1+(self._rise_factor/5)) ) * action_factor * stock_factor * md_comp * (1+(self._kick*0.1)) * 0.005
 	self._recoil = tweak_data.weapon:nqr_rise(self._ammotype_data, self._barrel_length, self._weight, self._name_id) * stock_factor * md_comp * (1+(self._kick*0.1))
 	self._kick = self._kick * (2-((md_flash^2) * (md_supp~=1 and ((2-md_supp)^0.2) or md_brake) * (md_can^2)))
+	self._shake_mul = 1
 	if wep_tweak.recoilless then self._recoil = 0.5 self._kick = 0.5 end
 	self._penetration = (
 		(self._result_energy/proj_amount)
@@ -672,6 +675,9 @@ end
 --RETICLE OBJ FOR EVERY SIGHT, BLANK_SIGHT
 function NewRaycastWeaponBase:_check_reticle_obj()
 	self._reticle_obj = nil
+
+	if self.AKIMBO then return end
+
 	local part = managers.weapon_factory:get_part_from_weapon_by_type("sight", self._parts)
 
 	if part then
@@ -1306,7 +1312,7 @@ end
 
 --ANIM PLAY: OFFSET ARGUMENT, DONT_PLAY ARGUMENT
 function NewRaycastWeaponBase:tweak_data_anim_play(anim, speed_multiplier, offsetq, dont_play, skip_sao_check)
-	--managers.mission._fading_debug_output:script().log(tostring(anim).." "..tostring(speed_multiplier),  Color.white)
+	--managers.mission._fading_debug_output:script().log(tostring(anim).." "..tostring(offsetq),  Color.white)
 
 	if not skip_sao_check and self:weapon_tweak_data().sao and anim=="fire" and dont_play then
 		self:tweak_data_anim_stop("fire", true)
@@ -1415,6 +1421,8 @@ function NewRaycastWeaponBase:tweak_data_anim_stop(anim, skip_sao_check)
 	NewRaycastWeaponBase.super.tweak_data_anim_stop(self, orig_anim)
 end
 function NewRaycastWeaponBase:tweak_data_anim_pause(anim, offset, second)
+	--managers.mission._fading_debug_output:script().log(tostring(anim).." "..tostring(offset),  Color.white)
+
 	local unit_anim = anim
 	local data = tweak_data.weapon.factory[self._factory_id]
 	local selfcsc = (second and alive(self._second_gun)) and self._second_gun:base() or self
@@ -1476,8 +1484,9 @@ function NewRaycastWeaponBase:do_magdrop(fresh_mag)
 	end
 
 	local amount_to_deduct = fresh_mag and self:get_ammo_max_per_clip() or (math.max(self:get_ammo_remaining_in_clip()-self:get_chamber(), 0))
-	self:set_ammo_total(math.max(self:get_ammo_total()-amount_to_deduct, 0))
-	self:set_ammo_remaining_in_clip(math.min(self:get_chamber(), self:get_ammo_remaining_in_clip()))
+	local ammo_clip = math.min(self:get_chamber(), self:get_ammo_remaining_in_clip())
+	self:set_ammo_total(math.max(self:get_ammo_total()-amount_to_deduct, ammo_clip))
+	self:set_ammo_remaining_in_clip(ammo_clip)
 	managers.hud:set_ammo_amount(self:selection_index(), self:ammo_info())
 
 	--managers.mission._fading_debug_output:script().log(tostring("csc"), Color.white)

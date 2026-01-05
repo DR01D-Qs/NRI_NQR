@@ -274,6 +274,7 @@ function WeaponFactoryManager:get_stance_mod(factory_id, blueprint, using_second
 							and not (part.type=="extra" and using_stance_mod)
 							and not (not has_main_sight and not is_ironsight and not using_second_sight)
 						) then
+							--managers.mission._fading_debug_output:script().log(tostring(part_id).." "..tostring(part_translation), Color.white)
 							mvector3.add(translation, part_translation)
 						end
 					end
