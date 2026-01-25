@@ -54,6 +54,75 @@ local DEFAULT_CUSTOMIZE_MASK_BLUEPRINT = {
 
 
 
+function BlackMarketManager:get_part_custom_colors(category, slot, part_id, require_existing)
+	if require_existing == nil then
+		require_existing = false
+	end
+
+	local part_tweak = tweak_data.weapon.factory.parts[part_id] or {}
+	local is_gadget = (part_tweak.type=="gadget" or table.contains(part_tweak.perks or {}, "gadget") or part_tweak.sub_type=="laser" or part_tweak.sub_type=="flashlight")
+	for i, k in pairs(part_tweak.adds or {}) do
+		local added_part = tweak_data.weapon.factory.parts[k]
+		if added_part and added_part.sub_type=="flashlight" or added_part.sub_type=="laser" then is_gadget = true end
+	end
+
+	local gadget_power = part_tweak and part_tweak.stats and part_tweak.stats.gadget_power or {}
+	local ls_color = (gadget_power.laser or 1)*0.3
+	local fl_color = (gadget_power.flashlight or 1)*0.4+0.2
+	local default_colors = {
+		laser = Color(0, ls_color, 0),
+		flashlight = Color(fl_color, fl_color, fl_color),
+	}
+
+	if not self._global.nqr_reset_custom_colors then
+		for i, k in pairs(self._global.crafted_items or {}) do
+			for u, j in pairs(k or {}) do
+				for y, h in pairs(j.custom_colors or {}) do
+					self._global.crafted_items[i][u].custom_colors[y] = nil
+					managers.blackmarket:set_part_custom_colors(category, slot, part_id, default_colors)
+				end
+			end
+		end
+		self._global.nqr_reset_custom_colors = true
+		log("nqr_reset_custom_colors")
+	end
+
+	local crafted_category = self._global.crafted_items[category]
+	local crafted_item = crafted_category and crafted_category[slot]
+	local custom_colors = crafted_item and crafted_item.custom_colors
+
+	if custom_colors and custom_colors[part_id] then
+		local colors = self:get_custom_colors_from_string(custom_colors and custom_colors[part_id])
+		local sub_types = {}
+
+		if part_tweak.sub_type then
+			sub_types[part_tweak.sub_type] = true
+		end
+
+		if part_tweak.adds then
+			for _, added_part_id in pairs(part_tweak.adds) do
+				local added_part_tweak = tweak_data.weapon.factory.parts[part_id]
+
+				if added_part_tweak.sub_type then
+					sub_types[added_part_tweak.sub_type] = true
+				end
+			end
+		end
+
+		for sub_type, _ in pairs(sub_types) do
+			colors[sub_type] = colors[sub_type] or tweak_data.custom_colors.defaults[sub_type]
+		end
+
+		return colors
+	--elseif not require_existing then
+	elseif is_gadget then
+		--Utils.PrintTable(default_colors, 3)
+		return default_colors
+	end
+end
+
+
+
 local ALLOWED_CREW_WEAPON_CATEGORIES = {
 	smg = true,
 	assault_rifle = true,

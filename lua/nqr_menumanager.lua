@@ -423,6 +423,220 @@ function MenuManager:show_confirm_blackmarket_mod(params)
 	managers.system_menu:show(dialog_data)
 end
 
+MenuCustomizeGadgetInitiator = MenuCustomizeGadgetInitiator or class(MenuCrimeNetSpecialInitiator)
+local padding = 10
+--[[function MenuNodeCustomizeGadgetGui:setup(node)
+	local l_hue = node:item("laser_hue")
+	local l_sat = node:item("laser_sat")
+	local l_val = node:item("laser_val")
+	local f_hue = node:item("flashlight_hue")
+	local f_sat = node:item("flashlight_sat")
+	local f_val = node:item("flashlight_val")
+	local data = node:parameters().menu_component_data
+	local part_id = data.name
+	local colors = managers.blackmarket:get_part_custom_colors(data.category, data.slot, data.name)
+
+	if colors.laser and l_hue and l_sat and l_val then
+		local h, s, v = rgb_to_hsv(colors.laser.r, colors.laser.g, colors.laser.b)
+
+		l_hue:set_value(h)
+		l_sat:set_value(s)
+		l_val:set_value(v)
+	end
+
+	if colors.flashlight and f_hue and f_sat and f_val then
+		local h, s, v = rgb_to_hsv(colors.flashlight.r, colors.flashlight.g, colors.flashlight.b)
+
+		f_hue:set_value(h)
+		f_sat:set_value(s)
+		f_val:set_value(v)
+	end
+
+	self:update_node_colors()
+end
+function MenuNodeCustomizeGadgetGui:update_node_colors(node)
+	node = node or self.node
+
+	if not node then
+		return
+	end
+
+	local colors = {}
+
+	if alive(self._laser_color) then
+		local l_hue = node:item("laser_hue")
+		local l_sat = node:item("laser_sat")
+		local l_val = node:item("laser_val")
+
+		if l_hue and l_sat and l_val then
+			local r, g, b = CoreMath.hsv_to_rgb(l_hue:value(), l_sat:value(), l_val:value())
+			local col = Color(r, g, b)
+
+			self._laser_color:set_color(col)
+
+			colors.laser = col
+		end
+	end
+
+	if alive(self._flashlight_color) then
+		local f_hue = node:item("flashlight_hue")
+		local f_sat = node:item("flashlight_sat")
+		local f_val = node:item("flashlight_val")
+
+		if f_hue and f_sat and f_val then
+			local r, g, b = CoreMath.hsv_to_rgb(f_hue:value(), f_sat:value(), f_val:value())
+			local col = Color(r, g, b)
+
+			self._flashlight_color:set_color(col)
+
+			colors.flashlight = col
+		end
+	end
+
+	return colors
+end]]
+function MenuNodeCustomizeGadgetGui:_setup_item_panel(safe_rect, res)
+	MenuNodeCustomizeGadgetGui.super._setup_item_panel(self, safe_rect, res)
+	self.item_panel:set_w(safe_rect.width * (1 - self._align_line_proportions))
+	self.item_panel:set_center(self.item_panel:parent():w() / 2, self.item_panel:parent():h() / 2)
+
+	local static_y = self.static_y and safe_rect.height * self.static_y
+
+	if static_y and static_y < self.item_panel:y() then
+		self.item_panel:set_y(static_y)
+	end
+
+	self.item_panel:set_position(math.round(self.item_panel:x()), math.round(self.item_panel:y()))
+	self:_rec_round_object(self.item_panel)
+
+	if alive(self.box_panel) then
+		self.item_panel:parent():remove(self.box_panel)
+
+		self.box_panel = nil
+	end
+
+	self.box_panel = self.item_panel:parent():panel()
+
+	self.box_panel:set_x(self.item_panel:x())
+	self.box_panel:set_w(self.item_panel:w())
+
+	if self._align_data.panel:h() < self.item_panel:h() then
+		self.box_panel:set_y(0)
+		self.box_panel:set_h(self.item_panel:parent():h())
+	else
+		self.box_panel:set_y(self.item_panel:top())
+		self.box_panel:set_h(self.item_panel:h())
+	end
+
+	self.box_panel:grow(20, 20)
+	self.box_panel:move(-10, -10)
+	self.box_panel:set_layer(151)
+
+	local data = self.node:parameters().menu_component_data
+	local part_id = data.name
+	local mod_td = tweak_data.weapon.factory.parts[part_id]
+	local show_laser = mod_td.sub_type == "laser"
+	local show_flashlight = mod_td.sub_type == "flashlight"
+
+	if mod_td.adds then
+		for _, part_id in ipairs(mod_td.adds) do
+			local sub_type = tweak_data.weapon.factory.parts[part_id].sub_type
+			show_laser = sub_type == "laser" or show_laser
+			show_flashlight = sub_type == "flashlight" or show_flashlight
+		end
+	end
+
+	local next_panel_h = padding + 2 + (tweak_data.menu.pd2_small_font_size + 1) * 3
+
+	if show_flashlight then
+		self._flashlight_panel = self.box_panel:panel({
+			h = 32,
+			layer = 10,
+			x = padding,
+			y = next_panel_h,
+			w = self.box_panel:w() - padding * 2
+		})
+
+		self:_rec_round_object(self._flashlight_panel)
+
+		self._flashlight_color = self._flashlight_panel:rect({
+			alpha = 0.8,
+			blend_mode = "add",
+			color = Color.red
+		})
+		next_panel_h = padding + 2 + (tweak_data.menu.pd2_small_font_size + 1) * 6 + 64
+	end
+
+	if show_laser then
+		self._laser_panel = self.box_panel:panel({
+			h = 32,
+			layer = 10,
+			x = padding,
+			y = next_panel_h,
+			w = self.box_panel:w() - padding * 2
+		})
+
+		self:_rec_round_object(self._laser_panel)
+
+		self._laser_color = self._laser_panel:rect({
+			alpha = 0.8,
+			blend_mode = "add",
+			color = Color.blue
+		})
+	end
+
+	self:update_node_colors()
+
+	self.boxgui = BoxGuiObject:new(self.box_panel, {
+		sides = {
+			1,
+			1,
+			1,
+			1
+		}
+	})
+
+	self.boxgui:set_clipping(false)
+	self.boxgui:set_layer(1000)
+	self.box_panel:rect({
+		rotation = 360,
+		color = tweak_data.screen_colors.dark_bg
+	})
+	self._align_data.panel:set_left(self.box_panel:left())
+	self._list_arrows.up:set_world_left(self._align_data.panel:world_left())
+	self._list_arrows.up:set_world_top(self._align_data.panel:world_top() - 10)
+	self._list_arrows.up:set_width(self.box_panel:width())
+	self._list_arrows.up:set_rotation(360)
+	self._list_arrows.up:set_layer(1050)
+	self._list_arrows.down:set_world_left(self._align_data.panel:world_left())
+	self._list_arrows.down:set_world_bottom(self._align_data.panel:world_bottom() + 10)
+	self._list_arrows.down:set_width(self.box_panel:width())
+	self._list_arrows.down:set_rotation(360)
+	self._list_arrows.down:set_layer(1050)
+	self:_set_topic_position()
+end
+
+function MenuCustomizeGadgetInitiator:create_choice(node, params)
+	local data_node = {
+		type = "MenuItemMultiChoice",
+	}
+	for i=1, params.options do
+		table.insert(data_node, {
+			_meta = "option",
+			text_id = "menu_cs_tier_"..i,
+			value = tonumber(string.format("%.1f", i*params.mul+params.offset)),
+		})
+	end
+	local new_item = node:create_item(data_node, params)
+
+	node:add_item(new_item)
+
+	if params.default_value ~= nil then
+		new_item:set_value(params.default_value)
+	end
+
+	return new_item
+end
 function MenuCustomizeGadgetInitiator:setup_node(node, data)
 	node:clean_items()
 
@@ -442,40 +656,10 @@ function MenuCustomizeGadgetInitiator:setup_node(node, data)
 		end
 	end
 
-	if not node:item("divider_end") then
-		if show_laser then
-			self:create_slider(node, {
-				max = 360,
-				name = "laser_hue",
-				min = 0,
-				callback = "set_gadget_laser_hue",
-				step = 5,
-				text_id = "bm_menu_laser_hue",
-				show_value = true
-			})
-			self:create_slider(node, {
-				min = 0,
-				name = "laser_sat",
-				max = 1,
-				callback = "set_gadget_laser_sat",
-				step = 0.02,
-				text_id = "bm_menu_laser_sat",
-				default_value = 1,
-				show_value = true
-			})
-			self:create_slider(node, {
-				name = "laser_val",
-				max = 1,
-				callback = "set_gadget_laser_val",
-				step = 0.02,
-				text_id = "bm_menu_laser_val",
-				default_value = 1,
-				show_value = true,
-				min = tweak_data.custom_colors.defaults.laser_alpha
-			})
-			self:create_divider(node, "laser_divider", nil, 64)
-		end
+	local colors = managers.blackmarket:get_part_custom_colors(data.category, data.slot, data.name)
+	local gadget_power = mod_td and mod_td.stats and mod_td.stats.gadget_power and mod_td.stats.gadget_power
 
+	if not node:item("divider_end") then
 		if show_flashlight then
 			self:create_slider(node, {
 				max = 360,
@@ -496,7 +680,7 @@ function MenuCustomizeGadgetInitiator:setup_node(node, data)
 				default_value = 1,
 				show_value = true
 			})
-			self:create_slider(node, {
+			--[[self:create_slider(node, {
 				min = 0,
 				name = "flashlight_val",
 				max = 1,
@@ -505,8 +689,65 @@ function MenuCustomizeGadgetInitiator:setup_node(node, data)
 				text_id = "bm_menu_flashlight_val",
 				default_value = 1,
 				show_value = true
+			})]]
+			local mul = 0.4
+			local offset = 0.2
+			self:create_choice(node, {
+				name = "flashlight_val",
+				options = gadget_power.flashlight or 1,
+				callback = "set_gadget_flashlight_val",
+				text_id = "bm_gadget_power_flashlight",
+				mul = mul,
+				offset = offset,
+				default_value = tonumber(string.format("%.1f", (gadget_power.flashlight or 1)*mul+offset)), --gotta do it this stupid way cuz of the float-point precision bs
 			})
+
 			self:create_divider(node, "flashlight_divider", nil, 64)
+		end
+
+		if show_laser then
+			self:create_slider(node, {
+				max = 360,
+				name = "laser_hue",
+				min = 0,
+				callback = "set_gadget_laser_hue",
+				step = 5,
+				text_id = "bm_menu_laser_hue",
+				show_value = true
+			})
+			self:create_slider(node, {
+				min = 0,
+				name = "laser_sat",
+				max = 1,
+				callback = "set_gadget_laser_sat",
+				step = 0.02,
+				text_id = "bm_menu_laser_sat",
+				default_value = 1,
+				show_value = true
+			})
+			--[[self:create_slider(node, {
+				name = "laser_val",
+				max = gadget_power.laser or 0.5, --1
+				callback = "set_gadget_laser_val",
+				step = 0.25, --0.02
+				text_id = "bm_menu_laser_val",
+				default_value = 1,
+				show_value = true,
+				min = gadget_power.laser==1 and 0 or 0.5, --tweak_data.custom_colors.defaults.laser_alpha
+			})]]
+			local mul = 0.3
+			local offset = 0
+			self:create_choice(node, {
+				name = "laser_val",
+				options = gadget_power.laser or 1,
+				callback = "set_gadget_laser_val",
+				text_id = "bm_gadget_power_laser",
+				mul = mul,
+				offset = offset,
+				default_value = tonumber(string.format("%.1f", (gadget_power.laser or 1)*mul+offset)), --gotta do it this stupid way cuz of the float-point precision bs
+			})
+
+			self:create_divider(node, "laser_divider", nil, 64)
 		end
 	end
 
@@ -536,12 +777,12 @@ function MenuCustomizeGadgetInitiator:setup_node(node, data)
 
 	node:add_item(new_item)
 
-	if show_laser then
-		node:set_default_item_name("laser_hue")
-		node:select_item("laser_hue")
-	elseif show_flashlight then
+	if show_flashlight then
 		node:set_default_item_name("flashlight_hue")
 		node:select_item("flashlight_hue")
+	elseif show_laser then
+		node:set_default_item_name("laser_hue")
+		node:select_item("laser_hue")
 	end
 
 	node:parameters().menu_component_data = data
@@ -553,25 +794,184 @@ function MenuCustomizeGadgetInitiator:setup_node(node, data)
 	local f_sat = node:item("flashlight_sat")
 	local f_val = node:item("flashlight_val")
 	local part_id = data.name
-	local colors = managers.blackmarket:get_part_custom_colors(data.category, data.slot, data.name)
 
 	if colors and colors.laser and l_hue and l_sat and l_val then
 		local h, s, v = rgb_to_hsv(colors.laser.r, colors.laser.g, colors.laser.b)
+		v = math.floor(v * 100 + 0.5) * 0.01
 
 		l_hue:set_value(h)
 		l_sat:set_value(s)
 		l_val:set_value(v)
+
+		l_sat._enabled = false
+		if gadget_power.laser==1 then l_val._enabled = false end
 	end
 
 	if colors and colors.flashlight and f_hue and f_sat and f_val then
 		local h, s, v = rgb_to_hsv(colors.flashlight.r, colors.flashlight.g, colors.flashlight.b)
+		v = math.floor(v * 100 + 0.5) * 0.01
 
 		f_hue:set_value(h)
 		f_sat:set_value(s)
 		f_val:set_value(v)
+
+		if gadget_power.flashlight==1 then f_val._enabled = false end
 	end
 
 	return node
+end
+
+function MenuCallbackHandler:set_gadget_customize_params()
+	if not managers.menu:active_menu() then
+		return false
+	end
+
+	if not managers.menu:active_menu().logic then
+		return false
+	end
+
+	if not managers.menu:active_menu().logic:selected_node() then
+		return false
+	end
+
+	local node = managers.menu:active_menu().logic:selected_node()
+	local data = node:parameters().menu_component_data
+	local part_id = data.name
+	local slot = data.slot
+	local category = data.category
+	local colors = {}
+	local active_node_gui = managers.menu:active_menu().renderer:active_node_gui()
+
+	if active_node_gui and active_node_gui.update_node_colors then
+		colors = active_node_gui:update_node_colors()
+	end
+
+	managers.blackmarket:set_part_custom_colors(category, slot, part_id, colors)
+	managers.menu:back()
+end
+
+function MenuComponentManager:create_weapon_mod_icon_list(weapon, category, factory_id, slot)
+	local icon_list = {}
+	local mods_all = managers.blackmarket:get_dropable_mods_by_weapon_id(weapon)
+	local crafted = managers.blackmarket:get_crafted_category(category)[slot]
+	local cosmetics_ids = managers.blackmarket:get_cosmetics_by_weapon_id(weapon)
+
+	if table.size(mods_all) > 0 then
+		local weapon_factory_tweak_data = tweak_data.weapon.factory.parts
+		local mods_equip = deep_clone(managers.blackmarket:get_weapon_blueprint(category, slot))
+		local default_blueprint = managers.weapon_factory:get_default_blueprint_by_factory_id(factory_id)
+
+		for _, default_part in ipairs(default_blueprint) do
+			table.delete(mods_equip, default_part)
+		end
+
+		local mods = {}
+		local mods_sorted = {}
+		local types = {}
+
+		if not crafted or not crafted.customize_locked then
+			for id, data in pairs(mods_all) do
+				mods[id] = mods[id] or {}
+
+				for _, mod in ipairs(data) do
+					table.insert(mods[id], clone(mod))
+				end
+
+				table.insert(mods_sorted, id)
+
+				types[id] = true
+			end
+		end
+
+		for _, data in pairs(mods) do
+			local sort_td = tweak_data.blackmarket.weapon_mods
+			local x_td, y_td, x_pc, y_pc = nil
+
+			table.sort(data, function (x, y)
+				x_td = sort_td[x[1]]
+				y_td = sort_td[y[1]]
+				x_pc = x_td.value or x_td.pc or x_td.pcs and x_td.pcs[1] or 10
+				y_pc = y_td.value or y_td.pc or y_td.pcs and y_td.pcs[1] or 10
+				x_pc = x_pc + (x[2] and tweak_data.lootdrop.global_values[x[2]].sort_number or 0)
+				y_pc = y_pc + (y[2] and tweak_data.lootdrop.global_values[y[2]].sort_number or 0)
+
+				return x_pc < y_pc or x_pc == y_pc and x[1] < y[1]
+			end)
+		end
+
+		table.sort(mods_sorted, function (x, y)
+			return y < x
+		end)
+
+		if table.size(cosmetics_ids) > 0 then
+			types.weapon_cosmetics = true
+
+			table.insert(mods_sorted, "weapon_cosmetics")
+		end
+
+		if crafted.cosmetics and crafted.cosmetics.bonus then
+			local bonuses = tweak_data.economy:get_bonus_icons(tweak_data.blackmarket.weapon_skins[crafted.cosmetics.id].bonus)
+			types.weapon_skin_bonuses = {}
+
+			for _, texture_path in ipairs(bonuses) do
+				table.insert(types.weapon_skin_bonuses, texture_path)
+				table.insert(mods_sorted, texture_path)
+			end
+		end
+
+		for _, name in ipairs(mods_sorted) do
+			local gadget, silencer, equipped, sub_type = nil
+			local is_auto = tweak_data.weapon[weapon] and tweak_data.weapon[weapon].FIRE_MODE == "auto"
+			local weapon_skin_bonus = false
+
+			if types.weapon_skin_bonuses and table.contains(types.weapon_skin_bonuses, name) then
+				equipped = not managers.job:is_current_job_competitive() and not managers.weapon_factory:has_perk("bonus", crafted.factory_id, crafted.blueprint)
+				weapon_skin_bonus = true
+			elseif name == "weapon_cosmetics" then
+				local cosmetics = managers.blackmarket:get_weapon_cosmetics(category, slot)
+				equipped = not not cosmetics
+				sub_type = equipped and tweak_data.blackmarket.weapon_skins[cosmetics.id] and tweak_data.blackmarket.weapon_skins[cosmetics.id].is_a_color_skin and "color_skin" or nil
+			else
+				for _, name_equip in pairs(mods_equip) do
+					if name == weapon_factory_tweak_data[name_equip].type then
+						equipped = true
+						sub_type = weapon_factory_tweak_data[name_equip].sub_type
+						local adds = weapon_factory_tweak_data[name_equip].adds
+						if name == "gadget" then
+							gadget = not (adds and #adds>0) and sub_type or nil
+						end
+
+						if sub_type == "silencer" then
+							silencer = true
+
+							break
+						end
+
+						silencer = false
+
+						break
+					end
+				end
+			end
+
+			local texture = self:get_texture_from_mod_type(name, sub_type, gadget, silencer, is_auto, equipped, mods[name], types, weapon_skin_bonus, weapon)
+
+			if texture then
+				if DB:has(Idstring("texture"), texture) then
+					table.insert(icon_list, {
+						texture = texture,
+						equipped = equipped,
+						type = name,
+						weapon_skin_bonus = weapon_skin_bonus
+					})
+				else
+					Application:error("[MenuComponentManager:create_weapon_mod_icon_list]", "Missing texture for weapon mod icon", texture)
+				end
+			end
+		end
+	end
+
+	return icon_list
 end
 
 

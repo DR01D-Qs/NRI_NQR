@@ -23,6 +23,10 @@ function PlayerDriving:_enter(enter_data)
 
 	self._current_weapon = self._unit:inventory():equipped_unit()
 
+	if self._current_weapon then
+		--table.insert(self._current_weapon:base()._setup.ignore_units, self._vehicle_unit)
+	end
+
 	if self._seat.driving then
 		self:_set_camera_limits("driving")
 
@@ -37,13 +41,18 @@ function PlayerDriving:_enter(enter_data)
 	else
 		self:_set_camera_limits("passenger")
 
+		--self._seat.allow_shooting = true
+		--self._seat.has_shooting_mode = true
+
 		if not self._seat.allow_shooting then
 			self._unit:camera():play_redirect(self.IDS_PASSENGER_REDIRECT)
+		else
+			self._unit:camera():play_redirect(self:get_animation("equip"))
 		end
 	end
 
 	self._unit:camera():set_shaker_parameter("breathing", "amplitude", 0)
-	self._camera_unit:base():animate_fov(65 * managers.user:get_setting("fov_multiplier"), 0.33)
+	--self._unit:camera()._camera_unit:base():animate_fov(self:get_zoom_fov({}), 0.33)
 
 	self._controller = self._unit:base():controller()
 
@@ -53,13 +62,13 @@ end
 
 function PlayerDriving:exit(state_data, new_state_name)
 	print("[DRIVING] PlayerDriving: Exiting vehicle")
+	self:_interupt_action_exit_vehicle()
 	PlayerDriving.super.exit(self, state_data, new_state_name)
 
 	if self._vehicle_unit:camera() then
 		self._vehicle_unit:camera():deactivate(self._unit)
 	end
 
-	self:_interupt_action_exit_vehicle()
 	self:_interupt_action_steelsight()
 
 	local projectile_entry = managers.blackmarket:equipped_projectile()
@@ -75,20 +84,21 @@ function PlayerDriving:exit(state_data, new_state_name)
 	self:_interupt_action_melee()
 
 	local exit_position = self._vehicle_ext:find_exit_position(self._unit)
+	local exit_pos = self._exit_data and self._exit_data.position or exit_position and exit_position:position()
+	local exit_rot = self._exit_data and self._exit_data.rotation or exit_position and exit_position:rotation() or Rotation()
+	self._exit_data = nil
 
-	if exit_position then
-		local exit_rot = exit_position:rotation()
-
+	if exit_pos then
 		self._unit:set_rotation(exit_rot)
 		self._unit:camera():set_rotation(exit_rot)
 
-		local pos = exit_position:position() + Vector3(0, 0, 30)
+		local pos = exit_pos + Vector3(0, 0, 30)
 
 		self._unit:set_position(pos)
 		self._unit:camera():set_position(pos)
 
 		if _G.IS_VR then
-			self._unit:movement():set_ghost_position(exit_position:position())
+			self._unit:movement():set_ghost_position(exit_pos)
 		end
 
 		self._unit:camera():camera_unit():base():set_spin(exit_rot:y():to_polar().spin)
@@ -120,7 +130,7 @@ function PlayerDriving:exit(state_data, new_state_name)
 	local exit_data = {
 		skip_equip = true
 	}
-	local velocity = self._unit:mover():velocity()
+	local velocity = self._unit:mover() and self._unit:mover():velocity()
 
 	self:_activate_mover(PlayerStandard.MOVER_STAND, velocity)
 	self._ext_network:send("set_pose", 1)
@@ -132,7 +142,7 @@ function PlayerDriving:exit(state_data, new_state_name)
 
 	self:_upd_attention()
 	self:_remove_camera_limits()
-	self._camera_unit:base():animate_fov(65 * managers.user:get_setting("fov_multiplier"), 0.33)
+	--self._camera_unit:base():animate_fov(75, 0.33)
 	self._camera_unit:anim_state_machine():set_global(self._vehicle_ext._tweak_data.animations.vehicle_id, 0)
 	managers.controller:set_ingame_mode("main")
 
@@ -141,25 +151,32 @@ end
 function PlayerDriving:on_inventory_event(unit, event)
 	local weapon = self._unit:inventory():equipped_unit()
 
-	self._current_weapon = weapon
+	if weapon then
+		table.insert(weapon:base()._setup.ignore_units, self._vehicle_unit)
 
-	weapon:base():set_visibility_state(true)
+		if alive(self._current_weapon) then
+			--table.delete(self._current_weapon:base()._setup.ignore_units, self._vehicle_unit)
+		end
+
+		self._current_weapon = weapon
+
+		weapon:base():set_visibility_state(true)
+	else
+		self._current_weapon = false
+	end
+end
+function PlayerDriving:get_zoom_fov(stance_data)
+	return PlayerStandard.get_zoom_fov(self, stance_data)
 end
 
 
 
 function PlayerDriving:_set_camera_limits(mode)
-	if mode == "driving" then
+	if mode == "driving" or mode == "passenger" then
 		if not self._vehicle_ext._tweak_data.camera_limits or not self._vehicle_ext._tweak_data.camera_limits.driver then
 			self._camera_unit:base():set_limits(170, 60)
 		else
 			self._camera_unit:base():set_limits(self._vehicle_ext._tweak_data.camera_limits.driver.yaw, self._vehicle_ext._tweak_data.camera_limits.driver.pitch)
-		end
-	elseif mode == "passenger" then
-		if not self._vehicle_ext._tweak_data.camera_limits or not self._vehicle_ext._tweak_data.camera_limits.passenger then
-			self._camera_unit:base():set_limits(170, 60)
-		else
-			self._camera_unit:base():set_limits(self._vehicle_ext._tweak_data.camera_limits.passenger.yaw, self._vehicle_ext._tweak_data.camera_limits.passenger.pitch)
 		end
 	elseif mode == "shooting" then
 		if not self._vehicle_ext._tweak_data.camera_limits or not self._vehicle_ext._tweak_data.camera_limits.shooting then

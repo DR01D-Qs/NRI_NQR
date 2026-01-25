@@ -21,6 +21,15 @@ local material_variables = {
 	pattern_tweak = "pattern_tweak",
 	wear_and_tear = (managers.blackmarket and managers.blackmarket:skin_editor() and managers.blackmarket:skin_editor():active() or Application:production_build()) and "wear_tear_value" or nil
 }
+local IDS_MATERIAL_CONFIG = Idstring("material_config")
+local IDS_MATERIAL = Idstring("material")
+local IDS_TEXTURE = Idstring("texture")
+local IDS_NORMAL = Idstring("normal")
+local IDS_PATTERN_TWEAK = Idstring("pattern_tweak")
+local IDS_UV_SCALE = Idstring("uv_scale")
+local IDS_WEAR_TEAR_VALUE = Idstring("wear_tear_value")
+
+
 
 function NewRaycastWeaponBase:spawn_magazine_unit(pos, rot, hide_bullets)
 	local mag_data = nil

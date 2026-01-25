@@ -5,9 +5,10 @@ local wp_cam_forward = Vector3()
 local wp_onscreen_direction = Vector3()
 local wp_onscreen_target_pos = Vector3()
 
+
+
 function HUDManager:_update_waypoints(t, dt)
 	local cam = managers.viewport:get_current_camera()
-	local in_steelsight = managers.player:local_player() and managers.player:local_player():movement():current_state():in_steelsight()
 
 	if not cam then
 		return
@@ -78,14 +79,15 @@ function HUDManager:_update_waypoints(t, dt)
 			mvector3.set(wp_dir_normalized, wp_dir)
 			mvector3.normalize(wp_dir_normalized)
 
+			local alpha = 0.5
 			local dot = mvector3.dot(wp_cam_forward, wp_dir_normalized)
-
 			if dot < 0 or panel:outside(mvector3.x(wp_pos), mvector3.y(wp_pos)) then
 				if data.state ~= "offscreen" then
 					data.state = "offscreen"
 
 					data.arrow:set_visible(true)
-					data.bitmap:set_color(data.bitmap:color():with_alpha(0.75))
+					data.arrow:set_color(data.arrow:color():with_alpha(alpha))
+					data.bitmap:set_color(data.bitmap:color():with_alpha(alpha))
 
 					data.off_timer = 0 - (1 - data.in_timer)
 					data.target_scale = 0.75
@@ -148,7 +150,7 @@ function HUDManager:_update_waypoints(t, dt)
 					data.state = "onscreen"
 
 					data.arrow:set_visible(false)
-					data.bitmap:set_color(data.bitmap:color():with_alpha(1))
+					data.bitmap:set_color(data.bitmap:color():with_alpha(alpha))
 
 					data.in_timer = 0 - (1 - data.off_timer)
 					data.target_scale = 1
@@ -162,20 +164,14 @@ function HUDManager:_update_waypoints(t, dt)
 					end
 				end
 
-				local alpha_from = 0.6
-				local alpha_to = in_steelsight and 0.05 or 0.2
-				local dot_from = in_steelsight and 0.96 or 0.98
-				local dot_to = in_steelsight and 0.99 or 1
-				local alpha = math.clamp(
-					alpha_from - ((dot - dot_from) / (dot_to - dot_from) * (alpha_from - alpha_to)),
-					alpha_to,
-					alpha_from
-				)
-				--managers.mission._fading_debug_output:script().log(tostring(alpha), Color.white)
+				if dot > 0.96 then
+					local val = 14.9 - dot * 15
+					alpha = (val > 0.1) and val or 0.1
+				end
 				--managers.mission._fading_debug_output:script().log(tostring(dot), Color.white)
+				--managers.mission._fading_debug_output:script().log(tostring(alpha), Color.white)
 
 				if data.bitmap:color().alpha ~= alpha then
-					alpha = data.bitmap:color().alpha - ((data.bitmap:color().alpha - alpha)*dt*6)
 					data.bitmap:set_color(data.bitmap:color():with_alpha(alpha))
 
 					if data.distance then

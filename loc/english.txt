@@ -72,6 +72,9 @@
 	"bm_md_brake" : "Muzzle Braking effect",
 	"bm_md_can" : "Flash Can effect",
 
+	"bm_gadget_power_laser" : "Laser Power",
+	"bm_gadget_power_flashlight" : "Flashlight Power",
+
 	"bm_menu_extra2" : "Extra2",
 	"bm_menu_extra2_plural" : "Gadget Rails",
 	"bm_menu_extra3" : "Extra3",
@@ -130,6 +133,7 @@
 	"bm_wp_sight_pos_a_o_f_2" : "Frontward Sight Position (standard rail)",
 	"bm_wp_sight_pos_a_of" : "Frontward Sight Position",
 	"bm_wp_sight_pos_a_o_f_short" : "Frontward Sight Position (short rail)",
+	"bm_wp_gadgets_pos_a_o" : "On-Top Gadget Position",
 	"bm_wp_gadgets_pos_a_fl_2" : "On-Top Gadget Position",
 	"bm_wp_gadgets_pos_a_fl2" : "Gadget Position 2",
 	"bm_wp_gadgets_pos_a_fl3" : "Gadget Position 3",
@@ -351,7 +355,7 @@
 	"bm_wp_upg_ass_74_g_legend" : "Vlad's Rodina Grip",
 	"bm_wp_upg_ass_74_s_legend" : "Vlad's Rodina Stock",
 	"bm_wp_upg_ass_74_fl_legend" : "Vlad's Rodina Laser",
-	"bm_wp_deagle_b_legend" : "Midas Touch Barrel Extension",
+	"bm_wp_deagle_b_legend" : "Midas Touch Compensator",
 	"bm_wp_m134_body_upper_spikey" : "The Gimp Cosmetic",
 	"bm_wp_m134_barrel_legendary" : "The Gimp Barrels",
 	"bm_wp_p90_b_legend" : "Alamo Dallas Receiver",

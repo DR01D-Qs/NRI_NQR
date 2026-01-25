@@ -154,6 +154,10 @@ tweak_data.scene_poses.weapon.scout = nil
 
 
 
+tweak_data.custom_colors.defaults.laser = Color(0, 0.1, 0)
+
+
+
 function TweakData:_set_normal()
 	self.player:_set_normal()
 	self.character:_set_normal()

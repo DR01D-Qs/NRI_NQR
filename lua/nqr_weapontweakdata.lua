@@ -2525,6 +2525,7 @@ end
 	self.uzi.timers.reload_empty = 3.4
 	self.uzi.eq_fr = {1,14,13}
 	self.uzi.anim_no_full = true
+	self.uzi.shot_anim_hands_offset = 4/30 --31/30
 
 	self.sterling.caliber = "9x19"
 	self.sterling.weight = 27

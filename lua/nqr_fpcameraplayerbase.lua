@@ -315,32 +315,20 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 
 		local wallpush_ignores = {}
 		local testray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets_no_criminals"))
-		if testray and testray.unit
-		and (
+		local push_dist = overall_length - (testray and testray.unit and testray.distance or overall_length)
+		plr._wall_push = nil
+
+		if push_dist>0 and not (
 			testray.unit:base() and testray.unit:base()._thrower_unit
 			or testray.unit:damage() and testray.unit:damage()._collision_event and string.find(testray.unit:damage()._collision_event, "wp_clip_")
 			or testray.unit:name()==Idstring("units/payday2/equipment/gen_equipment_zipline_motor/gen_equipment_zipline_motor")
 		)
 		then
-			table.insert(wallpush_ignores, testray.unit)
-			--for i, k in pairs(testray.unit:unit_data()) do managers.mission._fading_debug_output:script().log(tostring(i)..": "..tostring(k), Color.white) end
-		end
-		local ray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets_no_criminals"), "ignore_unit", wallpush_ignores)
-		--if ray then managers.mission._fading_debug_output:script().log(tostring(ray.unit), Color.white) end
+			if plr._state_data.on_ladder and wep_base:selection_index()==2 and (push_dist<9) then push_dist = 9 end
 
-		plr._wall_push = nil
-		local push_dist = overall_length - (ray and ray.distance or overall_length)
-		if plr._state_data.on_ladder and wep_base:selection_index()==2 then push_dist = math.max(9, push_dist) end
-
-		if push_dist>4 then
-			plr._wall_push = true
-			plr:_interupt_action_steelsight()
-		end
-		if (push_dist>8) then
-			z = -10
-		end
-		if (push_dist>24) and (wep_base:selection_index()==2) then
-			plr._wall_unequip = true
+			if push_dist>4 then plr._wall_push = true plr:_interupt_action_steelsight() end
+			if push_dist>8 then z = -10 end
+			if (push_dist>24) and (wep_base:selection_index()==2) then plr._wall_unequip = true end
 		end
 
 		if not (plr._running_enter_end_t and plr._running_exit_start_t) then

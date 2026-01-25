@@ -525,7 +525,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	--managers.mission._fading_debug_output:script().log(tostring(length), Color.white)
 
 	if length_stock and length_stock_addon then length = length - length_stock end
-	for i, k in pairs(tweak_data.weapon.factory[self._factory_id].default_blueprint) do
+	for i, k in pairs((tweak_data.weapon.factory[self._factory_id] and tweak_data.weapon.factory[self._factory_id].default_blueprint) or {}) do
 		self._current_stats.weight = self._current_stats.weight - (tweak_data.weapon.factory.parts[k].stats.weight or 0)
 	end
 
@@ -644,6 +644,28 @@ function NewRaycastWeaponBase:check_highlight_unit(unit)
 	if unit:character_damage() and unit:character_damage().dead and unit:character_damage():dead() then return end
 
 	managers.game_play_central:auto_highlight_enemy(unit, true, true)
+end
+
+
+
+function NewRaycastWeaponBase:get_reticle_obj()
+	self._reticle_obj = nil
+
+	if self.AKIMBO then return end
+
+	local second_sight = self:get_active_second_sight()
+	local part = managers.weapon_factory:get_part_from_weapon_by_type(second_sight and "second_sight" or "sight", self._parts)
+
+	if part then
+		local part_id = managers.weapon_factory:get_part_id_from_weapon_by_type(second_sight and "second_sight" or "sight", self._blueprint)
+		local part_tweak = tweak_data.weapon.factory.parts[part_id]
+
+		if alive(part.unit) and not part_tweak.blank_sight then
+			self._reticle_obj = part.unit:get_object(Idstring("g_reddot")) or part.unit:get_object(Idstring("g_gfx")) or part.unit:get_object(Idstring("g_reticle"))
+		end
+	end
+
+	return self._reticle_obj
 end
 
 
@@ -1473,14 +1495,17 @@ end
 --NEW FUNCTION: MAGDROP
 function NewRaycastWeaponBase:do_magdrop(fresh_mag)
 	self._magdrop = true
-
+	
+	self:drop_magazine_object()
 	if self:use_shotgun_reload() then
 		self:set_ammo_total(math.max(self:get_ammo_total() - 1, 0))
 		managers.hud:set_ammo_amount(self:selection_index(), self:ammo_info())
-
-		self:drop_magazine_object()
-
 		return
+	end
+	self:set_mag_visibility(false)
+	if self._second_gun then
+		self._second_gun:base():drop_magazine_object()
+		self._second_gun:base():set_mag_visibility(false)
 	end
 
 	local amount_to_deduct = fresh_mag and self:get_ammo_max_per_clip() or (math.max(self:get_ammo_remaining_in_clip()-self:get_chamber(), 0))
@@ -1491,12 +1516,6 @@ function NewRaycastWeaponBase:do_magdrop(fresh_mag)
 
 	--managers.mission._fading_debug_output:script().log(tostring("csc"), Color.white)
 
-	self:drop_magazine_object()
-	self:set_mag_visibility(false)
-	if self._second_gun then
-		self._second_gun:base():drop_magazine_object()
-		self._second_gun:base():set_mag_visibility(false)
-	end
 end
 
 --RELOAD_SPEED_MULTIPLIER: -

@@ -1,3 +1,7 @@
+local ids_unit = Idstring("unit")
+
+
+
 --OVERRIDE SUPPORT
 function WeaponFactoryManager:get_sound_switch(switch_group, factory_id, blueprint)
 	local factory = tweak_data.weapon.factory
@@ -42,6 +46,15 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		if k~=0 and lookup[i] then md_code_desc = md_code_desc..managers.localization:text("bm_md_"..lookup[i])..": "..k..". " end
 	end
 
+	local gadget_power_desc = ""
+	for i, k in pairs(part.stats.gadget_power or {}) do
+		local lookup = {
+			laser = true,
+			flashlight = true,
+		}
+		if lookup[i] then gadget_power_desc = gadget_power_desc..managers.localization:text("bm_gadget_power_"..i)..": "..k..". " end
+	end
+
 	if managers.menu:is_pc_controller() and managers.localization:exists(desc_id .. "_pc") then
 		result = managers.localization:text(desc_id .. "_pc", params)
 	elseif managers.localization:exists(desc_id) then
@@ -50,7 +63,7 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		result = managers.localization:text(desc_id)
 	end
 
-	return result..(result~="" and " " or "")..md_code_desc
+	return result..(result~="" and " " or "")..md_code_desc..gadget_power_desc
 end
 
 
@@ -88,7 +101,7 @@ function WeaponFactoryManager:get_stats(factory_id, blueprint)
 	return stats
 end
 
-function WeaponFactoryManager:_get_forbidden_parts(factory_id, blueprint, log)
+function WeaponFactoryManager:_get_forbidden_parts(factory_id, blueprint, to_log)
 	local factory = tweak_data.weapon.factory
 	local forbidden = {}
 	local override = self:_get_override_parts(factory_id, blueprint)
@@ -287,6 +300,232 @@ function WeaponFactoryManager:get_stance_mod(factory_id, blueprint, using_second
 	end
 
 	return { translation = translation, rotation = rotation }
+end
+
+
+
+function WeaponFactoryManager:_add_part(p_unit, factory_id, part_id, forbidden, override, parts, third_person, need_parent, async_task_data)
+	if forbidden[part_id] then
+		return
+	end
+
+	local factory = tweak_data.weapon.factory
+	local part = self:_part_data(part_id, factory_id, override)
+
+	if factory[factory_id].adds and factory[factory_id].adds[part_id] then
+		for _, add_id in ipairs(factory[factory_id].adds[part_id]) do
+			self:_add_part(p_unit, factory_id, add_id, forbidden, override, parts, third_person, need_parent, async_task_data)
+		end
+	end
+
+	if part.adds_type then
+		for _, add_type in ipairs(part.adds_type) do
+			local add_id = factory[factory_id][add_type]
+
+			self:_add_part(p_unit, factory_id, add_id, forbidden, override, parts, third_person, need_parent, async_task_data)
+		end
+	end
+
+	if part.adds then
+		for _, add_id in ipairs(part.adds) do
+			self:_add_part(p_unit, factory_id, add_id, forbidden, override, parts, third_person, need_parent, async_task_data)
+		end
+	end
+
+	if parts[part_id] then
+		return
+	end
+
+	local link_to_unit = p_unit
+
+	if async_task_data then
+		if part.parent then
+			link_to_unit = nil
+		end
+	elseif part.parent then
+		local parent_part = self:get_part_from_weapon_by_type(part.parent, parts)
+
+		if parent_part then
+			link_to_unit = parent_part.unit
+		else
+			table.insert(need_parent, part_id)
+
+			return
+		end
+	end
+
+	local unit_name = third_person and part.third_unit or part.unit
+	local ids_unit_name = Idstring(unit_name)
+	local package = nil
+
+	if not third_person and not async_task_data then
+		local tweak_unit_name = tweak_data:get_raw_value("weapon", "factory", "parts", part_id, "unit")
+		local ids_tweak_unit_name = tweak_unit_name and Idstring(tweak_unit_name)
+
+		if ids_tweak_unit_name and ids_tweak_unit_name == ids_unit_name then
+			package = "packages/fps_weapon_parts/" .. part_id
+
+			if DB:has(Idstring("package"), Idstring(package)) then
+				self:load_package(package)
+			else
+				print("[WeaponFactoryManager] Expected weapon part packages for", part_id)
+
+				package = nil
+			end
+		end
+	end
+
+	local flip_a_fl = part.type=="gadget" and ((part.a_fl or 0) -(factory[factory_id].a_fl or 0))
+
+	if async_task_data then
+		parts[part_id] = {
+			is_streaming = true,
+			animations = part.animations,
+			name = ids_unit_name,
+			link_to_unit = link_to_unit,
+			a_obj = part.a_obj and Idstring(part.a_obj),
+			parent = part.parent,
+			reload_objects = part.reload_objects,
+			steelsight_visible = part.steelsight_visible,
+			steelsight_swap_progress_trigger = part.steelsight_swap_progress_trigger,
+			animation_effects = part.animation_effects,
+			flip_a_fl = flip_a_fl,
+		}
+
+		managers.dyn_resource:load(ids_unit, ids_unit_name, "packages/dyn_resources", callback(self, self, "clbk_part_unit_loaded", async_task_data))
+	else
+		if not package then
+			managers.dyn_resource:load(ids_unit, ids_unit_name, "packages/dyn_resources", false)
+		end
+
+		local unit = self:_spawn_and_link_unit(ids_unit_name, part.a_obj and Idstring(part.a_obj), third_person, link_to_unit, flip_a_fl)
+
+		parts[part_id] = {
+			unit = unit,
+			animations = part.animations,
+			name = ids_unit_name,
+			package = package,
+			reload_objects = part.reload_objects
+		}
+
+		unit:set_visible(part.steelsight_visible ~= true)
+
+		parts[part_id].steelsight_visible = part.steelsight_visible
+		parts[part_id].steelsight_swap_progress_trigger = part.steelsight_swap_progress_trigger
+		parts[part_id].animation_effects = part.animation_effects
+	end
+end
+
+function WeaponFactoryManager:clbk_part_unit_loaded(task_data, status, u_type, u_name)
+	if not self._async_load_tasks[task_data] then
+		return
+	end
+
+	if task_data.spawn then
+		local function _spawn(part)
+			local unit = self:_spawn_and_link_unit(part.name, part.a_obj, task_data.third_person, part.link_to_unit, part.flip_a_fl)
+
+			unit:set_enabled(false)
+
+			part.unit = unit
+
+			part.unit:set_visible(part.link_to_unit:visible() and part.steelsight_visible ~= true)
+
+			part.a_obj = nil
+			part.link_to_unit = nil
+		end
+
+		for part_id, part in pairs(task_data.parts) do
+			if part.name == u_name and part.is_streaming then
+				part.is_streaming = nil
+
+				if part.link_to_unit then
+					_spawn(part)
+				else
+					local parent_part = self:get_part_from_weapon_by_type(part.parent, task_data.parts)
+
+					if parent_part and parent_part.unit then
+						part.link_to_unit = parent_part.unit
+
+						_spawn(part)
+					end
+				end
+			end
+		end
+
+		repeat
+			local re_iterate = nil
+
+			for part_id, part in pairs(task_data.parts) do
+				if not part.unit and not part.is_streaming then
+					local parent_part = self:get_part_from_weapon_by_type(part.parent, task_data.parts)
+
+					if parent_part and parent_part.unit then
+						part.link_to_unit = parent_part.unit
+
+						_spawn(part)
+
+						re_iterate = true
+					end
+				end
+			end
+		until not re_iterate
+	else
+		for part_id, part in pairs(task_data.parts) do
+			if part.name == u_name and part.is_streaming then
+				part.is_streaming = nil
+			end
+		end
+	end
+
+	if not task_data.all_requests_sent then
+		return
+	end
+
+	for part_id, part in pairs(task_data.parts) do
+		if part.is_streaming or task_data.spawn and not part.unit then
+			return
+		end
+	end
+
+	for part_id, part in pairs(task_data.parts) do
+		if alive(part.unit) then
+			part.unit:set_enabled(true)
+			self:_set_visibility(part_id, part, task_data.npc)
+		end
+	end
+
+	self._async_load_tasks[task_data] = nil
+
+	if not task_data.done_cb then
+		return
+	end
+
+	task_data.done_cb(task_data.parts, task_data.blueprint)
+end
+
+function WeaponFactoryManager:_spawn_and_link_unit(u_name, a_obj, third_person, link_to_unit, flip_a_fl)
+	local unit = World:spawn_unit(u_name, Vector3(), Rotation())
+	a_obj = a_obj or link_to_unit:orientation_object():name()
+	local res = link_to_unit:link(a_obj, unit, unit:orientation_object():name())
+
+	if flip_a_fl then
+		unit:set_rotation(unit:rotation())
+
+		local current_rot = unit:rotation()
+		local rot_90 = Rotation(0, 0, -90*flip_a_fl)
+		mrotation.multiply(current_rot, rot_90) 
+		unit:set_rotation(current_rot)
+	end
+
+	if managers.occlusion and not third_person then
+		local u_key = unit:key()
+		self._skip_occlusion_units[u_key] = (self._skip_occlusion_units[u_key] or 0) + 1
+
+		managers.occlusion:remove_occlusion(unit)
+	end
+
+	return unit
 end
 
 

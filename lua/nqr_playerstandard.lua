@@ -360,7 +360,7 @@ function PlayerStandard:update(t, dt)
 		end
 	end
 
-	--managers.mission._fading_debug_output:script().log(tostring(wep_base.r_offset), Color.white)
+	--managers.mission._fading_debug_output:script().log(tostring(self._controller:get_input_pressed("nqr_key_stocktoggle")), Color.white)
 
 	local weight = wep_base._current_stats.weight or 10
 	local shouldered = wep_base._current_stats.shouldered
@@ -1406,6 +1406,9 @@ function PlayerStandard:get_fire_weapon_direction()
 	end
 
 	return csc
+end
+function PlayerStandard:is_reticle_aim()
+	return self._state_data.reticle_obj and self._camera_unit:base():is_stance_done()
 end
 --NEW FUNCTION: OFFSET RECOIL
 function PlayerStandard:_vertical_recoil_kick(t, dt)
@@ -2958,10 +2961,12 @@ end
 
 --WALK HEADBOB: TWEAK
 function PlayerStandard:_get_walk_headbob()
-	if self._state_data.in_air then 			return 0
-	elseif self._state_data.using_bipod then 	return 0.01
-	elseif self._state_data.in_steelsight then 	return self._state_data.ducking and 0.02 or 0.01
-	else 										return self._state_data.ducking and 0.04 or 0.02
+	if self._state_data.in_air then
+		return 0
+	elseif self._state_data.using_bipod then
+		return 0.01
+	else
+		return (self._state_data.ducking and 0.04 or 0.02) * (self._state_data.in_steelsight and 0.5 or 1)
 	end
 end
 --CHECK RUN: BOLTING INTERUPT
@@ -3467,7 +3472,7 @@ function PlayerStandard:_check_step(t)
 	if mvector3.distance_sq(self._last_step_pos, self._pos) > step_length * step_length then
 		mvector3.set(self._last_step_pos, self._pos)
 		self._unit:base():anim_data_clbk_footstep()
-		self._ext_camera:play_shaker("player_land", self._running and 0.3 or 0)
+		if self._running then self._ext_camera:play_shaker("player_land", 0.3) end
 	end
 end
 --NEW FUNCTION: MOVEMENT UNEQUIP
@@ -3795,13 +3800,13 @@ function PlayerStandard:_check_action_steelsight(t, input)
 	if alive(self._equipped_unit) then
 		local result = nil
 
-		local wanted_sight = NQR.settings.nqr_wanted_sight - 1
+		--[[local wanted_sight = NQR.settings.nqr_wanted_sight - 1
 		if wep_base:has_second_sight() and not self._state_data.in_steelsight then
 			if not tweak_data.weapon.factory.parts[wep_base._second_sights[1].part_id].stats.zoom then
 				wep_base._second_sight_on = wep_base._second_sights[1].piggyback and 1 or (wanted_sight==2 and (#wep_base._second_sights==2 and 2 or 1)) or wanted_sight
 				wep_base:set_second_sight_on(wep_base._second_sight_on, false, wep_base._second_sights, self)
 			end
-		end
+		end]]
 
 		if wep_base.manages_steelsight and wep_base:manages_steelsight() then
 			if input.btn_steelsight_press and wep_base.steelsight_pressed then
@@ -3870,6 +3875,14 @@ end
 function PlayerStandard:_start_action_steelsight(t, gadget_state)
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
+
+	local wanted_sight = NQR.settings.nqr_wanted_sight - 1
+	if wep_base:has_second_sight() and not self._state_data.in_steelsight then
+		if not tweak_data.weapon.factory.parts[wep_base._second_sights[1].part_id].stats.zoom then
+			wep_base._second_sight_on = wep_base._second_sights[1].piggyback and 1 or (wanted_sight==2 and (#wep_base._second_sights==2 and 2 or 1)) or wanted_sight
+			wep_base:set_second_sight_on(wep_base._second_sight_on, false, wep_base._second_sights, self)
+		end
+	end
 
 	if not self._movement_equipped then return end
 

@@ -8,11 +8,11 @@ function WeaponFlashLight:init(unit)
 	self._on_event = "gadget_flashlight_on"
 	self._off_event = "gadget_flashlight_off"
 	self._a_flashlight_obj = self._unit:get_object(Idstring("a_flashlight"))
-	local is_haunted = nil --self:is_haunted()
+	local is_haunted = self:is_haunted()
 	self._g_light = self._unit:get_object(Idstring("g_light"))
 	local texture = is_haunted and "units/lights/spot_light_projection_textures/spotprojection_22_flashlight_df" or "units/lights/spot_light_projection_textures/spotprojection_11_flashlight_df"
 	self._light = World:create_light("spot|specular|plane_projection", texture)
-	self._light_multiplier = is_haunted and 2 or 2
+	self._light_multiplier = is_haunted and 2 or 1
 	self._current_light_multiplier = self._light_multiplier
 
 	self._light:set_spot_angle_end(60)
@@ -100,24 +100,25 @@ function WeaponFlashLight:update(unit, t, dt)
 		end
 	end
 
-	if not self.csc and not self._is_npc then self.csc = true self:set_color(self:color()) end
+	--if not self.csc and not self._is_npc then self.csc = true self:set_color(self:color()) end
 end
 
-
 function WeaponFlashLight:set_color(color)
-	if self:is_haunted() then
-		return
-	end
+	--log("set_color flashlight")
+	--Utils.PrintTable(color)
+	if self:is_haunted() then return end
+	if not color then return end
 
-	if not color then
-		return
-	end
+	local h, s, v = CoreMath.rgb_to_hsv(color.r, color.g, color.b)
+	local orig_v = v
+	if v<0.99 then v = v*0.8 end
+	local r, g, b = CoreMath.hsv_to_rgb(h, s, v)
+	local col_vec = Vector3(r,g,b)
+	self._light:set_color(col_vec)
+	self._light:set_far_range((is_haunted and 10000 or 5000)*orig_v)
+	--Utils.PrintTable(col_vec)
 
 	local opacity_ids = Idstring("opacity")
-	local col_vec = Vector3(color.r, color.g, color.b)
-
-	self._light:set_color(col_vec)
-
 	if self._is_npc then
 		World:effect_manager():set_simulator_var_float(self._light_effect, Idstring("glow base camera r"), opacity_ids, opacity_ids, color.r * 0)
 		World:effect_manager():set_simulator_var_float(self._light_effect, Idstring("glow base camera g"), opacity_ids, opacity_ids, color.g * 0)
@@ -137,8 +138,8 @@ function WeaponFlashLight:set_color(color)
 end
 
 function WeaponFlashLight:set_power(power)
-	if not power then return end
+	--[[if not power then return end
 
-	self._light:set_far_range(is_haunted and 10000 or (5000*power))
-	self._light:set_multiplier(power)
+	self._light:set_far_range(is_haunted and 10000 or (2000*power))
+	self._light:set_multiplier(power*0.5)]]
 end

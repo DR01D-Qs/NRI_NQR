@@ -50,6 +50,7 @@ function LocalizationManager:text(string_id, macros)
 			["bm_wp_rage_b_comp2_desc"] = true,
 			["bm_wp_rage_b_comp2_desc"] = true,
 			["bm_wp_deagle_co_short_desc"] = true,
+			["bm_wp_deagle_b_long_desc"] = true,
 			["bm_wp_1911_co_1_desc"] = true,
 			["bm_wp_1911_co_2_desc"] = true,
 			["bm_wp_g18c_co_1_desc"] = true,

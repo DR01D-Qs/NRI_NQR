@@ -4641,7 +4641,7 @@ function BlackMarketGui:populate_mods(data)
 			local is_auto = weapon and tweak_data.weapon[weapon.weapon_id] and tweak_data.weapon[weapon.weapon_id].FIRE_MODE == "auto"
 
 			if mod_type == "gadget" then
-				gadget = sub_type
+				gadget = not (mod_td.adds and #mod_td.adds>0) and sub_type or nil
 			end
 
 			local silencer = sub_type == "silencer" and true
@@ -8796,9 +8796,9 @@ function BlackMarketGuiSlotItem:init(main_panel, data, x, y, w, h)
 					Vector3(0, panel_size, 0),
 					Vector3(panel_size, 0, 0)
 				},
-				color = data.mini_colors[1].color or Color.red,
-				alpha = data.mini_colors[1].alpha or 1,
-				blend_mode = data.mini_colors[1].blend,
+				color = data.mini_colors[2].color or Color.red,
+				alpha = data.mini_colors[2].alpha or 1,
+				blend_mode = data.mini_colors[2].blend,
 				w = panel_size,
 				h = panel_size
 			})
@@ -8808,9 +8808,9 @@ function BlackMarketGuiSlotItem:init(main_panel, data, x, y, w, h)
 					Vector3(panel_size, 0, 0),
 					Vector3(panel_size, panel_size, 0)
 				},
-				color = data.mini_colors[2].color or Color.red,
-				alpha = data.mini_colors[2].alpha or 1,
-				blend_mode = data.mini_colors[2].blend,
+				color = data.mini_colors[1].color or Color.red,
+				alpha = data.mini_colors[1].alpha or 1,
+				blend_mode = data.mini_colors[1].blend,
 				w = panel_size,
 				h = panel_size
 			})

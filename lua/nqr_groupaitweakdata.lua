@@ -101,7 +101,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		run = {1.2,1}, --heat street
 		bph = {0.7,0.7}, --hell's island
 		glace = {0.6,1}, --green bridge
-		pbr = {1.0,1.5}, --beneath the mountain
+		pbr = {0.9,1.5}, --beneath the mountain
 		pbr2 = {0.7,2}, --birth of sky
 		dinner = {0.9,2}, --slaughterhouse
 		born = {1.2,1.5}, --biker 1
@@ -120,7 +120,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		mex = {1.5,1.5}, --border crossing
 		mex_cooking = {0.8,1}, --border crystals
 		roberts = {1.5,1.5}, --go bank
-		family = {2,2}, --diamond store
+		family = {1.4,2.5}, --diamond store
 		jewelry_store = {1,1}, --jewelry store
 		ukrainian_job = {1.5,1}, --ukrainian job
 		fex = {1.3,1.5}, --buluc's mansion
@@ -213,10 +213,10 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 
 	if difficulty_index <= 2 then
 		self.besiege.assault.force = { 3*force_mul*custom_force[1], 5*force_mul*custom_force[2], 7*force_mul }
-		self.besiege.assault.force_pool = { 8, 12, 16 }
+		self.besiege.assault.force_pool = { 7, 10, 13 }
 	else
 		self.besiege.assault.force = { 4*force_mul*custom_force[1], 6*force_mul*custom_force[2], 8*force_mul }
-		self.besiege.assault.force_pool = { 10, 14, 18 }
+		self.besiege.assault.force_pool = { 8, 12, 16 }
 	end
 	self.besiege.assault.force_balance_mul = { 1.0, 1.5, 2.0, 2.5 }
 	self.besiege.assault.force_pool_balance_mul = { 1.0, 1.75, 2.5, 3.25 }
