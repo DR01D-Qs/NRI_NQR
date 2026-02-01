@@ -2199,8 +2199,8 @@ end
 	self.awp.action = "bolt_action"
 	self.awp.timers.reload_not_empty = self.awp.timers.reload_not_empty - 0.6
 	self.awp.timers.reload_empty = self.awp.timers.reload_empty - 0.3
-	self.awp.fire_mode_data.fire_rate = 1.4
-	self.awp.shot_anim_hands = 38
+	self.awp.fire_mode_data.fire_rate = 1.2
+	self.awp.shot_anim_hands = 40
 	self.awp.mag_release = "paddle"
 	self.awp.bolt_release = "rotate"
 	self.awp.bolt_release_ratio = { 0.5, 0.5 }

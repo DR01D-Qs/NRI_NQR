@@ -25,8 +25,10 @@ function RaycastWeaponBase:init(unit)
 	UnitBase.init(self, unit, false)
 
 	self._unit = unit
-	self._name_id = self.name or self.name_id or "amcar"
-	self.name_id = self.name or nil
+	--self._name_id = self.name or self.name_id or "amcar"
+	--self.name_id = self.name or nil
+	self._name_id = self.name_id or "amcar"
+	self.name_id = nil
 	self._visible = false
 
 	self:_create_use_setups()

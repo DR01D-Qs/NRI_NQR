@@ -302,3 +302,109 @@ function GroupAIStateBase:spawn_one_teamAI(is_drop_in, char_name, pos, rotation,
 		return unit
 	end
 end
+
+
+
+function GroupAIStateBase:hostage_killed(killer_unit)
+	if not alive(killer_unit) then
+		return
+	end
+
+	if killer_unit:base() and killer_unit:base().thrower_unit then
+		killer_unit = killer_unit:base():thrower_unit()
+
+		if not alive(killer_unit) then
+			return
+		end
+	end
+
+	local key = killer_unit:key()
+	local criminal = self._criminals[key]
+
+	if not criminal then
+		return
+	end
+
+	self._hostages_killed = (self._hostages_killed or 0) + 1
+
+	if not self._hunt_mode then
+		if self._hostages_killed >= 1 and not self._hostage_killed_warning_lines then
+			if self:sync_hostage_killed_warning(1) then
+				managers.network:session():send_to_peers_synched("sync_hostage_killed_warning", 1)
+
+				self._hostage_killed_warning_lines = 1
+			end
+		elseif self._hostages_killed >= 3 and self._hostage_killed_warning_lines == 1 then
+			if self:sync_hostage_killed_warning(2) then
+				managers.network:session():send_to_peers_synched("sync_hostage_killed_warning", 2)
+
+				self._hostage_killed_warning_lines = 2
+			end
+		elseif self._hostages_killed >= 7 and self._hostage_killed_warning_lines == 2 and self:sync_hostage_killed_warning(3) then
+			managers.network:session():send_to_peers_synched("sync_hostage_killed_warning", 3)
+
+			self._hostage_killed_warning_lines = 3
+		end
+	end
+
+	if not criminal.is_deployable then
+		local tweak = tweak_data.player.damage
+
+		--[[if killer_unit:base().is_local_player or killer_unit:base().is_husk_player then
+			tweak = tweak_data.player.damage
+		else
+			tweak = tweak_data.character[killer_unit:base()._tweak_table].damage
+		end]]
+
+		local base_delay = tweak.base_respawn_time_penalty
+		local respawn_penalty = criminal.respawn_penalty or (40 + self._tweak_data.assault.delay[3])
+		criminal.respawn_penalty = respawn_penalty + tweak.respawn_time_penalty
+		criminal.hostages_killed = (criminal.hostages_killed or 0) + 1
+	end
+end
+
+function GroupAIStateBase:on_AI_criminal_death(criminal_name, unit)
+	managers.hint:show_hint("teammate_dead", nil, false, {
+		TEAMMATE = unit:base():nick_name()
+	})
+
+	if not Network:is_server() then
+		return
+	end
+
+	local base_delay = tweak_data.player.damage.base_respawn_time_penalty
+	local respawn_penalty = self._criminals[unit:key()].respawn_penalty or (40 + self._tweak_data.assault.delay[3])
+
+	managers.trade:on_AI_criminal_death(criminal_name, respawn_penalty, self._criminals[unit:key()].hostages_killed or 0)
+	managers.hud:set_ai_stopped(managers.criminals:character_data_by_unit(unit).panel_id, false)
+end
+
+function GroupAIStateBase:on_player_criminal_death(peer_id)
+	managers.player:transfer_special_equipment(peer_id)
+
+	local unit = managers.network:session():peer(peer_id):unit()
+
+	if not unit then
+		return
+	end
+
+	local my_peer_id = managers.network:session():local_peer():id()
+
+	if my_peer_id ~= peer_id then
+		managers.hint:show_hint("teammate_dead", nil, false, {
+			TEAMMATE = unit:base():nick_name()
+		})
+	end
+
+	if not Network:is_server() then
+		return
+	end
+
+	local criminal_name = managers.criminals:character_name_by_peer_id(peer_id)
+	local base_delay = tweak_data.player.damage.base_respawn_time_penalty
+	local respawn_penalty = self._criminals[unit:key()].respawn_penalty or (40 + self._tweak_data.assault.delay[3])
+
+	managers.trade:on_player_criminal_death(criminal_name, respawn_penalty, self._criminals[unit:key()].hostages_killed or 0)
+	managers.criminals:on_last_valid_player_spawn_point_updated(unit)
+	managers.mission:call_global_event("player_criminal_death")
+end

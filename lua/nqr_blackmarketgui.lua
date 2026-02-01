@@ -4505,7 +4505,7 @@ function BlackMarketGui:populate_mods(data)
 	local mod_t = {}
 	local num_steps = #data.on_create_data
 	local achievement_tracker = tweak_data.achievement.weapon_part_tracker
-	local part_is_from_cosmetic, mod_tweak, dlc_global_value, dlc_global_value_tweak, dlc_unlock_id, is_dlc_unlocked = nil
+	local part_is_from_cosmetic, mod_tweak, dlc_global_value, dlc_global_value_tweak, dlc_unlock_id, is_dlc_unlocked, mod_factory_tweak = nil
 	local guis_catalog = "guis/"
 	local index = 1
 
@@ -4515,6 +4515,7 @@ function BlackMarketGui:populate_mods(data)
 		local mod_global_value = mod_t[3] or "normal"
 		part_is_from_cosmetic = cosmetic_kit_mod == mod_name
 		mod_tweak = tweak_data.blackmarket.weapon_mods[mod_name]
+		mod_factory_tweak = tweak_data.weapon.factory.parts[mod_name]
 		guis_catalog = "guis/"
 		local bundle_folder = mod_tweak and mod_tweak.texture_bundle_folder
 
@@ -4530,7 +4531,7 @@ function BlackMarketGui:populate_mods(data)
 		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/mods/" .. new_data.name
 		new_data.slot = data.slot or data.prev_node_data and data.prev_node_data.slot
 		new_data.global_value = mod_global_value
-		new_data.unlocked = not crafted.customize_locked and part_is_from_cosmetic and 1 or mod_default or managers.blackmarket:get_item_amount(new_data.global_value, "weapon_mods", new_data.name, true)
+		new_data.unlocked = not crafted.customize_locked and (part_is_from_cosmetic or mod_factory_tweak.for_free) and 1 or mod_default or managers.blackmarket:get_item_amount(new_data.global_value, "weapon_mods", new_data.name, true)
 		new_data.equipped = false
 		new_data.stream = true
 		new_data.default_mod = default_mod

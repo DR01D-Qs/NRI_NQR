@@ -439,8 +439,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	for stat, value in pairs(stats2) do
 		if stat=="CLIP_AMMO_MAX" then
 			if type(value)=="table" then
-				local caliber = "9x19"
-				for u, j in pairs(value) do if string.find(stats2.caliber or "", u) then caliber = u break end end
+				local caliber = stats2.caliber or self._current_stats.caliber
 				self._current_stats[stat] = stats2[stat] and value[caliber] or wep_tweak.CLIP_AMMO_MAX or 1
 			else
 				self._current_stats[stat] = stats2[stat] and value or wep_tweak.CLIP_AMMO_MAX or 1
@@ -666,6 +665,48 @@ function NewRaycastWeaponBase:get_reticle_obj()
 	end
 
 	return self._reticle_obj
+end
+
+
+
+--PLAY GADGET SOUND ONLY ON MANUAL TOGGLE
+function NewRaycastWeaponBase:toggle_gadget(current_state)
+	if not self._enabled then
+		return false
+	end
+
+	local gadget_on = self._gadget_on or 0
+	local gadgets = self._gadgets
+
+	if gadgets then
+		gadget_on = (gadget_on + 1) % (#gadgets + 1)
+
+		self:set_gadget_on(gadget_on, false, gadgets, current_state, true)
+
+		return true
+	end
+
+	return false
+end
+function NewRaycastWeaponBase:set_gadget_on(gadget_on, ignore_enable, gadgets, current_state, sound)
+	if not ignore_enable and not self._enabled then
+		return
+	end
+
+	if not self._assembly_complete then
+		return
+	end
+
+	self._gadget_on = gadget_on or self._gadget_on
+	local gadget = nil
+
+	for i, id in ipairs(gadgets or self._gadgets) do
+		gadget = self._parts[id]
+
+		if gadget and alive(gadget.unit) then
+			gadget.unit:base():set_state(self._gadget_on == i, sound and self._sound_fire, current_state)
+		end
+	end
 end
 
 

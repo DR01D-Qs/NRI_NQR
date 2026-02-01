@@ -92,9 +92,9 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		dah = {1.1,1}, --diamond heist
 		peta = {2,1.5}, --goatsim 1
 		peta2 = {1,2}, --goats day 2
-		welcome_to_the_jungle_1 = {1.5,0.5}, --big oil 1
-		welcome_to_the_jungle_1_night = {1.5,0.5}, --big oil 1
-		welcome_to_the_jungle_2 = {1.3,1.2}, --big oil 2
+		welcome_to_the_jungle_1 = {1.5,1}, --big oil 1
+		welcome_to_the_jungle_1_night = {1.5,1}, --big oil 1
+		welcome_to_the_jungle_2 = {1.0,1.5}, --big oil 2
 		cane = {1,1.2}, --santa's workshop
 		brb = {0.8,1.5}, --brooklyn bank
 		mus = {1.0,1.5}, --the diamond
@@ -126,7 +126,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		fex = {1.3,1.5}, --buluc's mansion
 		rat = {1,1.5}, --cook off
 		sand = {1,1}, --the ukrainian prisoner
-		help = {1.2,1}, --prison nightmare
+		help = {1,1.5}, --prison nightmare
 		rvd1 = {1.5,1.5}, --reservoir dogs 1
 		rvd2 = {1,2.5}, --reservoir dogs 2
 		vit = {0.8,1.5}, --white house
@@ -138,7 +138,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		hox_3 = {1.2,1.5}, --hoxton revenge
 		xmn_hox1 = {1,1},
 		hvh = {0.4,1}, --cursed kill room
-		nmh = {0.9,0.5}, --no mercy
+		nmh = {0.9,1.2}, --no mercy
 		big = {1.5,1}, --the big bank
 		pent = {1.2,1}, --mountain master
 		pines = {1.2,1.5}, --white xmas

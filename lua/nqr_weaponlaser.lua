@@ -28,7 +28,7 @@ WeaponLaser._themes = {
 	}
 }
 WeaponLaser._max_distance = 3000
-WeaponLaser._scale_distance = 1000
+WeaponLaser._scale_distance = 2400
 
 
 
@@ -44,7 +44,7 @@ function WeaponLaser:init(unit)
 	self._spot_angle_end = 0
 	self._light = World:create_light("spot|specular")
 
-	self._light:set_spot_angle_end(3)
+	self._light:set_spot_angle_end(4)
 	self._light:set_far_range(125)
 	self._light:set_near_range(10)
 	self._light:link(obj)
@@ -59,7 +59,7 @@ function WeaponLaser:init(unit)
 
 	self._light_glow = World:create_light("spot|specular")
 
-	self._light_glow:set_spot_angle_end(20)
+	self._light_glow:set_spot_angle_end(10)
 	self._light_glow:set_far_range(125)
 	self._light_glow:set_near_range(40)
 
@@ -76,7 +76,8 @@ function WeaponLaser:init(unit)
 
 	self._brush:set_blend_mode("opacity_add")
 
-	self._light_mul = 1
+	self._light_mul_1 = 1
+	self._light_mul_2 = 1
 end
 
 function WeaponLaser:set_color(color)
@@ -100,10 +101,15 @@ function WeaponLaser:set_color(color)
 	self._light_glow_color = Vector3(r*v,g*v,b*v)
 	self._light_glow:set_color(self._light_glow_color)
 
-	self._light_mul = orig_v
+	self._light_mul_1 = 1+orig_v
+	self._light_mul_2 = 1+(orig_v*0.5)
+	self._max_distance = 3000 * self._light_mul_1
+	self._scale_distance = self._max_distance * 0.8
 
+	--log("---")
+	--log(self._is_npc)
 	--Utils.PrintTable(color)
-	--log(self._light_mul)
+	--log(self._max_distance)
 end
 
 local mvec1 = Vector3()
@@ -129,20 +135,20 @@ function WeaponLaser:update(unit, t, dt)
 
 	local ray = self._unit:raycast("ray", from, to, "slot_mask", self._slotmask, self._ray_ignore_units and "ignore_unit" or nil, self._ray_ignore_units)
 	if ray then
-		if not self._is_npc then
-			self._spot_angle_end = math.lerp(2, 20, ray.distance / self._max_distance)
-			self._light:set_spot_angle_end(self._spot_angle_end*(1+(self._light_mul*0.5)))
+		--if not self._is_npc then
+			self._spot_angle_end = math.lerp(2, 20 * self._light_mul_1, ray.distance / self._max_distance)
+			self._light:set_spot_angle_end(self._spot_angle_end * self._light_mul_2)
 
-			self._light_glow:set_spot_angle_end(math.lerp(6, 30, ray.distance / self._max_distance)*(1+(self._light_mul)))
+			self._light_glow:set_spot_angle_end(math.lerp(6, 30 * self._light_mul_2, ray.distance / self._max_distance) * self._light_mul_1)
 
 			local scale = (math.clamp(ray.distance, self._max_distance - self._scale_distance, self._max_distance) - (self._max_distance - self._scale_distance)) / self._scale_distance
 			scale = 1 - scale
 			self._light:set_multiplier(scale)
-			self._light_glow:set_multiplier(scale * (0.1*(1+(self._light_mul*0.5))))
+			self._light_glow:set_multiplier(scale * (0.1*self._light_mul_2))
 			--managers.mission._fading_debug_output:script().log(tostring(scale), Color.white)
-		end
+		--end
 
-		self._brush:cylinder(ray.position, from, self._is_npc and 0.5 or 0.25)
+		self._brush:cylinder(ray.position, from, 0.25)
 
 		local pos = mvec1
 		mvector3.set(pos, mvec_l_dir)
@@ -154,7 +160,7 @@ function WeaponLaser:update(unit, t, dt)
 	else
 		self._light:set_final_position(to)
 		self._light_glow:set_final_position(to)
-		self._brush:cylinder(from, to, self._is_npc and 0.5 or 0.25)
+		self._brush:cylinder(from, to, 0.25)
 	end
 
 	self._custom_position = nil

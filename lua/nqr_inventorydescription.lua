@@ -254,7 +254,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 						--nothing lol
 					elseif stat.name == "fire_rate" then
 						if part_data.custom_stats and part_data.custom_stats.fire_rate_multiplier then
-							mods_stats[stat.name].value = mods_stats[stat.name].value + part_data.custom_stats.fire_rate_multiplier - 1
+							mods_stats[stat.name].value = base_stats[stat.name].value * (part_data.custom_stats.fire_rate_multiplier - 1)
 						end
 					else
 						mods_stats[stat.name].value = mods_stats[stat.name].value + (part_data.stats[stat.name] or 0)

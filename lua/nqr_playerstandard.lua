@@ -1012,12 +1012,14 @@ function PlayerStandard:_toggle_gadget(wep_base)
 		if gadget and gadget.color then
 			local col = gadget:color()
 
-			self._unit:network():send("set_weapon_gadget_color", col.r * 255, col.g * 255, col.b * 255)
+			--self._unit:network():send("set_weapon_gadget_color", col.r * 255, col.g * 255, col.b * 255)
 		end
 
 		if alive(self._equipped_unit) then
 			managers.hud:set_ammo_amount(wep_base:selection_index(), wep_base:ammo_info())
 		end
+
+		wep_base._last_gadget_idx = wep_base._gadget_on
 	end
 end
 --CHECK BIPODS: BIPODLESS BIPODS

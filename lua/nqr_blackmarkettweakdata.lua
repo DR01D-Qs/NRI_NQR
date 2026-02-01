@@ -441,6 +441,7 @@ Hooks:PostHook( BlackMarketTweakData, "_init_weapon_skins", "nqr_BlackMarketTwea
 		--"wpn_fps_smg_mac10_s_skel",
 	}
 	self.weapon_skins.mac10_skf.parts.wpn_fps_smg_mac10_s_fold[Idstring("fold"):key()] = self.weapon_skins.mac10_skf.parts.wpn_fps_smg_mac10_s_skel[Idstring("skeletal"):key()]
+	self.weapon_skins.mac10_skf.parts.wpn_fps_smg_mac10_s_fold2 = self.weapon_skins.mac10_skf.parts.wpn_fps_smg_mac10_s_fold
 
 	self.weapon_skins.polymer_css.default_blueprint = {
 		"wpn_fps_extra2_lock_gadgets",

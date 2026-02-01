@@ -35,7 +35,7 @@ Hooks:PostHook( PlayerTweakData, "init", "nqr_playertweakdata", function(self)
 
 
 	self.damage.respawn_time_penalty = 15
-	self.damage.base_respawn_time_penalty = 60
+	self.damage.base_respawn_time_penalty = 30
 
     self.gravity = -(982*2)
 
