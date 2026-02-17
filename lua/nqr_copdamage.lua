@@ -59,8 +59,8 @@ function CopDamage:damage_mission(attack_data)
 	attack_data.attack_dir = self._unit:rotation():y()
 	attack_data.pos = self._unit:position()
 
-	log(attack_data.damage)
-	log(result_type)
+	--log(attack_data.damage)
+	--log(result_type)
 
 	self:_send_explosion_attack_result(attack_data, self._unit, damage_percent, self:_get_attack_variant_index("explosion"), attack_data.col_ray and attack_data.col_ray.ray)
 	self:_on_damage_received(attack_data)
@@ -256,7 +256,7 @@ end
 --GET DAMAGE TYPE: -
 function CopDamage:get_damage_type(damage_percent, category)
 	if not (self._char_tweak and self._char_tweak.damage and self._char_tweak.damage.hurt_severity) then
-		log(self._unit and self._unit:base() and self._unit:base()._tweak_table)
+		--log(self._unit and self._unit:base() and self._unit:base()._tweak_table)
 		return "dmg_rcv"
 	end
 	local hurt_table = self._char_tweak.damage.hurt_severity[category or "bullet"]

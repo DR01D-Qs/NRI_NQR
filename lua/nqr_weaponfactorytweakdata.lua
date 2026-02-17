@@ -1767,7 +1767,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	}
 
 	local overrides_beltfed_sights = {}
-	for i, k in pairs(self.nqr.all_sights) do overrides_beltfed_sights[k] = { a_obj = "a_o_parented", parent = "upper_reciever" } end
+	for i, k in pairs(table.without(self.nqr.all_sights, table.with(self.nqr.all_angled_sights, self.nqr.all_magnifiers))) do overrides_beltfed_sights[k] = { a_obj = "a_o_parented", parent = "upper_reciever" } end
 	--for i, k in pairs(self.nqr.all_optics) do overrides_beltfed_sights[k] = { forbids = { "wpn_fps_lmg_m60_o_sight" } } end
 
 	local overrides_vertical_grip_and_gadget_thing = {}
@@ -5318,6 +5318,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	table.insert(self.wpn_fps_snp_tti.default_blueprint, "wpn_fps_upg_blankcal_762x51")
 	table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_upg_blankcal_762x51")
 	table.insert(self.wpn_fps_snp_tti.default_blueprint, "wpn_fps_snp_victor_s_adapter")
+	table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_nqr_extra3_rail")
 	table.insert(self.wpn_fps_snp_tti.uses_parts, "wpn_fps_remove_s_addon")
 	--table.addto(self.wpn_fps_snp_tti.uses_parts, self.nqr.all_tube_stocks)
 	--table.addto(self.wpn_fps_snp_tti.uses_parts, self.nqr.all_m4_grips)
@@ -6017,7 +6018,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 		stats = { concealment = 28, weight = 8, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { ["7.92x57"]=50, ["7.62x51"]=50 } }, --roughly concealment
 	}
 	self.wpn_fps_lmg_mg42.override = {}
-	for i, k in pairs(self.nqr.all_sights) do self.wpn_fps_lmg_mg42.override[k] = { a_obj = "a_o_parented", parent = "lower_reciever" } end
+	for i, k in pairs(table.without(self.nqr.all_sights, table.with(self.nqr.all_angled_sights, self.nqr.all_magnifiers))) do self.wpn_fps_lmg_mg42.override[k] = { a_obj = "a_o_parented", parent = "lower_reciever" } end
 	table.addto(self.wpn_fps_lmg_mg42.uses_parts, self.nqr.all_sights)
 	table.deletefrom(self.wpn_fps_lmg_mg42.uses_parts, self.nqr.all_snoptics)
 	table.deletefrom(self.wpn_fps_lmg_mg42.uses_parts, self.nqr.all_magnifiers)
@@ -8986,7 +8987,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_deagle_g_ergo.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_deagle_g_standard.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_deagle_m_standard.stats = { concealment = 4, weight = 1, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { [".50 AE"] = 7, [".44 Mag"] = 8, [".357 Mag"] = 9 } }
-	self.parts.wpn_fps_pis_deagle_m_extended.stats = { concealment = 7, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { [".50 AE"] = 10, [".44 Mag"] = 11, [".357 Mag"] = 12 } }
+	self.parts.wpn_fps_pis_deagle_m_extended.stats = { concealment = 7, weight = 2, mag_amount = { 1, 2, 3 }, CLIP_AMMO_MAX = { [".50 AE"] = 10, [".44 Mag"] = 11, [".357 Mag"] = 12 } }
 	self.parts.wpn_fps_pis_deagle_o_standard_front.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_deagle_o_standard_front_long.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_pis_deagle_o_standard_rear.stats = { concealment = 0, weight = 0 }
@@ -9159,6 +9160,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_judge_m_body.stats = {}
 	self.parts.wpn_fps_pis_judge_body_standard.type = "magazine"
 	self.parts.wpn_fps_pis_judge_body_standard.adds = { "wpn_fps_pis_judge_m_body" }
+	self.parts.wpn_fps_pis_judge_body_standard.magdrop_effect = {
+		parent = "g_bullet_1", effect = "effects/payday2/particles/weapons/shells/shell_revolver_dump_judge",
+	}
 	self.parts.wpn_fps_pis_judge_body_standard.visibility = { { objects = { g_hammer = false, g_lock = false, g_cylinder = false, g_frame = false } } }
 	self.parts.wpn_fps_pis_judge_body_standard.stats = { concealment = 4, weight = 1, length = 6, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 5 }
 	self.parts.wpn_fps_pis_judge_body_modern.unit = fantom_unit
@@ -9175,7 +9179,15 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_judge_fl_adapter.rails = { "bottom" }
 	self.parts.wpn_fps_pis_judge_fl_adapter.stats = { concealment = 0, weight = 1 }
 	self.wpn_fps_pis_judge.adds = {}
-	self.wpn_fps_pis_judge.override = {}
+	self.wpn_fps_pis_judge.override = {
+		wpn_fps_upg_cal_45lc = {
+			override = {
+				wpn_fps_pis_judge_body_standard = {
+					magdrop_effect = { parent = "g_bullet_1", effect = "effects/payday2/particles/weapons/shells/shell_revolver_dump_x5" }
+				}
+			}
+		}
+	}
 	table.deletefrom(self.wpn_fps_pis_judge.uses_parts, self.nqr.all_sights)
 	table.deletefrom(self.wpn_fps_pis_judge.uses_parts, self.nqr.all_magnifiers)
 	table.deletefrom(self.wpn_fps_pis_judge.uses_parts, self.nqr.all_bxs)
@@ -9390,6 +9402,9 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_pis_rsh12_m_body.stats = {}
 	self.parts.wpn_fps_pis_rsh12_body_standard.type = "magazine"
 	self.parts.wpn_fps_pis_rsh12_body_standard.adds = { "wpn_fps_pis_rsh12_m_body" }
+	self.parts.wpn_fps_pis_rsh12_body_standard.magdrop_effect = {
+		parent = "g_bullet_1", effect = "effects/payday2/particles/weapons/shells/shell_revolver_dump_rsh",
+	}
 	self.parts.wpn_fps_pis_rsh12_body_standard.bullet_objects = { prefix = "g_tip_", amount = 5 }
 	self.parts.wpn_fps_pis_rsh12_body_standard.visibility = { { objects = { g_hammer = false, g_lock = false, g_cylinder = false, g_frame = false } } }
 	self.parts.wpn_fps_pis_rsh12_body_standard.stats = { concealment = 0, weight = 0, length = 6, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = 5 } --todo a_fl
@@ -10139,7 +10154,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 
 		if k.material_parameters and k.material_parameters.gfx_reddot and k.material_parameters.gfx_reddot[1] then
 			k.material_parameters.gfx_reddot[1].value = Vector3(0.2, 2, 15)
-			table.insert(k.material_parameters.gfx_reddot, { id = Idstring("holo_target_offset"), value = Vector3(0, 1000, 0) })
+			table.insert(k.material_parameters.gfx_reddot, { id = Idstring("holo_target_offset"), value = Vector3(0, 500, 0) })
 			k.material_parameters.gfx_reddot1 = deep_clone(k.material_parameters.gfx_reddot)
 			k.material_parameters.sight = deep_clone(k.material_parameters.gfx_reddot)
 		end

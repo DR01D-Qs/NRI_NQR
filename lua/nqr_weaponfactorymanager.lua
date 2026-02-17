@@ -33,6 +33,7 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		BTN_BIPOD = managers.localization:btn_macro("deploy_bipod", true)
 	}
 	local result = ""
+	local nl = managers.localization:text("bm_nl")
 
 	local md_code_desc = ""
 	for i, k in pairs((part.stats and part.stats.md_code) or {}) do
@@ -43,7 +44,7 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 			"brake",
 			"can",
 		}
-		if k~=0 and lookup[i] then md_code_desc = md_code_desc..managers.localization:text("bm_md_"..lookup[i])..": "..k..". " end
+		if k~=0 and lookup[i] then md_code_desc = md_code_desc..managers.localization:text("bm_md_"..lookup[i])..": "..k..". "..nl end
 	end
 
 	local gadget_power_desc = ""
@@ -52,7 +53,7 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 			laser = true,
 			flashlight = true,
 		}
-		if lookup[i] then gadget_power_desc = gadget_power_desc..managers.localization:text("bm_gadget_power_"..i)..": "..k..". " end
+		if lookup[i] then gadget_power_desc = gadget_power_desc..managers.localization:text("bm_gadget_power_"..i)..": "..k..". "..nl end
 	end
 
 	if managers.menu:is_pc_controller() and managers.localization:exists(desc_id .. "_pc") then
@@ -63,7 +64,13 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		result = managers.localization:text(desc_id)
 	end
 
-	return result..(result~="" and " " or "")..md_code_desc..gadget_power_desc
+	return (
+		result
+		..(result~="" and nl or "")
+		--..(result~="" and (md_code_desc~="" or gadget_power_desc~="") and nl or "")
+		..md_code_desc
+		..gadget_power_desc
+	)
 end
 
 

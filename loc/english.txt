@@ -44,7 +44,15 @@
 
 
 	"hud_int_nqr_corpse_loot" : "Hold $BTN_INTERACT; to loot some ammo",
-	"hint_found_no_ammo" : "Found no ammo",
+	"hint_nqr_loot_noammo" : "Found no ammo",
+	"hint_nqr_loot_found" : "Found ",
+	"hint_nqr_loot_pistol" : "pistol ",
+	"hint_nqr_loot_shotgun" : "shotgun ",
+	"hint_nqr_loot_rifle" : "rifle ",
+	"hint_nqr_loot_and" : "and ",
+	"hint_nqr_loot_ammo" : "ammo",
+	"hint_nqr_loot_noneed" : ", which you don't need",
+	"hint_nqr_loot_butfull" : ", but you are full",
 	"hint_not_refillable" : "No ammo for your weapons",
 	"hud_action_nqr_corpse_loot" : "Looting ammo",
 
@@ -65,6 +73,8 @@
 	"menu_machine_pistol" : "Machine Pistol",
 	"menu_akimbo_machine_pistol" : "Akimbo Machine Pistol",
 	"menu_akimbo_revolver" : "Akimbo Revolver",
+
+	"bm_nl" : "$NL;"
 
 	"bm_md_supp" : "Sound Suppression effect",
 	"bm_md_flash" : "Flash Hiding effect",
@@ -178,7 +188,7 @@
 	"bm_wp_upg_o_box_desc" : "Measures range and draws it inside the Sight's lens. Supports installation of Piggyback Second Sights on top.",
 	"bm_wp_upg_o_rangefinder_desc" : "Measures range and draws it inside the Sight's lens.",
 	"bm_wp_upg_o_canpiggyback_desc" : "Supports installation of Piggyback Second Sights on top.",
-	"bm_wp_upg_o_piggyback_canpiggyback_desc" : "Precc $BTN_GADGET; to toggle piggyback sight. Supports installation of Piggyback Second Sights on top.",
+	"bm_wp_upg_o_piggyback_canpiggyback_desc" : "Press $BTN_GADGET; to toggle piggyback sight. Supports installation of Piggyback Second Sights on top.",
 
 	"bm_wp_m4_ns_mk12" : "Longbore Suppressor",
 	"bm_wp_victor_ns_standard" : "North Star Muzzle Brake",

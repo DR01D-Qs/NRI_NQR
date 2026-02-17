@@ -1401,17 +1401,52 @@ function PlayerStandard:_check_stop_shooting()
 end
 function PlayerStandard:get_fire_weapon_direction()
 	local csc = nil
-	if self:is_reticle_aim() then
-		csc = self._ext_camera:forward_with_shake_toward_reticle(self._state_data.reticle_obj)
-	else
-		csc = self._ext_camera:forward()
-	end
+	--if self:is_reticle_aim() then
+		csc = self._ext_camera:forward_with_shake_toward_reticle(self._state_data.reticle_obj, self._state_data.reticle_holo)
+	--else
+	--	csc = self._ext_camera:forward()
+	--end
 
 	return csc
 end
 function PlayerStandard:is_reticle_aim()
 	return self._state_data.reticle_obj and self._camera_unit:base():is_stance_done()
 end
+--[[local fwd_ray_to = Vector3()
+function PlayerStandard:_update_fwd_ray()
+	local weap_base = alive(self._equipped_unit) and self._equipped_unit:base()
+	local from = self._unit:movement():m_head_pos()
+	local range = weap_base and weap_base.needs_extended_fwd_ray_range and weap_base:needs_extended_fwd_ray_range(self._state_data.in_steelsight) and 20000 or 4000
+
+	mvec3_set(fwd_ray_to, self._cam_fwd)
+	mvec3_mul(fwd_ray_to, range)
+	mvec3_add(fwd_ray_to, from)
+
+	local fwd_ray = World:raycast("ray", from, fwd_ray_to, "slot_mask", self._slotmask_fwd_ray)
+	self._fwd_ray = fwd_ray
+
+	managers.environment_controller:set_dof_distance(math.max(0, math.min(fwd_ray and fwd_ray.distance or 4000, 4000) - 200), self._state_data.in_steelsight)
+
+	if weap_base then
+		if fwd_ray and self._state_data.in_steelsight and weap_base.check_highlight_unit then
+			weap_base:check_highlight_unit(fwd_ray.unit)
+		end
+
+		if weap_base.set_unit_health_display then
+			weap_base:set_unit_health_display(fwd_ray and fwd_ray.unit or nil)
+		end
+
+		if weap_base.set_scope_range_distance then
+			weap_base:set_scope_range_distance(fwd_ray and fwd_ray.distance / 100 or false)
+		end
+	end
+
+	local to = Vector3()
+	mvector3.set(to, self:get_fire_weapon_direction())
+	mvector3.multiply(to, range)
+	mvector3.add(to, self:get_fire_weapon_position())
+	Draw:brush(Color(0.5,1,0,0)):cylinder(self:get_fire_weapon_position(), to, 0.02)
+end]]
 --NEW FUNCTION: OFFSET RECOIL
 function PlayerStandard:_vertical_recoil_kick(t, dt)
 	local r_value = 0
@@ -3965,6 +4000,7 @@ function PlayerStandard:_start_action_steelsight(t, gadget_state)
 	end
 
 	self._state_data.reticle_obj = wep_base.get_reticle_obj and wep_base:get_reticle_obj()
+	self._state_data.reticle_holo = wep_base._reticle_holo
 
 	if managers.controller:get_default_wrapper_type() ~= "pc" and managers.user:get_setting("aim_assist") then
 		local closest_ray = self._equipped_unit:base():check_autoaim(self:get_fire_weapon_position(), self:get_fire_weapon_direction(), nil, true)

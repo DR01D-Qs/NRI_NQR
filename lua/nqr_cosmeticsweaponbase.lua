@@ -192,7 +192,9 @@ function NewRaycastWeaponBase:drop_magazine_object()
 
 		if part and part.type == "magazine" then
 			if part and part.magdrop_effect then
-				World:effect_manager():spawn({ effect = Idstring(part.magdrop_effect.effect), parent = part_data.unit:get_object(Idstring(part.magdrop_effect.parent)) })
+				local override = managers.weapon_factory:_get_override_parts(self._factory_id, self._blueprint)
+				local part_ovrd = managers.weapon_factory:_part_data(part_id, self._factory_id, override)
+				World:effect_manager():spawn({ effect = Idstring(part_ovrd.magdrop_effect.effect), parent = part_data.unit:get_object(Idstring(part_ovrd.magdrop_effect.parent)) })
 			end
 			if self:is_category("revolver") then return end
 

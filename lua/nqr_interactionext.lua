@@ -34,7 +34,14 @@ function IntimitateInteractionExt:_interact_blocked(player)
 			end
 		end
 
-		managers.hud:show_hint({
+		local loc = managers.localization
+		local string = not ammo_type[1] and loc:text("hint_nqr_loot_noammo") or (loc:text("hint_nqr_loot_found")
+			..loc:text("hint_nqr_loot_"..ammo_type[1])
+			..(ammo_type[2] and (loc:text("hint_nqr_loot_and")..loc:text("hint_nqr_loot_"..ammo_type[2])) or "")
+			..loc:text("hint_nqr_loot_ammo")
+			..(ammo_type[1] and ((not could_pick) and loc:text("hint_nqr_loot_noneed") or not want_to_pick and loc:text("hint_nqr_loot_butfull") or "") or "")
+		)
+		--[[managers.hud:show_hint({
 			text = (
 				"FOUND "
 				..(ammo_type[1] or "NO")
@@ -42,6 +49,12 @@ function IntimitateInteractionExt:_interact_blocked(player)
 				.." AMMO"
 				..(ammo_type[1] and ((not could_pick) and ", WHICH YOU DON'T NEED" or not want_to_pick and ", BUT YOU ARE FULL" or "") or "")
 			), --managers.localization:text(hint.text_id, params),
+			event = "stinger_feedback_"..((not ((ammo_type[1]) or (could_pick) or (want_to_pick))) and "positive" or "negative"), --hint.event,
+			time = 2,
+			cd_start = not ammo_type[1] and (Application:time() + 2),
+		})]]
+		managers.hud:show_hint({
+			text = string,
 			event = "stinger_feedback_"..((not ((ammo_type[1]) or (could_pick) or (want_to_pick))) and "positive" or "negative"), --hint.event,
 			time = 2,
 			cd_start = not ammo_type[1] and (Application:time() + 2),

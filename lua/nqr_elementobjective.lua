@@ -11,6 +11,7 @@ function ElementObjective:init(...)
         chca = { objective_activate_objective_027 = 4 },
         arm_for = { activate_objective004 = 4, activate_objective006 = 4 },
         family = { func_objective_003 = 4, func_objective_004 = 4, func_objective_002 = 4, func_objective_001 = 2 },
+        jewelry_store = { steal8 = 6, steal6 = 6, steal3 = 3 },
         firestarter_1 = { func_objective_010 = 4, func_objective_009 = 4 },
         mex = {
             objective_activate_006 = 2,

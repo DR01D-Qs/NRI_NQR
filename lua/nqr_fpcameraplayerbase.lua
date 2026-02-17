@@ -318,14 +318,14 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 		local push_dist = overall_length - (testray and testray.unit and testray.distance or overall_length)
 		plr._wall_push = nil
 
-		if push_dist>0 and not (
+		if plr._state_data.on_ladder and wep_base:selection_index()==2 and (push_dist<9) then push_dist = 9 end
+
+		if push_dist>0 and not (testray and (
 			testray.unit:base() and testray.unit:base()._thrower_unit
 			or testray.unit:damage() and testray.unit:damage()._collision_event and string.find(testray.unit:damage()._collision_event, "wp_clip_")
 			or testray.unit:name()==Idstring("units/payday2/equipment/gen_equipment_zipline_motor/gen_equipment_zipline_motor")
-		)
+		) )
 		then
-			if plr._state_data.on_ladder and wep_base:selection_index()==2 and (push_dist<9) then push_dist = 9 end
-
 			if push_dist>4 then plr._wall_push = true plr:_interupt_action_steelsight() end
 			if push_dist>8 then z = -10 end
 			if (push_dist>24) and (wep_base:selection_index()==2) then plr._wall_unequip = true end

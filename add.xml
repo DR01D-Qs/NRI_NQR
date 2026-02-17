@@ -89,7 +89,6 @@
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_fps_pis_m1911_body_standard" force="true"/>
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_third_pis_m1911_body_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas\wpn_fps_ass_famas" force="true"/>
-	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas\wpn_fps_ass_famas1" force="true"/>
 	<animation path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_m_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_m_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_o_adapter" force="true"/>
@@ -98,7 +97,6 @@
 	<model path="units\pd2_dlc_gage_jobs\weapons\wpn_fps_upg_fg_jp\wpn_fps_upg_fg_jp" force="true"/>
 	<model path="units\pd2_dlc_gage_jobs\weapons\wpn_fps_upg_fg_smr\wpn_fps_upg_fg_smr" force="true"/>
 	<model path="units\pd2_dlc_gage_jobs\weapons\wpn_fps_upg_o_cs\wpn_fps_upg_o_cs" force="true"/>
-	<model path="units\pd2_dlc_gage_jobs\weapons\wpn_fps_upg_o_cs\wpn_fps_upg_o_cs1" force="true"/>
 	<model path="units\pd2_dlc_gage_lmg\weapons\wpn_fps_lmg_m249_pts\wpn_fps_lmg_m249_upper_reciever" force="true"/>
 	<model path="units\pd2_dlc_gage_lmg\weapons\wpn_fps_lmg_rpk\wpn_fps_lmg_rpk" force="true"/>
 	<model path="units\pd2_dlc_gage_snp\weapons\wpn_fps_snp_m95\wpn_fps_snp_m95" force="true"/>
@@ -109,12 +107,9 @@
 	<model path="units\pd2_dlc_ja22\weapons\wpn_fps_m4_upg_mk12_pts\wpn_fps_m4_upg_fg_mk12" force="true"/>
 	<model path="units\pd2_dlc_ja22\weapons\wpn_fps_m4_upg_mk12_pts\wpn_fps_m4_uupg_fg_rail_ext_mk12" force="true"/>
 	<model path="units\pd2_dlc_mwm\weapons\wpn_fps_upg_o_bmg\wpn_fps_upg_o_bmg" force="true"/>
-	<model path="units\pd2_dlc_mwm\weapons\wpn_fps_upg_o_bmg\wpn_fps_upg_o_bmg1" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_mxm_m4\wpn_fps_m4_uupg_fg_radian" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_atibal\wpn_fps_upg_o_atibal" force="true"/>
-	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_atibal\wpn_fps_upg_o_atibal1" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_atibal\wpn_fps_upg_o_atibal_reddot" force="true"/>
-	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_atibal\wpn_fps_upg_o_atibal_reddot1" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_hamr\wpn_fps_upg_o_hamr" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_upg_ak_mod_pts\wpn_fps_upg_ak_body_upperreceiver_zenitco" force="true"/>
 	<model path="units\pd2_dlc_osa\weapons\wpn_fps_pis_x_g18c\wpn_fps_pis_x_g18c" force="true"/>
@@ -129,13 +124,8 @@
 	<animation path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_drum" force="true"/>
 	<model path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_drum" force="true"/>
 	<model path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_stick" force="true"/>
-	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_insideq1" force="true"/>
 	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_reddot" force="true"/>
-	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_reddot1" force="true"/>
-	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_reddot11" force="true"/>
 	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_scope" force="true"/>
-	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_scope0" force="true"/>
-	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_scope1" force="true"/>
 	<model path="units\pd2_dlc_pxp4\weapons\wpn_fps_upg_o_schmidt\wpn_fps_upg_o_schmidt" force="true"/>
 	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_fg_hera" force="true"/>
 	<model path="units\pd2_dlc_savi\weapons\wpn_fps_snp_victor_pts\wpn_fps_snp_victor_fg_standard" force="true"/>
@@ -150,7 +140,6 @@
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_box\wpn_fps_upg_o_box" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_box\wpn_fps_upg_o_box1" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot" force="true"/>
-	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot1" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot_rangefinder" force="true"/>
 	<model path="units\pd2_dlc_usm1\weapons\wpn_npc_dmr\wpn_npc_dmr" force="true"/>
 	<model path="units\pd2_dlc_xm20\weapons\wpn_fps_upg_o_tf90\wpn_fps_upg_o_tf90" force="true"/>
@@ -191,6 +180,10 @@
 	<material_config path="units/pd2_dlc_gage_historical/weapons/wpn_fps_pis_c96_pts/wpn_fps_pis_c96_sight" force="true"/>
 
 	<effect path="effects/particles/weapons/sniper_glint_marshal" force="true"/>
+	<effect path="effects/payday2/particles/weapons/shotgun/sho_muzzleflash_hornet" force="true"/>
+	<effect path="effects/payday2/particles/weapons/shells/shell_revolver_dump_judge"/>
+	<effect path="effects/payday2/particles/weapons/shells/shell_revolver_dump_rsh"/>
+	<effect path="effects/payday2/particles/weapons/shells/shell_revolver_dump_x5"/>
 
 	<object path="units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<object path="units/pd2_dlc_bph/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
@@ -247,7 +240,6 @@
 	<object path="units/pd2_dlc_savi/weapons/wpn_fps_snp_victor_pts/wpn_fps_snp_victor_b_standard" force="true"/>
 	<object path="units/pd2_dlc_savi/weapons/wpn_fps_snp_victor_pts/wpn_fps_snp_victor_b_sbr" force="true"/>
 	<object path="units/pd2_dlc_gage_snp/weapons/wpn_fps_snp_msr_pts/wpn_fps_snp_msr_ns_suppressor" force="true"/>
-	<object path="units/pd2_dlc_berry/weapons/wpn_fps_snp_model70_pts/wpn_fps_snp_model70_ns_suppressor" force="true"/>
 	<object path="units/pd2_dlc_pxp4/weapons/wpn_fps_snp_awp_pts/wpn_fps_snp_awp_ns_muzzle" force="true"/>
 	<object path="units/pd2_dlc_pxp4/weapons/wpn_fps_snp_awp_pts/wpn_fps_snp_awp_ns_suppressor" force="true"/>
 	<object path="units/pd2_dlc_savi/weapons/wpn_fps_snp_victor_pts/wpn_fps_snp_victor_ns_hera_muzzle" force="true"/>

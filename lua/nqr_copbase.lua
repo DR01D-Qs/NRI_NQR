@@ -144,7 +144,7 @@ local enemy_mapping = {
 		weapon = { {8, { {10,"c45"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_shield_hvh_1/ene_shield_hvh_1"):key()] = {
-		armor = { body=2, back=1, head={2, 0.3, 1.0}, face={2, 0.7}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 },
+		armor = { body=2, back=1, head={2, 0.3, 1.0}, face={2, 0.7}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 },
 		weapon = { {8, { {7,"c45"}, {10,"mp9"} }} },
 	},
 	[Idstring("units/pd2_dlc_hvh/characters/ene_medic_hvh_m4/ene_medic_hvh_m4"):key()] = {
@@ -251,7 +251,7 @@ local enemy_mapping = {
 		weapon = { {3, { {10,"c45"} }}, {8, { {3,"c45"}, {10,"mp9"} }} },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_tazer/ene_murkywater_tazer"):key()] = {
-		armor = { body=3, back=3, head={3, 0.7, 0.9}, face={2, 0.2}, lower_legs=2, upper_legs=2, lower_arm=2, upper_arm=2 },
+		armor = { body=3, back=3, head={3, 0.7, 0.9}, face={2, 0.2}, lower_legs=1, upper_legs=1, lower_arm=0, upper_arm=1 },
 	},
 	[Idstring("units/pd2_dlc_bph/characters/ene_murkywater_cloaker/ene_murkywater_cloaker"):key()] = {
 		--armor = { body=2, back=2, head={0, 0.0, 0.0}, face={1, 0.8}, lower_legs=2, upper_legs=1, lower_arm=0, upper_arm=0 },
@@ -313,12 +313,12 @@ local enemy_mapping = {
 
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_fbi_heavy_g36/ene_akan_fbi_heavy_g36"):key()] = {
 		ammo = { 2, 2 },
-		armor = { body=3, back=2, head={3, 0.4, 0.8}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 },
+		armor = { body=3, back=2, head={3, 0.4, 0.8}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 },
 		weapon = { {8, { {3,"mp5"}, {10,"ak47_ass"} }} },
 	},
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_fbi_heavy_r870/ene_akan_fbi_heavy_r870"):key()] = {
 		ammo = { 2, 2 },
-		armor = { body=3, back=2, head={3, 0.4, 0.8}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 },
+		armor = { body=3, back=2, head={3, 0.4, 0.8}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 },
 	},
 
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_shield_c45/ene_akan_cs_shield_c45"):key()] = {
@@ -339,7 +339,7 @@ local enemy_mapping = {
 
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_cs_tazer_ak47_ass/ene_akan_cs_tazer_ak47_ass"):key()] = {
 		ammo = {2, 2},
-		armor = { body=3, back=2, head={0, 0.0, 0.0}, face={2, 0.9}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 },
+		armor = { body=3, back=2, head={0, 0.0, 0.0}, face={2, 0.9}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 },
 	},
 
 	[Idstring("units/pd2_dlc_mad/characters/ene_akan_medic_ak47_ass/ene_akan_medic_ak47_ass"):key()] = {

@@ -46,6 +46,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.bag_zipline.sound_done = "bar_drill_apply_finished"
 	self.grenade_briefcase.timer = nil
 	self.atm_interaction.timer = 1
+	self.open_from_inside.timer = nil
+	self.raise_balloon.interact_distance = 150
 
 	self.copy_machine_smuggle.interact_distance = 180
 	self.big_computer_hackable.interact_distance = 140
@@ -121,6 +123,10 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.apply_thermite_paste_chca.interact_distance = 300
 	self.press_printer_paper.interact_distance = 180
 	self.press_printer_ink.interact_distance = 180
+	self.hold_take_hand.timer = nil
+	self.chca_hold_pour_diesel.interact_distance = 180
+	self.hold_plant_breaching_charge.interact_distance = 110
+	self.gen_pku_thermite_paste_not_deployable.special_equipment_block = nil
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2
@@ -132,7 +138,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 
 	self.drill_jammed.timer = 8
 	self.player_zipline.interact_distance = 200
-	self.player_zipline.timer = 1.5
+	self.player_zipline.timer = 1
 	self.player_zipline.sound_start = "bar_drill_apply"
 	self.player_zipline.sound_interupt = "bar_drill_apply_cancel"
 	self.player_zipline.sound_done = "bar_drill_apply_finished"
@@ -171,8 +177,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		sand = { atm_interaction = { interact_distance = 170, interact_dont_interupt_on_distance = true } },
 		dah = { ignite_flare = { interact_distance = 300 }, use_flare = { interact_distance = 300 }, place_flare = { interact_distance = 300 } },
 		short2_stage2b = { gen_pku_cocaine = { timer = false } },
-		pbr = { hold_approve_req = { timer = 1 } },
+		pbr = { hold_approve_req = { timer = 1 }, c4_bag = { timer = 2 } },
 	}
-	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k) do self[i][u] = j end end
+	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k or {}) do self[i][u] = j end end
 
 end)

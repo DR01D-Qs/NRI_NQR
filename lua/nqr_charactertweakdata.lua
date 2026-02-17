@@ -15416,22 +15416,22 @@ Hooks:PostHook( CharacterTweakData, "init", "nqr_CharacterTweakData:init", funct
 	self.swat.ammo =					{ 2, 1 }
 	self.swat.armor =					{ body=2, back=1, head={1, 0.3, 0.7}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.heavy_swat.ammo =				{ 2, 1 }
-	self.heavy_swat.armor =				{ body=2, back=1, head={2, 0.3, 1.0}, face={2, 0.7}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 }
+	self.heavy_swat.armor =				{ body=2, back=1, head={2, 0.3, 1.0}, face={2, 0.7}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 }
 	self.city_swat.ammo =				{ 2, 1 }
 	self.city_swat.armor =				{ body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.fbi_swat.ammo =				{ 2, 1 }
 	self.fbi_swat.armor =				{ body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.fbi_heavy_swat.ammo =			{ 2, 0 }
-	self.fbi_heavy_swat.armor =			{ body=3, back=2, head={3, 0.7, 0.9}, face={2, 0.2}, lower_legs=2, upper_legs=0, lower_arm=2, upper_arm=2 }
+	self.fbi_heavy_swat.armor =			{ body=3, back=2, head={3, 0.7, 0.9}, face={2, 0.2}, lower_legs=1, upper_legs=0, lower_arm=1, upper_arm=1 }
 
 	self.sniper.ammo =					{ 2, 0 }
 	self.sniper.armor =					{ body=1, back=1, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.shield.ammo =					{ 2, 1 }
 	self.shield.armor =					{ body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.4}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.taser.ammo =					{ 2, 0 }
-	self.taser.armor =					{ body=2, back=2, head={3, 0.3, 1.0}, face={2, 0.7}, lower_legs=2, upper_legs=1, lower_arm=0, upper_arm=2 }
+	self.taser.armor =					{ body=2, back=2, head={3, 0.3, 1.0}, face={2, 0.7}, lower_legs=1, upper_legs=0, lower_arm=0, upper_arm=1 }
 	self.spooc.ammo =					{ 1, 0 }
-	self.spooc.armor =					{ body=2, back=2, head={0, 0.0, 0.0}, face={1, 0.8}, lower_legs=2, upper_legs=1, lower_arm=0, upper_arm=0 }
+	self.spooc.armor =					{ body=2, back=2, head={0, 0.0, 0.0}, face={1, 0.8}, lower_legs=1, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.medic.ammo =					{ 1, 1 }
 	self.medic.armor =					{ body=2, back=1, head={2, 0.3, 0.9}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.marshal_marksman.ammo = 		{ 3, 1 }
@@ -15446,7 +15446,7 @@ Hooks:PostHook( CharacterTweakData, "init", "nqr_CharacterTweakData:init", funct
 	self.tank_hw.armor =				{ whole_body=3,   head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 
 	self.phalanx_minion.ammo =			{ 2, 1 }
-	self.phalanx_minion.armor =			{ body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=2 }
+	self.phalanx_minion.armor =			{ body=2, back=1, head={2, 0.3, 0.9}, face={1, 0.5}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=1 }
 	self.phalanx_vip.ammo =				{ 2, 1 }
 	self.phalanx_vip.armor =			{ body=3, back=3, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.triad_boss.ammo = 				{ 0, 0 }
@@ -15456,9 +15456,9 @@ Hooks:PostHook( CharacterTweakData, "init", "nqr_CharacterTweakData:init", funct
 	self.drug_lord_boss.ammo = 			{ 3, 0 }
 	self.drug_lord_boss.armor = 		{ body=3, back=3, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 } --todo plates
 	self.biker_boss.ammo = 				{ 3, 0 }
-	self.biker_boss.armor = 			{ body=3, back=3, head={2, 0.9, 0.0}, face={0, 0.0}, lower_legs=2, upper_legs=2, lower_arm=2, upper_arm=2 }
+	self.biker_boss.armor = 			{ body=3, back=3, head={2, 0.9, 0.0}, face={0, 0.0}, lower_legs=1, upper_legs=1, lower_arm=1, upper_arm=1 }
 	self.hector_boss.ammo = 			{ 1, 0 }
-	self.hector_boss.armor = 			{ body=3, back=3, head={3, 0.3, 0.9}, face={2, 1.0}, lower_legs=2, upper_legs=2, lower_arm=0, upper_arm=0 }
+	self.hector_boss.armor = 			{ body=3, back=3, head={3, 0.3, 0.9}, face={2, 1.0}, lower_legs=1, upper_legs=1, lower_arm=1, upper_arm=1 }
 	self.mobster_boss.ammo = 			{ 2, 0 }
 	self.mobster_boss.armor = 			{ body=1, back=1, head={0, 0.0, 0.0}, face={0, 0.0}, lower_legs=0, upper_legs=0, lower_arm=0, upper_arm=0 }
 	self.chavez_boss.ammo = 			{ 1, 0 }

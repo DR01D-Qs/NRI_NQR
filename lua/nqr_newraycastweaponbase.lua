@@ -661,6 +661,7 @@ function NewRaycastWeaponBase:get_reticle_obj()
 
 		if alive(part.unit) and not part_tweak.blank_sight then
 			self._reticle_obj = part.unit:get_object(Idstring("g_reddot")) or part.unit:get_object(Idstring("g_gfx")) or part.unit:get_object(Idstring("g_reticle"))
+			self._reticle_holo = not part_tweak.reticle_obj
 		end
 	end
 

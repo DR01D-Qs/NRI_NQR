@@ -57,11 +57,9 @@ function ElementCounterFilter:init(...)
 
 
 
-    if not self._values then return end
-
     local job = Global.level_data and Global.level_data.level_id
     local lookup = {
-        haunted = { filter_BD_ovk = 1 },
+        haunted = { filter_BD_ovk = 1, filter_BD_very_hard = 1 },
     }
 
     self._values.value = (lookup[job] and lookup[job][self._editor_name]) or self._values.value
