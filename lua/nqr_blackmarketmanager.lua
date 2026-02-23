@@ -752,7 +752,7 @@ end
 
 
 
-function BlackMarketManager:_cleanup_blackmarket()
+--[[function BlackMarketManager:_cleanup_blackmarket()
 	print("[BlackMarketManager:_cleanup_blackmarket] STARTING BLACKMARKET CLEANUP")
 	print("----------------------------------------------------------------------")
 
@@ -1180,4 +1180,476 @@ function BlackMarketManager:_cleanup_blackmarket()
 
 	print("----------------------------------------------------------------------")
 	print("[BlackMarketManager:_cleanup_blackmarket] BLACKMARKET CLEANUP DONE")
-end
+end]]
+--[[function BlackMarketManager:_cleanup_blackmarket()
+	print("[BlackMarketManager:_cleanup_blackmarket] STARTING BLACKMARKET CLEANUP")
+	print("----------------------------------------------------------------------")
+
+	local crafted_items = self._global.crafted_items
+
+	for category, data in pairs(crafted_items) do
+		if not data or type(data) ~= "table" then
+			Application:error("BlackMarketManager:_cleanup_blackmarket() Crafted items category invalid", "category", category, "data", inspect(data))
+
+			self._global.crafted_items[category] = {}
+		end
+	end
+
+	local function chk_global_value_func(global_value, data, real_global_value)
+		return tweak_data.lootdrop.global_values[global_value or "normal"] and true or false
+	end
+
+	local cleanup_mask = false
+	local crafted_masks = crafted_items.masks
+
+	for i, mask in pairs(crafted_masks) do
+		local mask_data = tweak_data.blackmarket.masks[mask.mask_id]
+		cleanup_mask = not mask_data or mask_data.inaccessible
+		cleanup_mask = cleanup_mask or not chk_global_value_func(mask.global_value, mask, mask_data.infamous and "infamous" or mask_data.dlc or mask_data.global_value)
+		local blueprint = mask.blueprint or {}
+
+		if not cleanup_mask then
+			if not blueprint.color_c then
+				print("[BlackMarketManager:LICConverter] Mask was missing a color_c, adding...")
+
+				blueprint.color_c = {
+					id = "strip_paint",
+					global_value = "normal"
+				}
+			end
+
+			for part_type, data in pairs(blueprint) do
+				local converted_category = MASK_COLOR_CONVERT_MAP[part_type] or part_type
+				local part_data = tweak_data.blackmarket[converted_category] and tweak_data.blackmarket[converted_category][data.id]
+
+				if converted_category == "materials" and (part_type == "color_a" or part_type == "color_b") and not part_data then
+					print("[BlackMarketManager:LICConverter] Has convert color?", data.id, tweak_data.blackmarket.mask_colors[data.id] and tweak_data.blackmarket.mask_colors[data.id].convert_to_material)
+
+					local convert_to_material = tweak_data.blackmarket.mask_colors[data.id] and tweak_data.blackmarket.mask_colors[data.id].convert_to_material or "plastic"
+					part_data = tweak_data.blackmarket.materials[convert_to_material]
+
+					print("[BlackMarketManager:LICConverter] Converting material to " .. convert_to_material, data.id, inspect(part_data or {}))
+
+					if part_data then
+						data.id = convert_to_material
+						data.global_value = part_data.infamous and "infamous" or part_data.global_value or "normal"
+					end
+				end
+
+				cleanup_mask = not part_data
+				cleanup_mask = cleanup_mask or not chk_global_value_func(data.global_value, data, part_data.infamous and "infamous" or part_data.dlc or part_data.global_value)
+
+				if cleanup_mask then
+					print("[BlackMarketManager:LICConverter] Mask added to cleanup due to", converted_category, part_type, "-", data.id)
+
+					break
+				end
+			end
+		end
+
+		if cleanup_mask then
+			if i == 1 then
+				self._global.crafted_items.masks[i] = false
+
+				self:on_buy_mask(self._defaults.mask, "normal", 1, nil)
+			else
+				Application:error("BlackMarketManager:_cleanup_blackmarket() Mask or component of mask invalid, Selling the mask!", "mask_id", mask.mask_id, "global_value", mask.global_value, "blueprint", inspect(blueprint))
+				self:on_sell_mask(i, true)
+			end
+		end
+	end
+
+	local invalid_weapons = {}
+	local invalid_parts = {}
+	local invalid_cosmetics = {}
+
+	local function invalid_add_weapon_remove_parts_func(slot, item, part_id)
+		table.insert(invalid_weapons, slot)
+		Application:error("BlackMarketManager:_cleanup_blackmarket() Part non-existent, weapon invalid", "weapon_id", item.weapon_id, "slot", slot)
+
+		for i = #invalid_parts, 1, -1 do
+			if invalid_parts[i] and invalid_parts[i].slot == slot then
+				Application:error("removing part from invalid_parts", "part_id", part_id)
+				table.remove(invalid_parts, i)
+			end
+		end
+	end
+
+	local missing_from_default = {
+		wpn_fps_smg_olympic = {
+			"wpn_fps_amcar_bolt_standard"
+		}
+	}
+	local factory = tweak_data.weapon.factory
+
+	for _, category in ipairs({
+		"primaries",
+		"secondaries"
+	}) do
+		local crafted_category = self._global.crafted_items[category]
+		invalid_weapons = {}
+		invalid_parts = {}
+		invalid_cosmetics = {}
+
+		for slot, item in pairs(crafted_category) do
+			local factory_id = item.factory_id
+			local weapon_id = item.weapon_id
+			local blueprint = item.blueprint
+			local global_values = item.global_values or {}
+			local texture_switches = item.texture_switches
+			local cosmetics = item.cosmetics
+			local index_table = {}
+			local default_blueprint = managers.weapon_factory:get_default_blueprint_by_factory_id(factory_id)
+
+			if missing_from_default[factory_id] then
+				for _, part in ipairs(missing_from_default[factory_id]) do
+					if not table.contains(blueprint, part) then
+						tag_print("BlackMarketManager:_cleanup_blackmarket()", "Weapon is missing a default part from it's blueprint", weapon_id, part)
+						table.insert(blueprint, part)
+					end
+				end
+			end
+
+			local weapon_invalid = not Global.blackmarket_manager.weapons[weapon_id] or not tweak_data.weapon[weapon_id] or not tweak_data.weapon.factory[factory_id] or managers.weapon_factory:get_factory_id_by_weapon_id(weapon_id) ~= factory_id or managers.weapon_factory:get_weapon_id_by_factory_id(factory_id) ~= weapon_id or not chk_global_value_func(tweak_data.weapon[weapon_id].global_value)
+
+			if weapon_invalid then
+				table.insert(invalid_weapons, slot)
+			else
+				item.global_values = item.global_values or {}
+
+				for i, part_id in ipairs(factory[factory_id].uses_parts) do
+					index_table[part_id] = i
+				end
+
+				for i, part_id in ipairs(blueprint) do
+					if not index_table[part_id] or not chk_global_value_func(item.global_values[part_id]) then
+						Application:error("BlackMarketManager:_cleanup_blackmarket() Weapon part no longer in uses parts or bad global value", "part_id", part_id, "weapon_id", item.weapon_id, "part_global_value", item.global_values[part_id])
+
+						if table.contains(default_blueprint, part_id) then
+							invalid_add_weapon_remove_parts_func(slot, item, part_id)
+
+							break
+						else
+							local default_mod = nil
+
+							if tweak_data.weapon.factory.parts[part_id] then
+								local ids_id = Idstring(tweak_data.weapon.factory.parts[part_id].type)
+
+								for i, d_mod in ipairs(default_blueprint) do
+									if Idstring(tweak_data.weapon.factory.parts[d_mod].type) == ids_id then
+										default_mod = d_mod
+
+										break
+									end
+								end
+
+								if default_mod then
+									table.insert(invalid_parts, {
+										global_value = "normal",
+										refund = false,
+										reason = "not for weapon (default)",
+										slot = slot,
+										default_mod = default_mod,
+										part_id = part_id
+									})
+								else
+									table.insert(invalid_parts, {
+										refund = true,
+										reason = "not for weapon",
+										slot = slot,
+										global_value = item.global_values[part_id] or "normal",
+										part_id = part_id
+									})
+								end
+							else
+								invalid_add_weapon_remove_parts_func(slot, item, part_id)
+
+								break
+							end
+						end
+					end
+				end
+
+				local duplicate_parts = managers.weapon_factory:get_duplicate_parts_by_type(blueprint)
+
+				for _, part_id in ipairs(duplicate_parts) do
+					local default_mod = nil
+					local ids_id = Idstring(tweak_data.weapon.factory.parts[part_id].type)
+
+					for i, d_mod in ipairs(default_blueprint) do
+						if Idstring(tweak_data.weapon.factory.parts[d_mod].type) == ids_id then
+							default_mod = d_mod
+
+							break
+						end
+					end
+
+					local remove_part = true
+
+					if remove_part then
+						if default_mod then
+							table.insert(invalid_parts, {
+								global_value = "normal",
+								refund = false,
+								reason = "duplicate part (default)",
+								slot = slot,
+								default_mod = default_mod,
+								part_id = part_id
+							})
+						else
+							table.insert(invalid_parts, {
+								refund = true,
+								reason = "duplicate part",
+								slot = slot,
+								global_value = item.global_values[part_id] or "normal",
+								part_id = part_id
+							})
+						end
+					end
+				end
+
+				if cosmetics then
+					local invalid_cosmetic = not cosmetics.id or not tweak_data.blackmarket.weapon_skins[cosmetics.id]
+
+					if invalid_cosmetic then
+						table.insert(invalid_cosmetics, slot)
+					end
+				else
+					item.customize_locked = nil
+				end
+			end
+
+			if texture_switches then
+				local invalid_texture_switches = {}
+
+				for part_id, texture_id in pairs(texture_switches) do
+					if not tweak_data.weapon.factory.parts[part_id] then
+						table.insert(invalid_texture_switches, part_id)
+					else
+						local texture = self:get_part_texture_switch(category, slot, part_id)
+
+						if not texture or type(texture) ~= "string" or texture == "" then
+							table.insert(invalid_texture_switches, part_id)
+						end
+					end
+				end
+
+				for _, part_id in ipairs(invalid_texture_switches) do
+					texture_switches[part_id] = nil
+
+					Application:error("BlackMarketManager:_cleanup_blackmarket() Removing invalid weapon texture switch", "category", category, "slot", slot, "part_id", part_id)
+				end
+			end
+
+			local t = {}
+
+			for part_id, gv in pairs(global_values) do
+				if not table.contains(blueprint, part_id) then
+					Application:error("BlackMarketManager:_cleanup_blackmarket() part exists in weapons global values but not in its blueprint. Removing it", "category", category, "slot", slot, "part_id", part_id, "global_value", gv)
+					table.insert(t, part_id)
+				end
+			end
+
+			for i, part_id in ipairs(t) do
+				global_values[part_id] = nil
+			end
+		end
+
+		for _, slot in ipairs(invalid_cosmetics) do
+			Application:error("BlackMarketManager:_cleanup_blackmarket() Removing invalid Weapon skin", "slot", slot, "inspect", inspect(crafted_category[slot]))
+			self:on_remove_weapon_cosmetics(category, slot, true)
+		end
+
+		for _, slot in ipairs(invalid_weapons) do
+			Application:error("BlackMarketManager:_cleanup_blackmarket() Removing invalid Weapon", "slot", slot, "inspect", inspect(crafted_category[slot]))
+			self:on_sell_weapon(category, slot, true)
+		end
+
+		for _, data in ipairs(invalid_parts) do
+			if crafted_category[data.slot] then
+				Application:error("BlackMarketManager:_cleanup_blackmarket() Removing invalid Weapon part", data.reason, "slot", data.slot, "part_id", data.part_id, "default_mod", data.default_mod, "inspect", inspect(crafted_category[data.slot]), inspect(data))
+
+				if data.default_mod then
+					self:buy_and_modify_weapon(category, data.slot, data.global_value, data.default_mod, true, true, true)
+				else
+					self:remove_weapon_part(category, data.slot, data.global_value, data.part_id, true)
+				end
+
+				if data.refund ~= false then
+					managers.money:refund_weapon_part(crafted_category[data.slot].weapon_id, data.part_id, data.global_value)
+				end
+			else
+				Application:error("BlackMarketManager:_cleanup_blackmarket() No crafted item in slot", "category", category, "slot", data.slot)
+			end
+		end
+	end
+
+	local bm_tweak_data = tweak_data.blackmarket
+	local invalid_items = {}
+	local changed_items = {}
+
+	local function add_invalid_global_value_func(global_value)
+		invalid_items[global_value] = true
+
+		Application:error("BlackMarketManager:_cleanup_blackmarket() Invalid inventory global_value detected", "global_value", global_value)
+	end
+
+	local function add_invalid_category_func(global_value, category)
+		invalid_items[global_value] = invalid_items[global_value] or {}
+		invalid_items[global_value][category] = true
+
+		Application:error("BlackMarketManager:_cleanup_blackmarket() Invalid inventory category detected", "global_value", global_value, "category", category)
+	end
+
+	local function add_invalid_item_func(global_value, category, item)
+		invalid_items[global_value] = invalid_items[global_value] or {}
+		invalid_items[global_value][category] = invalid_items[global_value][category] or {}
+		invalid_items[global_value][category][item] = true
+
+		Application:error("BlackMarketManager:_cleanup_blackmarket() Invalid inventory item detected", "global_value", global_value, "category", category, "item", item)
+	end
+
+	local function convert_color_to_material_item_func(global_value, category, item, num_owned, material_id)
+		print("[BlackMarketManager:LICConverter] Trying...", global_value, category, item, num_owned, material_id)
+
+		local inventory = self._global.inventory
+		local material_tweak_data = tweak_data.blackmarket.materials[material_id] or tweak_data.blackmarket.materials.plastic
+
+		if material_tweak_data then
+			local material_global_value = material_tweak_data.global_value or material_tweak_data.infamous and "infamous" or "normal"
+			inventory[material_global_value] = inventory[material_global_value] or {}
+			inventory[material_global_value].materials = inventory[material_global_value].materials or {}
+			inventory[material_global_value].materials[material_id] = num_owned
+
+			print("[BlackMarketManager:LICConverter]", item, "into", material_id, num_owned)
+		end
+
+		add_invalid_item_func(global_value, category, item)
+	end
+
+	if self._global.inventory.normal and self._global.inventory.normal.masks and self._global.inventory.normal.masks.arch_nemesis then
+		self._global.inventory.normal.masks.arch_nemesis = nil
+	end
+
+	for global_value, categories in pairs(self._global.inventory or {}) do
+		if not chk_global_value_func(global_value) then
+			add_invalid_global_value_func(global_value)
+		else
+			for category, items in pairs(categories) do
+				if not bm_tweak_data[category] then
+					add_invalid_category_func(global_value, category)
+				else
+					for item, num in pairs(items) do
+						local item_tweak_data = bm_tweak_data[category][item]
+
+						if not item_tweak_data then
+							add_invalid_item_func(global_value, category, item)
+						elseif category == "mask_colors" and item_tweak_data.convert_to_material then
+							convert_color_to_material_item_func(global_value, category, item, num, item_tweak_data.convert_to_material)
+						elseif item_tweak_data.inaccessible then
+							add_invalid_item_func(global_value, category, item)
+						elseif category ~= "mask_colors" then
+							local global_values = {}
+
+							if item_tweak_data.infamous then
+								table.insert(global_values, "infamous")
+							end
+
+							if item_tweak_data.dlc then
+								table.insert(global_values, item_tweak_data.dlc)
+							end
+
+							if item_tweak_data.dlcs then
+								for _, dlc in ipairs(item_tweak_data.dlcs) do
+									table.insert(global_values, dlc)
+								end
+							end
+
+							if item_tweak_data.global_value then
+								table.insert(global_values, item_tweak_data.global_value)
+							end
+
+							if #global_values == 0 then
+								table.insert(global_values, "normal")
+							end
+
+							global_values = table.list_union(global_values)
+
+							if not table.contains(global_values, global_value) then
+								add_invalid_item_func(global_value, category, item)
+							else
+								for _, gv in ipairs(global_values) do
+									if not chk_global_value_func(gv) then
+										add_invalid_item_func(global_value, category, item)
+
+										break
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	for global_value, categories in pairs(invalid_items) do
+		if type(categories) == "boolean" then
+			self._global.inventory[global_value] = nil
+			self._global.new_drops[global_value] = nil
+		else
+			for category, items in pairs(categories) do
+				if type(items) == "boolean" then
+					if not self._global.inventory[global_value] then
+						Application:error("[BlackMarketManager] global_value do not exists in inventory", global_value)
+					else
+						self._global.inventory[global_value][category] = nil
+
+						if self._global.new_drops[global_value] then
+							self._global.new_drops[global_value][category] = nil
+						end
+					end
+				else
+					for item, invalid in pairs(items) do
+						if not self._global.inventory[global_value] then
+							Application:error("[BlackMarketManager] global_value do not exists in inventory", global_value)
+						elseif not self._global.inventory[global_value][category] then
+							Application:error("[BlackMarketManager] category do not exists in inventory", category)
+						else
+							self._global.inventory[global_value][category][item] = nil
+
+							if self._global.new_drops[global_value] and self._global.new_drops[global_value][category] then
+								self._global.new_drops[global_value][category][item] = nil
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	for _, item in pairs(changed_items) do
+		self._global.inventory[item.global_value] = self._global.inventory[item.global_value] or {}
+		self._global.inventory[item.global_value][item.category] = self._global.inventory[item.global_value][item.category] or {}
+		self._global.inventory[item.global_value][item.category][item.id] = (self._global.inventory[item.global_value][item.category][item.id] or 0) + 1
+
+		Application:error("[BlackMarketManager] Inventory item changed global value: ", item.category, item.id, item.global_value)
+	end
+
+	if self._global.inventory_tradable then
+		local invalid_tradable_items = {}
+
+		for instance_id, data in pairs(self._global.inventory_tradable) do
+			if not data.category or not data.entry or not data.amount then
+				table.insert(invalid_tradable_items, instance_id)
+			end
+		end
+
+		for _, instance_id in ipairs(invalid_tradable_items) do
+			self._global.inventory_tradable[instance_id] = nil
+		end
+	end
+
+	print("----------------------------------------------------------------------")
+	print("[BlackMarketManager:_cleanup_blackmarket] BLACKMARKET CLEANUP DONE")
+end]]
