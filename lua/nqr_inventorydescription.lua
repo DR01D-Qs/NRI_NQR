@@ -163,7 +163,7 @@ function WeaponDescription._get_base_stats(name)
 
 		if stat.name == "magazine" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
 				if part_data.stats and part_data.stats.CLIP_AMMO_MAX then
 					base_stats[stat.name].value = (
 						type(part_data.stats.CLIP_AMMO_MAX)=="table"
@@ -175,7 +175,7 @@ function WeaponDescription._get_base_stats(name)
 			base_stats[stat.name].value = (base_stats[stat.name].value or wep_tweak.CLIP_AMMO_MAX or 0)
 		elseif stat.name == "totalammo" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
 				if part_data.stats and part_data.stats.mag_amount then
 					base_stats[stat.name].value = (
 						part_data.stats.mag_amount[2]
@@ -196,7 +196,7 @@ function WeaponDescription._get_base_stats(name)
 			) or "Default"
 		elseif stat.name == "barrel_length" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
 				if part_data.stats and part_data.stats.barrel_length then
 					base_stats[stat.name].value = part_data.stats.barrel_length
 					break
@@ -209,7 +209,7 @@ function WeaponDescription._get_base_stats(name)
 			base_stats[stat.name].value = base_stats[stat.name].value or 0
 
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
 				if part_data.stats and (part_data.stats.length or part_data.stats.barrel_length) then
 					base_stats[stat.name].value = base_stats[stat.name].value + (part_data.stats.length or 0) + (part_data.stats.barrel_length or 0)
 				end
