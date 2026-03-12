@@ -59,9 +59,23 @@ local function sfindt_plain(string, table)
 	end
 end
 
-local job_instance_returns = {
+local job_donttouch = {
+
+}
+local job_instance_donttouch = {
 	peta2 = { "pet_roadswats" },
-	wwh = { "intro_shield009", "intro_shield012", "intro_shield013", "intro_shield016" },
+}
+
+local job_denys100 = {
+	dinner = { "_shield001", "_shield005", "_shield009", "_shield013", "_shield019" },
+}
+local job_denys100_specific = {
+	wwh = {
+		intro_shield009 = true,
+		intro_shield012 = true,
+		intro_shield013 = true,
+		intro_shield016 = true,
+	},
 }
 
 local haras_job_denys_specific = {
@@ -220,6 +234,31 @@ local job_denys_specific = {
 		ai_spawn_enemy_140 = true,
 		ai_spawn_enemy_139 = true,
 	},
+	dinner = {
+		car1_follow_enemy003 = true,
+		car1_follow_enemy004 = true,
+		car1_crash_enemy003 = true,
+		car1_crash_enemy004 = true,
+		car2_follow_enemy003 = true,
+		car2_follow_enemy004 = true,
+		car2_crash_enemy003 = true,
+		car2_crash_enemy004 = true,
+		car3_follow_enemy003 = true,
+		car3_follow_enemy004 = true,
+		car3_crash_enemy003 = true,
+		car3_crash_enemy004 = true,
+		car4_follow_enemy002 = true,
+		car4_follow_enemy003 = true,
+		car4_reverse_enemy002 = true,
+		car4_reverse_enemy003 = true,
+	},
+	dah = {
+		ai_spawn_enemy_004 = true,
+		ai_spawn_enemy_008 = true,
+		ai_spawn_enemy_023 = true,
+		ai_spawn_enemy_024 = true,
+		ai_spawn_enemy_025 = true,
+	},
 }
 --instance glace_helicopter_dozer_003
 --glace_prison_bus_002 ai_spawn_enemy_002
@@ -234,12 +273,17 @@ local job_denys = {
 	red2 = { "_after_vault" },
 	spa = { "ai_spawn_gangster_apt" },
 	bph = { "spawn_ambush_connector_", "spawn_ambush_turretroom_" },
-	des = { "ai_spawn_murkywater_" }
+	des = { "ai_spawn_murkywater_" },
+	flat = { "blockade cop", "fixed mexican 145 thug ", "spawn_escape_shield_", "building_sniper_spawn_" },
+	dinner = { "garage_murky" },
+	born = { "ai_spawn_enemy_biker0" },
+	friend = { "_entrance_thug" },
 }
 local job_instance_denys = {
 	pbr2 = { "sewer_enem", "pbr_plane_" },
 	deep = { "deep_helicopter_enemies" },
 	spa = { "spa_gangster_group_" },
+	sand = { "sand_spawn_enemies_" },
 }
 
 local sniper_denys = {
@@ -258,6 +302,8 @@ local sniper_denys = {
 	man = true,
 	hox_2 = true,
 	wwh = true,
+	dinner = true,
+	crojob2 = true,
 }
 
 local function harasser_deheavify(name)
@@ -280,14 +326,13 @@ function ElementSpawnEnemyDummy:produce(params)
 
 	local harasser = nil
 	local denied = nil
-	local dont_antiharass = nil
 
 	if rtrn_buffer[editor_name]
-	or (job_instance_returns[job] and sfindt_plain(instance_name, job_instance_returns[job]))
+	or (job_donttouch[job] and sfindt_plain(editor_name, job_donttouch[job]))
+	or (job_instance_donttouch[job] and sfindt_plain(instance_name, job_instance_donttouch[job]))
 	or sfind_plain(editor_name, "boss") 
 	then
 		rtrn_buffer[editor_name] = true
-		dont_antiharass = true
 	else
 		local players_amount_mul = managers.groupai:state():_get_balancing_multiplier(tweak_data.group_ai.besiege.assault.force_balance_mul) or 1
 
@@ -309,9 +354,14 @@ function ElementSpawnEnemyDummy:produce(params)
 			or (job=="flat" and (0.1 * players_amount_mul))
 			or 0.2
 		)
-		local deny_other_proc = math.random() > ((job=="jolly" and 0.2 or 0.4) * players_amount_mul)
+		local deny_other_chances = {
+			jolly = 0.2,
+		}
+		local deny_other_proc = math.random() > ((deny_other_chances[job] or 0.4) * players_amount_mul)
 
 		if (harasser and deny_harasser_proc)
+		or (job_denys100_specific[job] and job_denys100_specific[job][editor_name])
+		or (job_denys100[job] and sfindt_plain(editor_name, job_denys100[job]))
 		or deny_other_proc and (
 			deny_buffer[editor_name] or (
 				(job_denys_specific[job] and job_denys_specific[job][editor_name])

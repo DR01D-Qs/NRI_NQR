@@ -4375,7 +4375,7 @@ function PlayerInventoryGui:_get_mods_stats(name, base_stats, equipped_mods, bon
 		local part_data = nil
 
 		for _, mod in ipairs(equipped_mods) do
-			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, default_blueprint)
+			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, equipped_mods)
 
 			if part_data then
 				for _, stat in pairs(self._stats_shown) do

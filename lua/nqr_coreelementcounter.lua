@@ -22,7 +22,11 @@ function ElementCounter:init(...)
         nail = { all_ingredients = 2, },
         --peta = { count_to_13 = 4,},
         peta2 = { count_to_13 = 1, },
+        dah = { ["2_bags_secured"] = 1, ["3_bags_secured"] = 2, ["4_bags_secured"] = 4, ["6_bags_secured"] = 4, ["8_bags_secured"] = 4 }
     }
+    if Global.game_settings.difficulty=="normal" then
+        lookup.dah["4_bags_secured"] = 2
+    end
 
     self._values.counter_target = (lookup[job] and lookup[job][self._editor_name]) or self._values.counter_target
 end

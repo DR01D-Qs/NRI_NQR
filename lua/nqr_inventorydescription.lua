@@ -163,7 +163,7 @@ function WeaponDescription._get_base_stats(name)
 
 		if stat.name == "magazine" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
 				if part_data.stats and part_data.stats.CLIP_AMMO_MAX then
 					base_stats[stat.name].value = (
 						type(part_data.stats.CLIP_AMMO_MAX)=="table"
@@ -175,7 +175,7 @@ function WeaponDescription._get_base_stats(name)
 			base_stats[stat.name].value = (base_stats[stat.name].value or wep_tweak.CLIP_AMMO_MAX or 0)
 		elseif stat.name == "totalammo" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
 				if part_data.stats and part_data.stats.mag_amount then
 					base_stats[stat.name].value = (
 						part_data.stats.mag_amount[2]
@@ -196,7 +196,7 @@ function WeaponDescription._get_base_stats(name)
 			) or "Default"
 		elseif stat.name == "barrel_length" then
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
 				if part_data.stats and part_data.stats.barrel_length then
 					base_stats[stat.name].value = part_data.stats.barrel_length
 					break
@@ -209,7 +209,7 @@ function WeaponDescription._get_base_stats(name)
 			base_stats[stat.name].value = base_stats[stat.name].value or 0
 
 			for i, k in pairs(default_blueprint) do
-				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, default_blueprint)
+				part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(k, factory_id, equipped_mods)
 				if part_data.stats and (part_data.stats.length or part_data.stats.barrel_length) then
 					base_stats[stat.name].value = base_stats[stat.name].value + (part_data.stats.length or 0) + (part_data.stats.barrel_length or 0)
 				end
@@ -242,7 +242,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 		local part_data = nil
 
 		for _, mod in ipairs(equipped_mods) do
-			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, default_blueprint)
+			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, equipped_mods)
 
 			if part_data and part_data.stats then
 				for _, stat in pairs(WeaponDescription._stats_shown) do
@@ -256,7 +256,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 						if part_data.custom_stats and part_data.custom_stats.fire_rate_multiplier then
 							mods_stats[stat.name].value = base_stats[stat.name].value * (part_data.custom_stats.fire_rate_multiplier - 1)
 						end
-					else
+					else						
 						mods_stats[stat.name].value = mods_stats[stat.name].value + (part_data.stats[stat.name] or 0)
 					end
 				end
@@ -299,7 +299,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 		local mag_main = 0
 		local mag_ext = 0
 		for _, mod in ipairs(equipped_mods) do
-			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, default_blueprint)
+			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, equipped_mods)
 
 			if part_data and part_data.stats then
 				if part_data.stats.CLIP_AMMO_MAX then
@@ -331,7 +331,7 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 		local main_total_ammo = 0
 		local added_total_ammo = 0
 		for _, mod in ipairs(equipped_mods) do
-			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, default_blueprint)
+			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod, factory_id, equipped_mods)
 
 			if part_data and part_data.stats then
 				if part_data.stats.totalammo then
@@ -475,7 +475,7 @@ function WeaponDescription._get_weapon_mod_stats(mod_name, weapon_name, base_sta
 		part_data = nil
 
 		if mod.name then
-			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod.name, factory_id, default_blueprint)
+			part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(mod.name, factory_id, equipped_mods)
 		end
 
 		for _, stat in pairs(WeaponDescription._stats_shown) do

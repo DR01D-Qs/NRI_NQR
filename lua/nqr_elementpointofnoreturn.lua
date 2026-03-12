@@ -24,6 +24,8 @@ function ElementPointOfNoReturn:on_executed(instigator)
         roberts = 2,
 
         oil_rig_will_explode = 1.5,
+
+        bnktower = 2,
      }
   local lookup_acc = {
 		nmh = { func_point_no_return_001 = 1.2, point_no_return_065 = 0.5 },
@@ -35,6 +37,8 @@ function ElementPointOfNoReturn:on_executed(instigator)
 			self._values[i] = self._values[i] * (lookup[job] or (lookup_acc[job] and lookup_acc[job][self._values._editor_name]) or 1)
 		end
     end
+
+
 
 	self:operation_add()
 	ElementPointOfNoReturn.super.on_executed(self, instigator)

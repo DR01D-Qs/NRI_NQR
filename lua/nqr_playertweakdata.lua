@@ -927,4 +927,9 @@ Hooks:PostHook( PlayerTweakData, "_init_new_stances", "nqr_playertweakdata:_init
 	self.stances.tti.steelsight.shoulders.translation = Vector3(-9.36896, -2.853, 0.935059)
 	self.stances.tti.steelsight.shoulders.rotation = Rotation(0, -0.000348389, 5.86957e-005)
 
+	self.stances.ms3gl.standard.shoulders.translation = Vector3(-2.45443, 5.94613, -0.739)
+	self.stances.ms3gl.standard.shoulders.rotation = Rotation(1.66557e-008, 0, 0.001)
+	self.stances.ms3gl.steelsight.shoulders.translation = Vector3(-12.6008, -1.662, -1.311)
+	self.stances.ms3gl.steelsight.shoulders.rotation = Rotation(6.36053e-005, 0, 0.00131194)
+
 end)

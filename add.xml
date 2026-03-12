@@ -13,7 +13,6 @@
 	<model path="units\payday2\weapons\wpn_fps_ass_amcar_pts\wpn_fps_amcar_uupg_fg_amcar" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_aug\wpn_fps_ass_aug" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_g36\wpn_fps_ass_g36" force="true"/>
-	<animation path="units\payday2\weapons\wpn_fps_ass_g36_pts\wpn_fps_ass_g36_m_standard" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_g36_pts\wpn_fps_ass_g36_m_standard" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_m16\wpn_fps_ass_m16" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_m16_pts\wpn_fps_m16_fg_railed" force="true"/>
@@ -72,7 +71,6 @@
 	<model path="units\pd2_dlc_berry\weapons\wpn_fps_snp_model70_pts\wpn_fps_snp_model70_ns_suppressor" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000\wpn_fps_ass_sub2000" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_gen1" force="true"/>
-	<animation path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_gen2" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_gen2" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_railed" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_suppressed" force="true"/>
@@ -84,12 +82,10 @@
 	<model path="units\pd2_dlc_dec5\weapons\wpn_fps_ass_scar_pts\wpn_fps_ass_scar_b_short" force="true"/>
 	<model path="units\pd2_dlc_dragan\weapons\wpn_fps_ass_vhs\wpn_fps_ass_vhs" force="true"/>
 	<model path="units\pd2_dlc_dragan\weapons\wpn_fps_ass_vhs_pts\wpn_fps_ass_vhs_body" force="true"/>
-	<animation path="units\pd2_dlc_dragan\weapons\wpn_fps_ass_vhs_pts\wpn_fps_ass_vhs_m" force="true"/>
 	<model path="units\pd2_dlc_dragan\weapons\wpn_fps_ass_vhs_pts\wpn_fps_ass_vhs_m" force="true"/>
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_fps_pis_m1911_body_standard" force="true"/>
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_third_pis_m1911_body_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas\wpn_fps_ass_famas" force="true"/>
-	<animation path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_m_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_m_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_o_adapter" force="true"/>
 	<model path="units\pd2_dlc_gage_historical\weapons\wpn_fps_lmg_mg42_pts\wpn_fps_lmg_mg42_reciever" force="true"/>
@@ -121,7 +117,6 @@
 	<model path="units\pd2_dlc_pim\weapons\wpn_fps_snp_desertfox_pts\wpn_fps_snp_desertfox_b_short" force="true"/>
 	<model path="units\pd2_dlc_pim\weapons\wpn_fps_snp_desertfox_pts\wpn_fps_snp_desertfox_b_silencer" force="true"/>
 	<model path="units\pd2_dlc_pim\weapons\wpn_fps_snp_desertfox_pts\wpn_fps_snp_desertfox_ns_comp" force="true"/>
-	<animation path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_drum" force="true"/>
 	<model path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_drum" force="true"/>
 	<model path="units\pd2_dlc_pxp2\weapons\wpn_fps_sho_sko12_pts\wpn_fps_sho_sko12_mag_stick" force="true"/>
 	<model path="units\pd2_dlc_pxp3\weapons\wpn_fps_upg_o_northtac\wpn_fps_upg_o_northtac_reddot" force="true"/>
@@ -259,6 +254,8 @@
 
 	<object path="units/pd2_dlc_pxp2/weapons/wpn_fps_sho_sko12_pts/wpn_fps_sho_sko12_mag_stick" force="true"/>
 	<object path="units/payday2/weapons/wpn_fps_ass_g36/wpn_fps_ass_g36" force="true"/>
+	<object path="units/pd2_dlc1/weapons/wpn_fps_ass_s552/wpn_fps_ass_s552" force="true"/>
+	<model path="units/pd2_dlc1/weapons/wpn_fps_ass_s552/wpn_fps_ass_s552" force="true"/>
 	<object path="units/pd2_dlc_gage_assault/weapons/wpn_fps_ass_famas/wpn_fps_ass_famas" force="true"/>
 	<object path="units/pd2_dlc_dragan/weapons/wpn_fps_ass_vhs/wpn_fps_ass_vhs" force="true"/>
 	<object path="units/pd2_dlc_chico/weapons/wpn_fps_ass_contraband/wpn_fps_ass_contraband" force="true"/>

@@ -155,7 +155,8 @@
 	"bm_wp_upg_cal_9x19" : "9x19 Caliber Conversion",
 	"bm_wp_upg_cal_40sw" : ".40 S&W Caliber Conversion",
 	"bm_wp_upg_cal_45acp" : ".45 ACP Caliber Conversion",
-	"bm_wp_upg_cal_45lc" : ".45 LC Caliber Conversion",
+	"bm_wp_upg_cal_45lc" : ".45 LC Caliber",
+	"bm_wp_upg_cal_556x45" : "5.56x45 Caliber Conversion"
 	"bm_wp_upg_cal_50beo" : ".50 Beo Caliber Conversion",
 	"bm_wp_upg_cal_300blk" : ".300 BLK Caliber Conversion",
 	"bm_wp_upg_cal_762x39" : "7.62x39 Caliber Conversion",
@@ -358,6 +359,7 @@
 	"bm_wp_korth_m_6" : "Octa Cylinder",
 	"bm_wp_r870_gadgetrail" : "Reinfeld Gadget Rail",
 	"bm_wp_model70_b_short" : "Short Barrel",
+	"bm_wp_rota_b_salvo" : "Shh! Barrel",
 
 	"bm_wp_upg_ass_74_b_legend" : "Vlad's Rodina Barrel",
 	"bm_wp_upg_ass_74_ns_legend" : "Vlad's Rodina Barrel Extension",

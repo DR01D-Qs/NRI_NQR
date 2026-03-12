@@ -155,7 +155,8 @@
 	"bm_wp_upg_cal_9x19" : "Конверсия Калибра 9x19",
 	"bm_wp_upg_cal_40sw" : "Конверсия Калибра .40 S&W",
 	"bm_wp_upg_cal_45acp" : "Конверсия Калибра .45 ACP",
-	"bm_wp_upg_cal_45lc" : "Конверсия Калибра .45 LC",
+	"bm_wp_upg_cal_45lc" : "Калибр .45 LC",
+	"bm_wp_upg_cal_556x45" : "Конверсия Калибра 5.56x45"
 	"bm_wp_upg_cal_50beo" : "Конверсия Калибра .50 Beo",
 	"bm_wp_upg_cal_300blk" : "Конверсия Калибра .300 BLK",
 	"bm_wp_upg_cal_762x39" : "Конверсия Калибра 7.62x39",
@@ -194,8 +195,8 @@
 	"bm_wp_victor_ns_standard" : "Дульный Тормоз North Star",
 	"bm_wp_victor_ns_hera_muzzle" : "Пламегаситель Celestial",
 	"bm_wp_victor_ns_hera_supp" : "Глушитель Celestial",
-	"bm_wp_upg_ns_sho_salvo_large" : "Глушитель Shh!",
-	"bm_wp_upg_ns_sho_salvo_small" : "Глушитель Sh!",
+	"bm_wp_upg_ns_sho_salvo_large" : "Глушитель Тсс!",
+	"bm_wp_upg_ns_sho_salvo_small" : "Глушитель Тс!",
 
 	"bm_wp_m4_uupg_b_long" : "Ствол CAR 20' (Винтовочный Газоотвод)",
 	"bm_wp_m4_uupg_b_medium" : "Ствол CAR 14.5' (Карабиновый Газоотвод)",
@@ -358,6 +359,7 @@
 	"bm_wp_korth_m_6" : "Барабан Octa",
 	"bm_wp_r870_gadgetrail" : "Планка Гаджета Reinfeld",
 	"bm_wp_model70_b_short" : "Укороченный Ствол",
+	"bm_wp_rota_b_salvo" : "Ствол Тсс!",
 
 	"bm_wp_upg_ass_74_b_legend" : "Ствол Vlad's Rodina",
 	"bm_wp_upg_ass_74_ns_legend" : "Насадка Vlad's Rodina",

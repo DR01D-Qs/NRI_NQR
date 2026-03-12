@@ -145,7 +145,8 @@
 	"bm_wp_upg_cal_9x19" : "9x19口径转换",
 	"bm_wp_upg_cal_40sw" : ".40 S&W口径转换",
 	"bm_wp_upg_cal_45acp" : ".45 ACP口径转换",
-	"bm_wp_upg_cal_45lc" : ".45 LC口径转换",
+	"bm_wp_upg_cal_45lc" : ".45 LC口径",
+	"bm_wp_upg_cal_556x45" : "5.56x45口径转换"
 	"bm_wp_upg_cal_50beo" : ".50 Beo口径转换",
 	"bm_wp_upg_cal_300blk" : ".300 BLK口径转换",
 	"bm_wp_upg_cal_762x39" : "7.62x39口径转换",

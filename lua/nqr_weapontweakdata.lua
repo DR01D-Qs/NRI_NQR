@@ -974,6 +974,14 @@ end
 				default_barrel = 20,
 				caliber_weight = 17.2,
 			},
+			{ name = "Sub FMJ",
+				proj_type = "pointy",
+				proj_weight = 220,
+				default_speed = 320,
+				default_energy = 730,
+				default_barrel = 20,
+				caliber_weight = 22.7,
+			},
 		},
 		["5.45x39"] = {
 			class = "rifle",
@@ -1396,7 +1404,7 @@ end
 --THE STATS
 ------ASSAULT RIFLE
 	self.new_m4.caliber = "5.56x45"
-	self.new_m4.weight = 29
+	self.new_m4.weight = 32
 	self.new_m4.stats.alert_size = 7
 	self.new_m4.stats.value = 1
 	self.new_m4.stats.suppression = 10
@@ -1473,7 +1481,7 @@ end
 	self.amcar.timers = self.new_m4.timers
 
 	self.m16.caliber = "5.56x45"
-	self.m16.weight = 37
+	self.m16.weight = 35
 	self.m16.fire_mode_data.fire_rate = 0.08
 	self.m16.rise_factor = 0
 	self.m16.bolt_release = "half"
@@ -1485,7 +1493,7 @@ end
 	self.m16.timers = self.new_m4.timers
 
 	self.olympic.caliber = "5.56x45"
-	self.olympic.weight = 27
+	self.olympic.weight = 24
 	self.olympic.rise_factor = 0
 	self.olympic.bolt_release = "half"
 	self.olympic.fire_mode_data.fire_rate = 0.0667
@@ -2284,7 +2292,7 @@ end
 	self.r870.use_shotgun_reload = true
 
 	self.serbu.caliber = "12 gauge"
-	self.serbu.weight = 26
+	self.serbu.weight = 23
 	self.serbu.rise_factor = 2
 	self.serbu.action = "pump_action"
 	self.serbu.feed_system = "tube_fed"
@@ -2297,7 +2305,7 @@ end
 	self.serbu.use_shotgun_reload = true
 
 	self.m590.caliber = "12 gauge"
-	self.m590.weight = 58 --plus a stock
+	self.m590.weight = 26+2+2 --stock and adapter
 	self.m590.rise_factor = 2
 	self.m590.action = "pump_action"
 	self.m590.feed_system = "tube_fed"
@@ -3414,8 +3422,18 @@ end
 
 	self.ms3gl.weight = 30 --roughly
 	self.ms3gl.caliber = "40x46mm"
-	self.ms3gl.feed_system = "stacked"
+	self.ms3gl.feed_system = "cylinder_open"
 	self.ms3gl.use_shotgun_reload = true
+	self.ms3gl.FIRE_MODE = "single"
+	self.ms3gl.bolt_release = "rotate"
+	self.ms3gl.bolt_release_ratio = { 1.0, 0.8 }
+	self.ms3gl.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+	self.ms3gl.timers.shotgun_reload_first_shell_offset = nil
+	self.ms3gl.r_exit_mul = 1
+	self.ms3gl.r_enter = 30
+	self.ms3gl.r_get_new_mag_in = 0.7
+	self.ms3gl.shot_anim_hands_offset = 6/30
+	self.ms3gl.eq_fr = {0,9,17}
 
 	self.arbiter.weight = 64
 	self.arbiter.caliber = "25x40mm"

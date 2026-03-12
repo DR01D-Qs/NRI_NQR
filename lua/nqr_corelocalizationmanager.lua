@@ -33,6 +33,7 @@ function LocalizationManager:text(string_id, macros)
 			["bm_wp_upg_ns_pis_large_desc"] = true,
 			["bm_wp_upg_ns_ass_smg_large_desc"] = true,
 			["bm_wp_upg_ns_shot_thick_desc"] = true,
+			["wpn_fps_smg_mp5_fg_mp5sd"] = true,
 
 			["bm_wp_m4_uupg_b_long_desc"] = true,
 			["bm_wp_m4_uupg_b_medium_desc"] = true,

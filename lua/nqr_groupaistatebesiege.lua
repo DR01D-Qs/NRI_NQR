@@ -171,7 +171,8 @@ function GroupAIStateBesiege:set_wave_mode(flag)
 	self._hunt_mode = nil
 	local job = Global.level_data and Global.level_data.level_id
 	local lookup = {
-		peta2 = {},
+		peta2 = true,
+		dah = true,
 	}
 
 	if flag == "hunt" then
