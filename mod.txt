@@ -3,7 +3,7 @@
 	"description" : "NQR is a big work-in-progress overhaul mod, which aims for a vastly more grounded, hollywood-realism-flavoured gameplay experience.",
 	"author" : "DR01D_Qs, TheTankDivision, splish",
 	"contact" : "https://modworkshop.net/mod/54318",
-	"version" : "0.1.24.1",
+	"version" : "0.1.24.2",
 	"image" : "nqr_icon.png",
 	"blt_version" : 2,
 	"priority" : 100,
@@ -23,6 +23,7 @@
 	],
 
 	"hooks" : [
+		{"hook_id":"core/lib/managers/coreenvironmentcontrollermanager","script_path":"lua/nqr_coreenvironmentcontrollermanager.lua"},
 		{"hook_id":"core/lib/managers/corelocalizationmanager","script_path":"lua/nqr_corelocalizationmanager.lua"},
 		{"hook_id":"core/lib/managers/mission/coreelementinstance","script_path":"lua/nqr_coreelementinstance.lua"},
 		{"hook_id":"core/lib/managers/mission/coreelementcounter","script_path":"lua/nqr_coreelementcounter.lua"},

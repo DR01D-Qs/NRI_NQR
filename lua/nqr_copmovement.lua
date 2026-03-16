@@ -183,3 +183,128 @@ function CopMovement:update(unit, t, dt)
 		if self._dmg_accum < 0 then self._dmg_accum = nil end
 	end
 end
+
+
+
+function CopMovement:clbk_inventory(unit, event)
+	if event ~= "shield_equip" and event ~= "shield_unequip" then
+		local weapon = self._ext_inventory:equipped_unit()
+
+		if weapon then
+			if self._weapon_hold then
+				for i, hold_type in ipairs(self._weapon_hold) do
+					self._machine:set_global(hold_type, 0)
+				end
+			end
+
+			if self._weapon_anim_global then
+				self._machine:set_global(self._weapon_anim_global, 0)
+			end
+
+			self._weapon_hold = {}
+			local reload_hold_param = nil
+			local weap_tweak = weapon:base():weapon_tweak_data()
+
+			if type(weap_tweak.hold) == "table" then
+				local num = #weap_tweak.hold + 1
+				local reload_times = HuskPlayerMovement.reload_times
+
+				for i, hold_type in ipairs(weap_tweak.hold) do
+					self._machine:set_global(hold_type, self:get_hold_type_weight(hold_type) or num - i)
+					table.insert(self._weapon_hold, hold_type)
+
+					real_hold = hold_type
+
+					if not reload_hold_param and reload_times[hold_type] then
+						reload_hold_param = hold_type
+
+						self._machine:set_global("hold_" .. hold_type, 1)
+						table.insert(self._weapon_hold, "hold_" .. hold_type)
+					end
+				end
+			else
+				self._machine:set_global(weap_tweak.hold, self:get_hold_type_weight(weap_tweak.hold) or 1)
+				table.insert(self._weapon_hold, weap_tweak.hold)
+
+				if HuskPlayerMovement.reload_times[weap_tweak.hold] then
+					reload_hold_param = weap_tweak.hold
+
+					self._machine:set_global("hold_" .. weap_tweak.hold, 1)
+					table.insert(self._weapon_hold, "hold_" .. weap_tweak.hold)
+				end
+			end
+
+			local anim_reload_type = nil
+
+			if weap_tweak.reload then
+				if weap_tweak.reload ~= "looped" then
+					anim_reload_type = "reload_" .. weap_tweak.reload
+				end
+			elseif reload_hold_param then
+				anim_reload_type = "reload_" .. reload_hold_param
+			end
+
+			if anim_reload_type then
+				self._machine:set_global(anim_reload_type, 1)
+				table.insert(self._weapon_hold, anim_reload_type)
+			end
+
+			local weapon_usage = weap_tweak.anim_usage or weap_tweak.usage
+
+			self._machine:set_global(weapon_usage, 1)
+
+			self._weapon_anim_global = weapon_usage
+
+			self._machine:set_global("is_npc", 1)
+
+			local weapon_usage_tweak = self._tweak_data.weapon[weap_tweak.usage]
+			self._reload_speed_multiplier = weapon_usage_tweak.RELOAD_SPEED or 1
+
+			if weap_tweak.reload == "looped" or weap_tweak.usage == "is_shotgun_pump" then
+				local non_looped_reload_time = HuskPlayerMovement.reload_times[weap_tweak.usage == "is_shotgun_pump" and "shotgun" or reload_hold_param or "rifle"]
+				self._looped_reload_time = non_looped_reload_time / self._reload_speed_multiplier
+				local loop_amount = weap_tweak.looped_reload_single and 1 or weap_tweak.CLIP_AMMO_MAX
+				local looped_reload_time = 0.45 * loop_amount
+				self._reload_speed_multiplier = looped_reload_time / self._looped_reload_time
+			else
+				self._looped_reload_time = nil
+			end
+
+			local can_drop_mag = nil
+
+			if self:allow_dropped_magazines() then
+				local w_td_crew = self:_equipped_weapon_crew_tweak_data()
+
+				if w_td_crew and w_td_crew.pull_magazine_during_reload and self:allow_dropped_magazines() then
+					local left_hand = self._unit:get_object(Idstring("LeftHandMiddle1"))
+
+					if left_hand then
+						can_drop_mag = true
+
+						if not self._get_reload_hand_velocity then
+							self._get_reload_hand_velocity = true
+							self._left_hand_obj = left_hand
+							self._left_hand_pos = Vector3()
+							self._left_hand_direction = Vector3()
+							self._left_hand_velocity = nil
+						end
+					end
+				end
+			end
+
+			if not can_drop_mag then
+				self._get_reload_hand_velocity = nil
+				self._left_hand_obj = nil
+				self._left_hand_pos = nil
+				self._left_hand_direction = nil
+				self._left_hand_velocity = nil
+			end
+		end
+	end
+
+	for _, action in ipairs(self._active_actions) do
+		if action and action.on_inventory_event then
+			action:on_inventory_event(event)
+		end
+	end
+end
