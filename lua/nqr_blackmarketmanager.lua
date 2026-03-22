@@ -63,7 +63,7 @@ function BlackMarketManager:get_part_custom_colors(category, slot, part_id, requ
 	local is_gadget = (part_tweak.type=="gadget" or table.contains(part_tweak.perks or {}, "gadget") or part_tweak.sub_type=="laser" or part_tweak.sub_type=="flashlight")
 	for i, k in pairs(part_tweak.adds or {}) do
 		local added_part = tweak_data.weapon.factory.parts[k]
-		if added_part and added_part.sub_type=="flashlight" or added_part.sub_type=="laser" then is_gadget = true end
+		if added_part and (added_part.sub_type=="flashlight" or added_part.sub_type=="laser") then is_gadget = true end
 	end
 
 	local gadget_power = part_tweak and part_tweak.stats and part_tweak.stats.gadget_power or {}
