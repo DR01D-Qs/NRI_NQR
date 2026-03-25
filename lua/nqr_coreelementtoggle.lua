@@ -18,6 +18,7 @@ function ElementToggle:init(...)
 
     local lookup = {
         crojob2 = { hunt_ON = true, },
+        trai = { toggle_on_teleporter = true, },
     }
     if lookup[job] and lookup[job][self._editor_name] then self._values.enabled = false end
 end

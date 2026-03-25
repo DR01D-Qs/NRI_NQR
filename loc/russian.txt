@@ -55,6 +55,7 @@
 	"hint_nqr_loot_butfull" : ", но запас полон",
 	"hint_not_refillable" : "Нет патронов для вашего оружия",
 	"hud_action_nqr_corpse_loot" : "Сбор патронов",
+	"hint_stand_up_no_stamina" : "Ты слишком устал, чтобы подняться. Перестань двигаться!",
 
 
 
@@ -110,6 +111,8 @@
 	"bm_menu_magazine_ext_plural" : "Увеличители Магазина",
 	"bm_menu_hammer" : "Курок",
 	"bm_menu_hammer_plural" : "Курки",
+	"bm_menu_reciever_addon" : "Модуль Ресивера",
+	"bm_menu_reciever_addon_plural" : "Модули Ресивера",
 
 	"bm_wp_not_a_stock_desc" : "Не выполняет функцию Приклада.",
 	"bm_wp_stock_collapsable_desc" : "Можно сложить.",

@@ -1,5 +1,9 @@
 Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", function(self)
 
+	self.invisible_interaction_open_container = deep_clone(self.invisible_interaction_open)
+
+
+
 	self.INTERACT_DISTANCE = 130
 	for i, k in pairs(self) do
 		if type(k)=="table" and k.interact_distance then k.interact_distance = math.min(k.interact_distance, 130) end
@@ -34,6 +38,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.pick_lock_x_axis.timer = 8
 	self.pick_lock_hard_no_skill.interact_distance = 80
 	self.pick_lock_hard_no_skill.timer = 10
+	self.pick_lock_hard_no_skill_deactivated.timer = 15
 	self.pick_lock_deposit_transport.timer = 5
 	self.hold_blow_torch.interact_distance = 120
 	self.hold_open.interact_distance = 150
@@ -48,10 +53,14 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.atm_interaction.timer = 1
 	self.open_from_inside.timer = nil
 	self.raise_balloon.interact_distance = 150
+	self.gasoline.interact_distance = 240
 
 	self.copy_machine_smuggle.interact_distance = 180
 	self.big_computer_hackable.interact_distance = 140
-	self.hold_signal_driver.interact_distance = 350
+	self.take_ticket.timer = nil
+	self.use_ticket.timer = nil
+	self.hold_signal_driver.timer = nil
+	self.hold_signal_driver.interact_distance = 360
 	self.hold_remove_rope.interact_distance = 110
 	self.hold_open_bomb_hatch.interact_distance = 80
 	self.hold_start_bomb_charge.interact_distance = 80
@@ -79,7 +88,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.money_briefcase.interact_distance = 110
 	self.money_luggage.interact_distance = 110
 	self.hold_take_server_axis.interact_distance = 150
-	self.hold_take_parachute.timer = nil
+	self.hold_take_parachute.timer = 1.5
 	self.cas_take_empty_watertank.timer = 1
 	self.cas_take_full_watertank.timer = 1
 	self.fex_hold_prop_wall_lamp.timer = 1
@@ -127,6 +136,19 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.chca_hold_pour_diesel.interact_distance = 180
 	self.hold_plant_breaching_charge.interact_distance = 110
 	self.gen_pku_thermite_paste_not_deployable.special_equipment_block = nil
+	self.just_close.interact_distance = 150
+	self.hold_take_battery.timer = 1
+	self.des_take_unknown.interact_distance = 160
+	self.diamonds_pickup_full.timer = 1
+	self.use_bridge.interact_distance = 180
+	self.trai_hold_picklock_toolsafe.interact_distance = 80
+	self.din_crane_control.interact_distance = 110
+	self.answer_call.timer = nil
+	self.deep_press_test_oil_sample.timer = 2
+	self.deep_hold_pipe_corner_spin.timer = 0.5
+	self.hold_turn_off.timer = 2
+	self.pex_place_evidance.interact_distance = 180
+	self.pex_set_burnable_liquid.interact_distance = 180
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2
@@ -179,6 +201,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		short2_stage2b = { gen_pku_cocaine = { timer = false } },
 		pbr = { hold_approve_req = { timer = 1 }, c4_bag = { timer = 2 } },
 		friend = { pick_lock_x_axis = { interact_distance = 110 }, rewire_friend_fuse_box = { interact_distance = 100 } },
+		arm_for = { pickup_harddrive = { timer = false } },
+		wwh = { money_luggage = { interact_distance = 120 } },
 	}
 	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k or {}) do self[i][u] = j end end
 

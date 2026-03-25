@@ -12,6 +12,11 @@ function HintManager:init()
 		text_id = "hint_not_refillable",
     	event = "stinger_feedback_positive",
 	}
+	Global.hint_manager.hints.stand_up_no_stamina = {
+        trigger_count = 0,
+		text_id = "hint_stand_up_no_stamina",
+    	--event = "stinger_feedback_positive",
+	}
 
 	self._cooldown = {}
 end

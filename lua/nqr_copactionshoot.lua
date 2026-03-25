@@ -43,6 +43,9 @@ function CopActionShoot:update(t)
 	local target_vec, target_dis, autotarget, target_pos = nil
 
 	if self._attention then
+		self._ext_movement:upd_m_head_pos()
+		shoot_from_pos = self._shoot_from_pos
+
 		target_pos, target_vec, target_dis, autotarget = self:_get_target_pos(shoot_from_pos, self._attention, t)
 		local tar_vec_flat = temp_vec2
 
@@ -135,6 +138,7 @@ function CopActionShoot:update(t)
 
 				target_dis = mvec3_dir(target_vec, shoot_from_pos, spread_pos)
 				local fired = self._weapon_base:trigger_held(shoot_from_pos, target_vec, dmg_mul, self._shooting_player, nil, nil, nil, self._attention.unit)
+				--Draw:brush(Color.red, 2):cylinder(shoot_from_pos, target_pos, 0.1)
 
 				if fired then
 					if fired.hit_enemy and fired.hit_enemy.type == "death" and self._unit:unit_data().mission_element then
@@ -289,7 +293,7 @@ function CopActionShoot:update(t)
 
 						target_dis = mvec3_dir(target_vec, shoot_from_pos, spread_pos)
 						local fired = self._weapon_base:singleshot(shoot_from_pos, target_vec, dmg_mul, self._shooting_player, nil, nil, nil, self._attention.unit)
-
+						
 						if fired and fired.hit_enemy and fired.hit_enemy.type == "death" and self._unit:unit_data().mission_element then
 							self._unit:unit_data().mission_element:event("killshot", self._unit)
 						end
@@ -307,10 +311,6 @@ function CopActionShoot:update(t)
 				end
 			end
 		end
-	end
-
-	if self._ext_anim.base_need_upd then
-		self._ext_movement:upd_m_head_pos()
 	end
 end
 

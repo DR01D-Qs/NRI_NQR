@@ -168,3 +168,110 @@ function EnemyManager:_update_gfx_lod()
 		end
 	end
 end
+
+
+
+function EnemyManager:corpse_limit()
+	local limit = self._MAX_NR_CORPSES
+	limit = managers.mutators:modify_value("EnemyManager:corpse_limit", limit)
+
+	return limit
+end
+
+function EnemyManager:_upd_corpse_disposal()
+	self._corpse_disposal_id = nil
+	local enemy_data = self._enemy_data
+	local player = managers.player:player_unit()
+	local cam_pos, cam_fwd = nil
+
+	if player then
+		cam_pos = player:movement():m_head_pos()
+		cam_fwd = player:camera():forward()
+	elseif managers.viewport:get_current_camera() then
+		cam_pos = managers.viewport:get_current_camera_position()
+		cam_fwd = managers.viewport:get_current_camera_rotation():y()
+	end
+
+	local corpses = enemy_data.corpses
+	local nr_corpses = enemy_data.nr_corpses
+	local disposals_needed = nr_corpses - self:corpse_limit()
+	local to_dispose = {}
+	local nr_found = 0
+
+	if cam_pos then
+		local min_dis = 4000000
+		local dot_chk = 0
+		local dir_vec = tmp_vec1
+
+		for u_key, u_data in pairs(corpses) do
+			if not u_data.no_dispose then
+				local u_pos = u_data.m_pos
+
+				if min_dis < mvec3_dis_sq(cam_pos, u_pos) then
+					mvec3_dir(dir_vec, cam_pos, u_pos)
+
+					if mvec3_dot(cam_fwd, dir_vec) < dot_chk then
+						to_dispose[u_key] = true
+						nr_found = nr_found + 1
+
+						if nr_found == disposals_needed then
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+
+	disposals_needed = disposals_needed - nr_found
+
+	if disposals_needed > 0 then
+		local oldest_corpses = {}
+
+		for u_key, u_data in pairs(corpses) do
+			if not u_data.no_dispose and not to_dispose[u_key] then
+				local death_t = u_data.death_t
+
+				for i = disposals_needed, 1, -1 do
+					local old_corpse = oldest_corpses[i]
+
+					if not old_corpse then
+						old_corpse = {
+							t = death_t,
+							key = u_key
+						}
+						oldest_corpses[#oldest_corpses + 1] = old_corpse
+
+						break
+					elseif death_t < old_corpse.t then
+						old_corpse.t = death_t
+						old_corpse.key = u_key
+
+						break
+					end
+				end
+			end
+		end
+
+		for i = 1, disposals_needed do
+			to_dispose[oldest_corpses[i].key] = true
+		end
+
+		nr_found = nr_found + disposals_needed
+	end
+
+	local is_server = Network:is_server()
+
+	for u_key, _ in pairs(to_dispose) do
+		local unit = corpses[u_key].unit
+		corpses[u_key] = nil
+
+		if is_server or unit:id() == -1 then
+			unit:base():set_slot(unit, 0)
+		else
+			unit:set_enabled(false)
+		end
+	end
+
+	enemy_data.nr_corpses = nr_corpses - nr_found
+end

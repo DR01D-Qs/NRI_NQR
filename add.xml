@@ -261,6 +261,31 @@
 	<object path="units/pd2_dlc_chico/weapons/wpn_fps_ass_contraband/wpn_fps_ass_contraband" force="true"/>
 	<object path="units/payday2/weapons/wpn_fps_pis_b92fs/wpn_fps_pis_beretta" force="true"/>
 
+	<!-- <unit path="units/pd2_dlc_dinner/equipment/din_interactable_pliers/din_interactable_pliers" force="true"/> -->
+
+	<animation path="anims/fps/colt_1911/colt_1911_sprint" force="true"/>
+	<animation path="anims/fps/colt_1911/colt_1911_sprint_enter" force="true"/>
+	<animation path="anims/fps/colt_1911/colt_1911_sprint_exit" force="true"/>
+	<animation path="anims/fps/deagle/deagle_sprint" force="true"/>
+	<animation path="anims/fps/deagle/deagle_sprint_enter" force="true"/>
+	<animation path="anims/fps/deagle/deagle_sprint_exit" force="true"/>
+	<animation path="anims/fps/mac11/mac11_sprint" force="true"/>
+	<animation path="anims/fps/mac11/mac11_sprint_enter" force="true"/>
+	<animation path="anims/fps/mac11/mac11_sprint_exit" force="true"/>
+	<animation path="anims/fps/packrat/packrat_sprint" force="true"/>
+	<animation path="anims/fps/packrat/packrat_sprint_enter" force="true"/>
+	<animation path="anims/fps/packrat/packrat_sprint_exit" force="true"/>
+	<animation path="anims/fps/type54/type54_sprint" force="true"/>
+	<animation path="anims/fps/type54/type54_sprint_enter" force="true"/>
+	<animation path="anims/fps/type54/type54_sprint_exit" force="true"/>
+	<animation path="anims/fps/type54/type54_underbarrel_sprint" force="true"/>
+	<animation path="anims/fps/type54/type54_underbarrel_sprint_enter" force="true"/>
+	<animation path="anims/fps/type54/type54_underbarrel_sprint_exit" force="true"/>
+	<animation path="anims/fps/m14/m14_sprint" force="true"/>
+	<animation path="anims/fps/m14/m14_sprint_enter" force="true"/>
+
+	<model path="units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci_pts/wpn_fps_ass_tecci_ns_special" force="true"/>
+
 
 
 	<object path="units/payday2/characters/civ_male_bank_manager_1/civ_male_bank_manager_1" force="true"/>

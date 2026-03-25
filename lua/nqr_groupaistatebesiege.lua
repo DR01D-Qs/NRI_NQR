@@ -173,6 +173,7 @@ function GroupAIStateBesiege:set_wave_mode(flag)
 	local lookup = {
 		peta2 = true,
 		dah = true,
+		ukrainian_job = true,
 	}
 
 	if flag == "hunt" then

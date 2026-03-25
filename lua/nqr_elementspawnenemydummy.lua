@@ -157,6 +157,7 @@ local haras_job_denys_specific = {
 	},
 }
 local haras_job_denys = {
+	election_day_2 = { "spawn00" },
 	election_day_3 = { "escape" },
 	peta2 = { "swat" },
 }
@@ -259,6 +260,14 @@ local job_denys_specific = {
 		ai_spawn_enemy_024 = true,
 		ai_spawn_enemy_025 = true,
 	},
+	rvd = {
+		enemy_swat_green001 = true,
+		enemy_shield_green001 = true,
+		enemy_cloaker_regular001 = true,
+		enemy_bulldozer_green001 = true,
+		enemy_swat_green006 = true,
+		enemy_shield_green003 = true,
+	},
 }
 --instance glace_helicopter_dozer_003
 --glace_prison_bus_002 ai_spawn_enemy_002
@@ -304,6 +313,13 @@ local sniper_denys = {
 	wwh = true,
 	dinner = true,
 	crojob2 = true,
+	bex = true,
+	arm_par = true,
+	arm_und = true,
+	arm_cro = true,
+	arm_fac = true,
+	arm_hcm = true,
+	pex = true,
 }
 
 local function harasser_deheavify(name)

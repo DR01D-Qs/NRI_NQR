@@ -2707,6 +2707,8 @@ end
 	self.mac10.r_no_bullet_clbk = true
 	self.mac10.anim_no_full = true
 	self.mac10.r_ass = 1/30
+	self.mac10.weapon_hold = "glock"
+	self.mac10.force_anim_reload_transition = true
 
 	self.baka.caliber = "9x19"
 	self.baka.weight = 19
@@ -2718,6 +2720,15 @@ end
 	self.baka.timers.reload_empty = 2.5
 	self.baka.eq_fr = {0,11,13}
 	self.baka.anim_no_full = true
+	self.baka.timers.reload_not_empty = self.mac10.timers.reload_not_empty
+	self.baka.timers.reload_empty = self.mac10.timers.reload_empty
+	self.baka.weapon_hold = self.mac10.weapon_hold
+	self.baka.animations.reload_name_id = "mac10"
+	self.baka.anim_reload_mul = 1.11
+	self.baka.eq_fr = self.mac10.eq_fr
+	self.baka.r_no_bullet_clbk =  true
+	self.baka.anim_no_full = true
+	self.baka.force_anim_reload_transition = true
 
 	self.pm9.caliber = "9x19"
 	self.pm9.weight = 28
@@ -2728,6 +2739,16 @@ end
 	self.pm9.anim_shoot_stop = true
 	self.pm9.timers = self.baka.timers
 	self.pm9.eq_fr = self.baka.eq_fr
+	self.pm9.timers.reload_not_empty = self.mac10.timers.reload_not_empty
+	self.pm9.timers.reload_empty = self.mac10.timers.reload_empty
+	self.pm9.action = "blowback"
+	self.pm9.weapon_hold = self.mac10.weapon_hold
+	self.pm9.animations.reload_name_id = "mac10"
+	self.pm9.anim_reload_mul = 1.11
+	self.pm9.eq_fr = self.mac10.eq_fr
+	self.pm9.r_no_bullet_clbk =  true
+	self.pm9.anim_no_full = true
+	self.pm9.force_anim_reload_transition = true
 
 	self.mp9.caliber = "9x19"
 	self.mp9.weight = 14
@@ -2791,25 +2812,6 @@ end
 	self.cobray.anim_no_full = true
 	self.cobray.bolt_speed = 1.75
 	self.cobray.shot_anim_hands_offset = 2/30
-
-	self.pm9.timers.reload_not_empty = self.mac10.timers.reload_not_empty
-	self.pm9.timers.reload_empty = self.mac10.timers.reload_empty
-	self.pm9.action = "blowback"
-	self.pm9.weapon_hold = "mac11"
-	self.pm9.animations.reload_name_id = "mac10"
-	self.pm9.anim_reload_mul = 1.11
-	self.pm9.eq_fr = self.mac10.eq_fr
-	self.pm9.r_no_bullet_clbk =  true
-	self.pm9.anim_no_full = true
-
-	self.baka.timers.reload_not_empty = self.mac10.timers.reload_not_empty
-	self.baka.timers.reload_empty = self.mac10.timers.reload_empty
-	self.baka.weapon_hold = "mac11"
-	self.baka.animations.reload_name_id = "mac10"
-	self.baka.anim_reload_mul = 1.11
-	self.baka.eq_fr = self.mac10.eq_fr
-	self.baka.r_no_bullet_clbk =  true
-	self.baka.anim_no_full = true
 
 
 
@@ -2953,6 +2955,8 @@ end
 	self.packrat.shot_anim_hands = 1.25
 	self.packrat.eq_fr = {3,15,12}
 	self.packrat.r_ass = 1/30
+	self.packrat.weapon_hold = "glock"
+	self.packrat.force_anim_reload_transition = true
 
 	self.holt.caliber = "9x19"
 	self.holt.weight = 10
@@ -2963,6 +2967,8 @@ end
 	self.holt.shot_anim_hands = self.packrat.shot_anim_hands
 	self.holt.eq_fr = self.packrat.eq_fr
 	self.holt.r_ass = 1/30
+	self.holt.weapon_hold = "glock"
+	self.holt.force_anim_reload_transition = true
 
 	self.maxim9.caliber = "9x19"
 	self.maxim9.weight = 11
@@ -2997,6 +3003,8 @@ end
 	self.legacy.shot_anim_hands = self.packrat.shot_anim_hands
 	self.legacy.eq_fr = self.packrat.eq_fr
 	self.legacy.r_ass = 1/30
+	self.legacy.weapon_hold = "glock"
+	self.legacy.force_anim_reload_transition = true
 
 	self.breech.caliber = "9x19"
 	self.breech.weight = 9
@@ -3005,6 +3013,13 @@ end
 	self.breech.bolt_release = "quarter"
 	self.breech.eq_fr = {4,11,13}
 	self.breech.r_ass = 1/30
+	self.breech.weapon_hold = "glock"
+	self.breech.animations.reload_name_id = "ppk"
+	self.breech.anim_reload_mul = 0.95
+	self.breech.timers.reload_not_empty = self.ppk.timers.reload_not_empty
+	self.breech.timers.reload_empty = self.ppk.timers.reload_empty
+	self.breech.eq_fr = self.ppk.eq_fr
+	self.breech.r_no_bullet_clbk = self.ppk.r_no_bullet_clbk
 
 	self.b92fs.caliber = "9x19"
 	self.b92fs.weight = 10
@@ -3070,6 +3085,8 @@ end
 	self.lemming.eq_fr = self.packrat.eq_fr
 	self.lemming.r_ass = 1/30
 	self.lemming.has_description = nil
+	self.lemming.weapon_hold = "glock"
+	self.lemming.force_anim_reload_transition = true
 
 	self.type54.caliber = "7.62x25"
 	self.type54.weight = 9
@@ -3078,6 +3095,8 @@ end
 	self.type54.action = "moving_barrel"
 	self.type54.eq_fr = self.glock_17.eq_fr
 	self.type54.r_ass = 1/30
+	self.type54.weapon_hold = "glock"
+	self.type54.force_anim_reload_transition = true
 
 	self.deagle.caliber = ".50 AE"
 	self.deagle.weight = 19

@@ -27,6 +27,13 @@ function ElementObjective:init(...)
             objective_activate_016 = 4,
             objective_activate_017 = 4,
         },
+        trai = {
+            func_obj_enter_loot_wagon_6 = 4,
+            func_obj_enter_loot_wagon_5 = 3,
+            func_obj_enter_loot_wagon_4 = 2,
+            func_obj_enter_loot_wagon_3 = 1,
+            func_obj_enter_loot_wagon_2 = 0,
+        },
     }
     if Global.game_settings.difficulty=="normal" then
         lookup.arm_for.activate_objective006 = 2

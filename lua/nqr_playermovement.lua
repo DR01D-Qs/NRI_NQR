@@ -1,3 +1,7 @@
+local IDS_NONE = Idstring("")
+
+
+
 --KNOCKDOWN INSTEAD OF INCAP
 function PlayerMovement:on_SPOOCed(enemy_unit)
 	if managers.player:has_category_upgrade("player", "counter_strike_spooc") and self._current_state.in_melee and self._current_state:in_melee() then

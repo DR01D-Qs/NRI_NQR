@@ -55,6 +55,7 @@
 	"hint_nqr_loot_butfull" : ", but you are full",
 	"hint_not_refillable" : "No ammo for your weapons",
 	"hud_action_nqr_corpse_loot" : "Looting ammo",
+	"hint_stand_up_no_stamina" : "You're too tired to stand up, stop moving!",
 
 
 
@@ -110,6 +111,8 @@
 	"bm_menu_magazine_ext_plural" : "Mag Extensions",
 	"bm_menu_hammer" : "Hammer",
 	"bm_menu_hammer_plural" : "Hammers",
+	"bm_menu_reciever_addon" : "Receiver Addon",
+	"bm_menu_reciever_addon_plural" : "Receiver Addons",
 
 	"bm_wp_not_a_stock_desc" : "Does not provide the function of a Stock.",
 	"bm_wp_stock_collapsable_desc" : "Can be collapsed.",

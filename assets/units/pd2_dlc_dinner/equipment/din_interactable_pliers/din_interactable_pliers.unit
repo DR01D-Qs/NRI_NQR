@@ -1,0 +1,12 @@
+<unit type="din" slot="1">
+	<object file="units/pd2_dlc_dinner/equipment/din_interactable_pliers/din_interactable_pliers" />
+	<network sync="spawn"/>
+	<extensions>
+		<extension name="unit_data" class="ScriptUnitData" />
+		<extension name="damage" class="UnitDamage" />
+		<extension name="interaction" class="UseInteractionExt">
+			<var name="tweak_data" value="invisible_interaction_open_container" />
+			<var name="_interact_object" value="interact"/>
+		</extension>
+	</extensions>
+</unit>

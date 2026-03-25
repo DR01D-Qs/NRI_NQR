@@ -514,9 +514,14 @@ function PlayerStandard:nqr_eq_speed(is_unequip)
 	local length_pnlt = (math.max(0, wep_length*0.025 - 0.15))
 	local weight_pnlt = wep_base:selection_index()==1 and (math.max(0, (wep_weight*0.015)^1)-0.1 + length_pnlt*0.5) or ((math.max(0, wep_weight-20)*0.005)^0.8 + length_pnlt*0.2)
 	local eq_t = (wep_base._current_stats.shouldered and 0.4 or 0.2) + (is_unequip and 0 or (weight_pnlt))
-	local eq_tt = (
-		wep_base:selection_index()==1 and not (self._change_weapon_data and self._change_weapon_data.reequip)
+	local eq_tt_mod = (
+		wep_base:selection_index()==1
 		and (length_pnlt + (is_unequip and 0.5 or 0.3) + (wep_base._current_stats.shouldered and 0.5 or 0))
+		or (is_unequip and 0 or 0.25)
+	)
+	local eq_tt = (
+		not (self._change_weapon_data and self._change_weapon_data.reequip)
+		and (eq_tt_mod)
 		or 0
 	)
 	local anim_spd = 1
@@ -3691,7 +3696,10 @@ function PlayerStandard:_end_action_ducking(t, skip_can_stand_check)
 	self._state_data.getup_t = t + 0.15
 
 	if not skip_can_stand_check and not self:_can_stand() then return end
-	if self._unit:movement()._stamina < (tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.5 / managers.player:body_armor_value("stamina")) then return end
+	if self._unit:movement()._stamina < (tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.5 / managers.player:body_armor_value("stamina")) then
+		managers.hint:show_hint("stand_up_no_stamina", 2)
+		return
+	end
 	self._unit:movement():subtract_stamina(tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.5 / managers.player:body_armor_value("stamina"))
 
 	self._state_data.ducking = false

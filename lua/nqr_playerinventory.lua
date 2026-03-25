@@ -111,3 +111,84 @@ function PlayerInventory:_start_feedback_effect(end_time)
 
 	return true
 end
+
+
+
+function PlayerInventory:equip_selection(selection_index, instant)
+	--log("equip_selection 1", self._equipped_selection, self._selected_primary, selection_index)
+	if selection_index and selection_index ~= self._equipped_selection and self._available_selections[selection_index] then
+		if self._equipped_selection then
+			self:unequip_selection(nil, instant)
+		end
+
+		self._equipped_selection = selection_index
+
+		self:_place_selection(selection_index, true)
+
+		self._selected_primary = selection_index
+
+		self:_send_equipped_weapon()
+		self:_call_listeners("equip")
+
+		if self._unit:unit_data().mugshot_id then
+			local hud_icon_id = self:equipped_unit():base():weapon_tweak_data().hud_icon
+
+			managers.hud:set_mugshot_weapon(self._unit:unit_data().mugshot_id, hud_icon_id, self:equipped_unit():base():weapon_tweak_data().use_data.selection_index)
+		end
+
+		self:equipped_unit():base():set_flashlight_enabled(true)
+		self:equipped_unit():base():set_scope_enabled(true)
+
+	--log("equip_selection 2", self._equipped_selection, self._selected_primary, selection_index)
+		return true
+	end
+	--log("equip_selection 3", self._equipped_selection, self._selected_primary, selection_index)
+
+	return false
+end
+
+function PlayerInventory:_select_new_primary()
+	for index, use_data in pairs(self._available_selections) do
+		return index
+	end
+end
+
+function PlayerInventory:add_unit(new_unit, is_equip, equip_is_instant)
+	--log("add_unit 1", self._selected_primary, is_equip)
+	local new_selection = {}
+	local use_data = new_unit:base():get_use_data(self._use_data_alias)
+	new_selection.use_data = use_data
+	new_selection.unit = new_unit
+
+	new_unit:base():add_destroy_listener(self._listener_id, callback(self, self, "clbk_weapon_unit_destroyed"))
+
+	local selection_index = use_data.selection_index
+	is_equip = selection_index==2
+
+	if self._available_selections[selection_index] then
+		local old_weapon_unit = self._available_selections[selection_index].unit
+		is_equip = is_equip or old_weapon_unit == self:equipped_unit()
+
+		old_weapon_unit:base():remove_destroy_listener(self._listener_id)
+		old_weapon_unit:base():set_slot(old_weapon_unit, 0)
+		World:delete_unit(old_weapon_unit)
+
+		if self._equipped_selection == selection_index then
+			self._equipped_selection = nil
+		end
+	end
+
+	self._available_selections[selection_index] = new_selection
+	self._latest_addition = selection_index
+	self._selected_primary = selection_index --self._selected_primary or selection_index
+
+	self:_call_listeners("add")
+
+	--log("add_unit 2", self._selected_primary, is_equip)
+	if is_equip then
+		self:equip_latest_addition(equip_is_instant)
+	else
+		self:_place_selection(selection_index, is_equip)
+	end
+	--log("add_unit 3", self._selected_primary, is_equip)
+end
