@@ -114,7 +114,7 @@ end
 
 
 
-function PlayerInventory:equip_selection(selection_index, instant)
+--[[function PlayerInventory:equip_selection(selection_index, instant)
 	--log("equip_selection 1", self._equipped_selection, self._selected_primary, selection_index)
 	if selection_index and selection_index ~= self._equipped_selection and self._available_selections[selection_index] then
 		if self._equipped_selection then
@@ -192,3 +192,4 @@ function PlayerInventory:add_unit(new_unit, is_equip, equip_is_instant)
 	end
 	--log("add_unit 3", self._selected_primary, is_equip)
 end
+]]
