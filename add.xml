@@ -5,6 +5,7 @@
 	<animation path="anims\fps\ksg\ksg_reload_exit" force="true"/>
 	<animation path="anims\fps\ksg\ksg_reload_not_empty_exit" force="true"/>
 	<effect path="effects\particles\weapons\sniper_glint_marshal" force="true"/>
+	<object path="units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<model path="units\payday2\characters\ene_acc_shield_lights\ene_acc_shield_lights" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_74\wpn_fps_ass_74" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_ass_akm\wpn_fps_ass_akm" force="true"/>
@@ -57,7 +58,6 @@
 	<model path="units\payday2\weapons\wpn_fps_upg_o_aimpoint\wpn_fps_upg_o_aimpoint" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_upg_o_aimpoint\wpn_fps_upg_o_aimpoint_preorder" force="true"/>
 	<model path="units\payday2\weapons\wpn_fps_upg_o_specter\wpn_fps_upg_o_specter" force="true"/>
-	<model path="units\pd2_dlc1q\weapons\wpn_fps_upg_o_cmore\wpn_fps_upg_o_cmore" force="true"/>
 	<model path="units\pd2_dlc2\weapons\wpn_fps_upg_o_acog\wpn_fps_upg_o_acog" force="true"/>
 	<model path="units\pd2_dlc_afp\weapons\wpn_fps_pis_beer_pts\wpn_fps_pis_beer_b_std" force="true"/>
 	<model path="units\pd2_dlc_afp\weapons\wpn_fps_pis_czech\wpn_fps_pis_czech" force="true"/>
@@ -68,7 +68,6 @@
 	<model path="units\pd2_dlc_akm4_modpack\weapons\wpn_fps_upg_m4_s_ubr\wpn_fps_upg_m4_s_ubr" force="true"/>
 	<model path="units\pd2_dlc_akm4_modpack\weapons\wpn_fps_upg_smg_olympic_fg_lr300\wpn_fps_upg_smg_olympic_fg_lr300" force="true"/>
 	<model path="units\pd2_dlc_atw\weapons\wpn_fps_lmg_m60_pts\wpn_fps_lmg_m60_upper_reciever" force="true"/>
-	<model path="units\pd2_dlc_berry\weapons\wpn_fps_snp_model70_pts\wpn_fps_snp_model70_ns_suppressor" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000\wpn_fps_ass_sub2000" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_gen1" force="true"/>
 	<model path="units\pd2_dlc_casino\weapons\wpn_fps_ass_sub2000_pts\wpn_fps_ass_sub2000_fg_gen2" force="true"/>
@@ -85,6 +84,7 @@
 	<model path="units\pd2_dlc_dragan\weapons\wpn_fps_ass_vhs_pts\wpn_fps_ass_vhs_m" force="true"/>
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_fps_pis_m1911_body_standard" force="true"/>
 	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_pis_m1911_pts\wpn_third_pis_m1911_body_standard" force="true"/>
+	<model path="units\pd2_dlc_fawp\weapons\wpn_fps_sho_m590_pts\wpn_fps_sho_m590_s_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas\wpn_fps_ass_famas" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_m_standard" force="true"/>
 	<model path="units\pd2_dlc_gage_assault\weapons\wpn_fps_ass_famas_pts\wpn_fps_ass_famas_o_adapter" force="true"/>
@@ -98,7 +98,6 @@
 	<model path="units\pd2_dlc_gage_snp\weapons\wpn_fps_snp_m95\wpn_fps_snp_m95" force="true"/>
 	<model path="units\pd2_dlc_gage_snp\weapons\wpn_fps_upg_o_leupold\wpn_fps_upg_o_leupold" force="true"/>
 	<model path="units\pd2_dlc_gage_snp\weapons\wpn_fps_upg_o_shortdot\wpn_fps_upg_o_shortdot" force="true"/>
-	<model path="units\pd2_dlc_gage_snp\weapons\wpn_fps_upg_o_shortdot\wpn_fps_upg_o_shortdot1" force="true"/>
 	<model path="units\pd2_dlc_grv\weapons\wpn_fps_smg_coal\wpn_fps_smg_coal" force="true"/>
 	<model path="units\pd2_dlc_ja22\weapons\wpn_fps_m4_upg_mk12_pts\wpn_fps_m4_upg_fg_mk12" force="true"/>
 	<model path="units\pd2_dlc_ja22\weapons\wpn_fps_m4_upg_mk12_pts\wpn_fps_m4_uupg_fg_rail_ext_mk12" force="true"/>
@@ -133,7 +132,6 @@
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_ass_g36_fg_long\wpn_fps_upg_g36_b_ultra" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_ass_g36_fg_long\wpn_fps_upg_g36_fg_long" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_box\wpn_fps_upg_o_box" force="true"/>
-	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_box\wpn_fps_upg_o_box1" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot" force="true"/>
 	<model path="units\pd2_dlc_tng\weapons\wpn_fps_upg_o_spot\wpn_fps_upg_o_spot_rangefinder" force="true"/>
 	<model path="units\pd2_dlc_usm1\weapons\wpn_npc_dmr\wpn_npc_dmr" force="true"/>
@@ -180,10 +178,12 @@
 	<effect path="effects/payday2/particles/weapons/shells/shell_revolver_dump_rsh"/>
 	<effect path="effects/payday2/particles/weapons/shells/shell_revolver_dump_x5"/>
 
-	<object path="units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<object path="units/pd2_dlc_bph/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
+	<model path="units/pd2_dlc_bph/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<object path="units/pd2_dlc_bex/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
+	<model path="units/pd2_dlc_bex/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<object path="units/pd2_dlc_mad/characters/ene_acc_shield_akan_shield/ene_acc_shield_akan" force="true"/>
+	<model path="units/pd2_dlc_mad/characters/ene_acc_shield_akan_shield/ene_acc_shield_akan" force="true"/>
 
 	<!-- <object path="units/pd2_dlc_bbq/weapons/wpn_fps_sho_aa12_pts/wpn_fps_sho_aa12_mag_straight" force="true"/> -->
 

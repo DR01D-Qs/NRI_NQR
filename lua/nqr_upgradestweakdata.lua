@@ -72,13 +72,14 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		   [0] = {
 			"peacemaker",
 		}, [1] = {
+			"welrod",
 		}, [2] = {
 			"model3",
 			"push",
 		}, [3] = {
 		}, [4] = {
-		}, [5] = {
 			"c96",
+		}, [5] = {
 		}, [6] = {
 			"breech",
 		}, [7] = {
@@ -475,5 +476,10 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 	self.weapon_cost_multiplier = {
 		akimbo = 2
 	}
+
+
+
+	self.values.cable_tie.quantity_1 = { 0 }
+	self.values.cable_tie.quantity_2 = { 0 }
 
 end)

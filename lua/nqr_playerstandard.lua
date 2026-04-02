@@ -282,6 +282,7 @@ function PlayerStandard:_enter(enter_data)
 	self._ext_inventory:set_mask_visibility(true)
 	self:_upd_attention()
 	self._ext_network:send("set_stance", 3, false, false)
+	--if not self._spawned then self._spawned = true self._ext_inventory:equip_selection(2) end
 end
 --UPDATE: SLIDE LOCK THING, INTERUPTED RELOAD OFFSET, OFFSET RECOIL CHECK, BREATH SHAKER DYNAMIC
 function PlayerStandard:update(t, dt)
@@ -2536,6 +2537,127 @@ end
 
 
 
+--CHECK MELEE: BOLTING INTERUPT
+function PlayerStandard:_check_action_melee(t, input)
+	if self._state_data.melee_attack_wanted then
+		if not self._state_data.melee_attack_allowed_t then
+			self._state_data.melee_attack_wanted = nil
+
+			self:_do_action_melee(t, input)
+		end
+
+		return
+	end
+
+	local action_wanted = input.btn_melee_press or input.btn_melee_release or self._state_data.melee_charge_wanted
+
+	if not action_wanted then
+		return
+	end
+
+	if input.btn_melee_release then
+		if self._state_data.meleeing then
+			if self._state_data.melee_attack_allowed_t then
+				self._state_data.melee_attack_wanted = true
+
+				return
+			end
+
+			self:_do_action_melee(t, input)
+		end
+
+		return
+	end
+
+	local action_forbidden =
+		not self:_melee_repeat_allowed()
+		or self._use_item_expire_t
+		or (self._equip_weapon_expire_t and self._equip_weapon_expire_t0)
+		or self:_interacting()
+		or self:_is_throwing_projectile()
+		or self:_is_using_bipod()
+		or self:is_shooting_count()
+		or not self._movement_equipped
+		or self._state_data.lying
+
+	if action_forbidden then
+		return
+	end
+
+	local melee_entry = managers.blackmarket:equipped_melee_weapon()
+	local instant = tweak_data.blackmarket.melee_weapons[melee_entry].instant
+
+	self._unequip_weapon_expire_t = nil
+	self:_start_action_melee(t, input, instant)
+	local wep_base = self._equipped_unit:base()
+	self._running_enter_end_t = nil
+	self._running_exit_start_t = nil
+
+	return true
+end
+function PlayerStandard:_start_action_melee(t, input, instant)
+	self._equipped_unit:base():tweak_data_anim_stop("fire")
+	self:_interupt_action_reload(t)
+	self:_interupt_action_steelsight(t)
+	self:_interupt_action_running(t)
+	self:_interupt_action_charging_weapon(t)
+
+	self._state_data.melee_charge_wanted = nil
+	self._state_data.meleeing = true
+	self._state_data.melee_start_t = nil
+	local melee_entry = managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = tweak_data.blackmarket.melee_weapons[melee_entry]
+	local bayonet_melee = false
+	local primary = managers.blackmarket:equipped_primary()
+	local primary_id = primary.weapon_id
+	local bayonet_id = managers.blackmarket:equipped_bayonet(primary_id)
+
+	if bayonet_id and melee_entry == "weapon" and self._equipped_unit:base():selection_index() == 2 then
+		bayonet_melee = true
+	end
+
+	if instant then
+		self:_do_action_melee(t, input)
+
+		return
+	end
+
+	self:_stance_entered()
+
+	if self._state_data.melee_global_value then
+		self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 0)
+	end
+	self._state_data.melee_global_value = melee_tweak.anim_global_param
+	self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 1)
+
+	local current_state_name = self._camera_unit:anim_state_machine():segment_state(self:get_animation("base"))
+
+	self._state_data.melee_attack_allowed_t = t + (
+		current_state_name~=self:get_animation("melee_attack_state") and (melee_tweak.attack_allowed_expire_t or 0.15) or 0
+	)
+	local instant_hit = melee_tweak.instant
+
+	if not instant_hit then
+		self._ext_network:send("sync_melee_start", 0)
+	end
+
+	if current_state_name == self:get_animation("melee_attack_state") then
+		self._ext_camera:play_redirect(self:get_animation("melee_charge"))
+
+		return
+	end
+
+	local offset = nil
+
+	if current_state_name == self:get_animation("melee_exit_state") then
+		local segment_relative_time = self._camera_unit:anim_state_machine():segment_relative_time(self:get_animation("base"))
+		offset = (1 - segment_relative_time) * 0.9
+	end
+
+	offset = math.max(offset or 0, attack_allowed_expire_t)
+
+	self._ext_camera:play_redirect(self:get_animation("melee_enter"), nil, offset)
+end
 --DO MELEE: RATE OF FIRE
 function PlayerStandard:_do_action_melee(t, input, skip_damage)
 	self._state_data.meleeing = nil
@@ -2556,7 +2678,7 @@ function PlayerStandard:_do_action_melee(t, input, skip_damage)
 		bayonet_melee = true
 	end
 
-	self._state_data.melee_expire_t = t + (tweak_data.blackmarket.melee_weapons[melee_entry].expire_t + wep_weight/100) / is_secondary
+	self._state_data.melee_expire_t = t + (tweak_data.blackmarket.melee_weapons[melee_entry].expire_t + wep_weight*0.01) / is_secondary
 	self._state_data.melee_repeat_expire_t = t + (math.min(tweak_data.blackmarket.melee_weapons[melee_entry].repeat_expire_t, tweak_data.blackmarket.melee_weapons[melee_entry].expire_t) + wep_weight/100) / is_secondary
 
 	if melee_damage_delay~=0 and not skip_damage then
@@ -2589,6 +2711,8 @@ function PlayerStandard:_do_action_melee(t, input, skip_damage)
 		local hit = skip_damage or self:_do_melee_damage(t, bayonet_melee)
 
 		if hit then
+			self._ext_camera:play_shaker("fire_weapon_rot", 2 * (self._state_data.in_steelsight and 1.5 or 1))
+			--self._ext_camera:play_shaker("fire_weapon_kick", 1 * (self._state_data.in_steelsight and 0.4 or 1), 1, 0.15)
 			self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_bayonet") or self:get_animation("melee"))
 		else
 			self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_miss_bayonet") or self:get_animation("melee_miss"))
@@ -2634,7 +2758,7 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 	local wep_base = self._equipped_unit:base()
 	local wep_weight = wep_base._current_stats.weight
 	local stamina_factor = self._unit:movement():is_above_stamina_threshold() and 1 or 3
-	self._unit:movement():subtract_stamina(tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.1 * (1+wep_weight/30) / managers.player:body_armor_value("stamina"))
+	self._unit:movement():subtract_stamina(tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.1 * (1+wep_weight*0.04) / managers.player:body_armor_value("stamina"))
 	self._ext_movement:activate_regeneration()
 
 	local sphere_cast_radius = 20
@@ -2835,17 +2959,6 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 		end
 	end
 
-	if managers.player:has_category_upgrade("melee", "stacking_hit_damage_multiplier") then
-		self._state_data.stacking_dmg_mul = self._state_data.stacking_dmg_mul or {}
-		self._state_data.stacking_dmg_mul.melee = self._state_data.stacking_dmg_mul.melee or {
-			nil,
-			0
-		}
-		local stack = self._state_data.stacking_dmg_mul.melee
-		stack[1] = nil
-		stack[2] = 0
-	end
-
 	return col_ray
 end
 function PlayerStandard:_calc_melee_hit_ray(t, sphere_cast_radius)
@@ -2873,64 +2986,6 @@ function PlayerStandard:_check_melee_dot_damage(col_ray, defense_data, melee_ent
 	local damage_class = CoreSerialize.string_to_classtable(data.damage_class)
 
 	damage_class:start_dot_damage(col_ray, nil, data, melee_entry)
-end
---CHECK MELEE: BOLTING INTERUPT
-function PlayerStandard:_check_action_melee(t, input)
-	if self._state_data.melee_attack_wanted then
-		if not self._state_data.melee_attack_allowed_t then
-			self._state_data.melee_attack_wanted = nil
-
-			self:_do_action_melee(t, input)
-		end
-
-		return
-	end
-
-	local action_wanted = input.btn_melee_press or input.btn_melee_release or self._state_data.melee_charge_wanted
-
-	if not action_wanted then
-		return
-	end
-
-	if input.btn_melee_release then
-		if self._state_data.meleeing then
-			if self._state_data.melee_attack_allowed_t then
-				self._state_data.melee_attack_wanted = true
-
-				return
-			end
-
-			self:_do_action_melee(t, input)
-		end
-
-		return
-	end
-
-	local action_forbidden =
-		not self:_melee_repeat_allowed()
-		or self._use_item_expire_t
-		or (self._equip_weapon_expire_t and self._equip_weapon_expire_t0)
-		or self:_interacting()
-		or self:_is_throwing_projectile()
-		or self:_is_using_bipod()
-		or self:is_shooting_count()
-		or not self._movement_equipped
-		or self._state_data.lying
-
-	if action_forbidden then
-		return
-	end
-
-	local melee_entry = managers.blackmarket:equipped_melee_weapon()
-	local instant = tweak_data.blackmarket.melee_weapons[melee_entry].instant
-
-	self._unequip_weapon_expire_t = nil
-	self:_start_action_melee(t, input, instant)
-	local wep_base = self._equipped_unit:base()
-	self._running_enter_end_t = nil
-	self._running_exit_start_t = nil
-
-	return true
 end
 --JUMP: STAMINA DRAIN
 function PlayerStandard:_check_action_jump(t, input)

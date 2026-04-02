@@ -15522,18 +15522,18 @@ end)
 Hooks:PostHook( CharacterTweakData, "_init_marshal_shield", "nqr_CharacterTweakData:_init_marshal_shield", function(self, presets)
 	self.marshal_shield.weapon = presets.weapon.normal
 	self.marshal_shield.move_speed = presets.move_speed.slow
-	self.marshal_shield.immune_to_concussion = false
-	self.marshal_shield.damage.immune_to_knockback = false
+	self.marshal_shield.immune_to_concussion = nil
+	self.marshal_shield.damage.immune_to_knockback = nil
 	self.marshal_shield.damage.shield_knocked = true
 	self.marshal_shield_break.tags = { "law", "shield" }
-	self.marshal_shield_break.modify_health_on_tweak_change = false
+	self.marshal_shield_break.modify_health_on_tweak_change = nil
 	self.marshal_shield_break.tmp_invulnerable_on_tweak_change = 0
 end)
 
 Hooks:PostHook( CharacterTweakData, "_init_phalanx_minion", "nqr_CharacterTweakData:_init_phalanx_minion", function(self, presets)
 	self.phalanx_minion.can_be_tased = nil
 	self.phalanx_minion.damage.shield_knocked = true
-	self.phalanx_minion.damage.immune_to_knockback = nil
+	self.phalanx_minion.damage.immune_to_knockback = true
 end)
 
 Hooks:PostHook( CharacterTweakData, "_init_taser", "nqr_CharacterTweakData:_init_taser", function(self, presets)

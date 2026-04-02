@@ -39,6 +39,10 @@ Hooks:PostHook( BlackMarketTweakData, "_init_melee_weapons", "nqr_projectilestwe
 	self.melee_weapons.fear.fire_dot_data = nil
 
 	self.melee_weapons.spoon_gold.fire_dot_data = nil
+
+
+
+	--self.melee_weapons.weapon.instant = false
 end)
 
 Hooks:PostHook( BlackMarketTweakData, "_init_weapon_skins", "nqr_BlackMarketTweakData:_init_weapon_skins", function(self)

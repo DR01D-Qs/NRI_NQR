@@ -1180,9 +1180,17 @@ end
 				proj_type = "rounded",
 				proj_weight = 124,
 				default_speed = 350,
-				default_energy = 494,
+				default_energy = 500,
 				default_barrel = 4.65,
-				caliber_weight = 12.6,
+				caliber_weight = 13.2,
+			},
+			{ name = "Sub FMJ",
+				proj_type = "rounded",
+				proj_weight = 147,
+				default_speed = 300,
+				default_energy = 430,
+				default_barrel = 4.65,
+				caliber_weight = 14.7,
 			},
 		},
 		[".40 S&W"] = {
@@ -3127,6 +3135,22 @@ end
 	self.contender.eq_fr = self.glock_17.eq_fr
 	self.contender.has_description = nil
 
+	self.welrod.caliber = ".32 ACP"
+	self.welrod.weight = 11
+	self.welrod.fire_mode_data.fire_rate = 1.2
+	self.welrod.rise_factor = 2
+	self.welrod.timers.reload_not_empty = 2.8
+	self.welrod.timers.reload_empty = 2.8
+	self.welrod.action = "bolt_action"
+	self.welrod.shot_anim_hands = 62
+	self.welrod.bolt_release = "rotate"
+	self.welrod.bolt_release_ratio = { 0.7, 0.8 }
+	self.welrod.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+	self.welrod.custom_cycle_2 = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+	self.welrod.mag_release = "paddle"
+	self.welrod.eq_fr = {1,12,12}
+	--self.msr.r_no_bullet_clbk = true
+
 
 
 ------REVOLVER
@@ -3580,6 +3604,7 @@ end
 				["effects/payday2/particles/weapons/shells/shell_sniper_m95"] = "effects/payday2/particles/weapons/shells/shell_shak",
 				["effects/payday2/particles/weapons/shells/shell_sniper_9mm"] = "effects/payday2/particles/weapons/shells/shell_9mm",
 				["effects/payday2/particles/weapons/shells/shell_awp"] = "effects/payday2/particles/weapons/shells/shell_556",
+				["effects/payday2/particles/weapons/shells/shell_welrod"] = "effects/payday2/particles/weapons/shells/shell_9mm",
 			}
 			self[wep].shell_ejection = ejection_swaps[self[wep].shell_ejection] or self[wep].shell_ejection
 

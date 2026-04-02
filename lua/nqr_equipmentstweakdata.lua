@@ -1,6 +1,6 @@
 EquipmentsTweakData = EquipmentsTweakData or class()
 
-Hooks:PostHook(EquipmentsTweakData, "init", "nqr_GroupAITweakData:init", function(self)
+Hooks:PostHook(EquipmentsTweakData, "init", "nqr_EquipmentsTweakData:init", function(self)
 	local job = Global.level_data and Global.level_data.level_id
 	local lookup = {
 		pbr = { c4 = { quantity = 2, max_quantity = 6, transfer_quantity = 6 } },
@@ -12,4 +12,9 @@ Hooks:PostHook(EquipmentsTweakData, "init", "nqr_GroupAITweakData:init", functio
 			if self.specials[i] then self.specials[i][u] = j end
 		end
 	end
+
+
+
+	self.specials.cable_tie.quantity = 95
+	self.specials.cable_tie.max_quantity = 95
 end)

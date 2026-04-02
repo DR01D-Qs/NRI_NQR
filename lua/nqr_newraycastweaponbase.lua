@@ -518,6 +518,10 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 				length_stock_addon = part.stats.length
 			end
 		end
+
+		if part.stats.bleedoff then
+			self._bleedoff = part.stats.bleedoff
+		end
 	end
 	--managers.mission._fading_debug_output:script().log(tostring(length_stock), Color.white)
 	--managers.mission._fading_debug_output:script().log(tostring(length_stock_addon), Color.white)
@@ -571,11 +575,11 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 			( default_energy * ( (barrel / default_barrel) ^ (1/3) ) ) or
 		--SAME
 			default_energy) )]]
-	self._result_energy = tweak_data.weapon:nqr_energy(self._ammotype_data, self._barrel_length)
+	self._barrel_length = self._current_stats.barrel_length or self._barrel_length
+	self._result_energy = tweak_data.weapon:nqr_energy(self._ammotype_data, self._barrel_length) * (self._bleedoff or 1)
 	self._result_speed = math.sqrt(2 * self._result_energy / (self._ammotype_data.proj_weight/15432))
 	self._current_stats.mag_weight = ((self._current_stats.CLIP_AMMO_MAX or 1)*(self._ammotype_data.cartridge_weight or 1)*0.01) + (self._current_stats.empty_mag_weight or 0)
 	if self._name_id=="m134" then self._current_stats.mag_weight = 10 end
-	self._barrel_length = self._current_stats.barrel_length or self._barrel_length
 	self._rise_factor = self._current_stats.rise_factor or self._rise_factor
 	self._weight = (self._current_stats.weight or self._weight) + (self._current_stats.mag_weight or 0)
 	self._alert_size = (default_energy * 10 * (md_supp*1.5)) + ((self._result_speed>343) and 10000 or 0)

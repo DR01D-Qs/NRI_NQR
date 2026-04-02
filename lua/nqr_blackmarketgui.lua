@@ -5784,9 +5784,9 @@ function BlackMarketGui:show_stats()
 
 				mod_stats.chosen.damage = tweak_data.weapon:nqr_energy(
 					mods_ammotype_data,
-					total_mods_stats.barrel_length.value~=0 and total_mods_stats.barrel_length.value or total_base_stats.barrel_length.value,
+					(total_mods_stats.barrel_length.value~=0 and total_mods_stats.barrel_length.value or total_base_stats.barrel_length.value),
 					name
-				) * 0.025
+				) * 0.025 * (total_mods_stats.bleedoff or 1)
 				mod_stats.chosen.spread = tweak_data.weapon:nqr_spread(
 					mods_ammotype_data,
 					total_mods_stats.barrel_length.value~=0 and total_mods_stats.barrel_length.value or total_base_stats.barrel_length.value,

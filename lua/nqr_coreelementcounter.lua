@@ -25,6 +25,45 @@ function ElementCounter:init(...)
         dah = { ["2_bags_secured"] = 1, ["3_bags_secured"] = 2, ["4_bags_secured"] = 4, ["6_bags_secured"] = 4, ["8_bags_secured"] = 4 },
         hox_1 = { turret_counter_ovk = 1, turret_counter_vhard = 0 },
         trai = { logic_counter_6_bags = 4 },
+        ranc = {
+            --fulton nrm
+            logic_counter_012 = 2,
+            logic_counter_013 = 1,
+            logic_counter_014 = 0,
+            logic_counter_015 = 0,
+            logic_counter_016 = 0,
+            logic_counter_017 = 0,
+
+            --fulton ovk
+            logic_counter_001 = 4,
+            logic_counter_007 = 3,
+            logic_counter_006 = 2,
+            logic_counter_005 = 1,
+            logic_counter_004 = 0,
+            logic_counter_003 = 0,
+            logic_counter_002 = 0,
+            logic_counter_011 = 0,
+
+            --boat nrm
+            logic_counter_018 = 2,
+            logic_counter_019 = 1,
+            logic_counter_020 = 0,
+            logic_counter_021 = 0,
+            logic_counter_022 = 0,
+            logic_counter_023 = 0,
+            logic_counter_024 = 0,
+
+            --boat ovk
+            logic_counter_031 = 4,
+            logic_counter_030 = 3,
+            logic_counter_029 = 2,
+            logic_counter_028 = 1,
+            logic_counter_027 = 0,
+            logic_counter_026 = 0,
+            logic_counter_025 = 0,
+            logic_counter_024 = 0,
+            logic_counter_023 = 0,
+        },
     }
     if Global.game_settings.difficulty=="normal" then
         lookup.dah["4_bags_secured"] = 2

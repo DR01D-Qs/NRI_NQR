@@ -357,7 +357,14 @@ end
 
 --GLOBAL SHIELDBASH
 function RaycastWeaponBase:chk_shield_knock(hit_unit, col_ray, weapon_unit, user_unit, damage)
-	if hit_unit:base() and hit_unit:base()._tweak_table~="shield" then return false end
+	if not (hit_unit:inventory() and hit_unit:inventory()._shield_unit or hit_unit:in_slot(self.shield_mask)) then return false end
+	if hit_unit:base()
+	and hit_unit:base()._tweak_table
+	and tweak_data.character[hit_unit:base()._tweak_table].damage
+	and tweak_data.character[hit_unit:base()._tweak_table].damage.immune_to_knockback
+	then
+		return false
+	end
 
 	local hit_shield = hit_unit:in_slot(self.shield_mask)
 	local enemy_unit = hit_shield and hit_unit:parent() or hit_unit
@@ -367,14 +374,14 @@ function RaycastWeaponBase:chk_shield_knock(hit_unit, col_ray, weapon_unit, user
 	local is_swat = hit_unit:name()==Idstring("units/payday2/characters/ene_acc_shield_small/shield_small")
 	local is_phalanx = hit_unit:name()==Idstring("units/pd2_dlc_vip/characters/ene_acc_shield_phalanx/ene_acc_shield_phalanx")
 
-	local damage_min = 30
-	local damage_max = 60
+	local damage_min = 80
+	local damage_max = 120
 	if is_swat then
-		damage_min = 20
-		damage_max = 40
-	elseif is_phalanx then
 		damage_min = 60
-		damage_max = 130
+		damage_max = 90
+	elseif is_phalanx then
+		damage_min = 120
+		damage_max = 180
 	end
 
 	local mov_ext = alive(enemy_unit) and enemy_unit:movement()

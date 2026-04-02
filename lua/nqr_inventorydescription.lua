@@ -108,7 +108,7 @@ function WeaponDescription._get_stats(name, category, slot, blueprint)
 		base_ammotype_data,
 		base_stats.barrel_length.value,
 		name
-	) * 0.025
+	) * 0.025 * (base_stats.bleedoff or 1)
 	base_stats.spread.value = tweak_data.weapon:nqr_spread(
 		base_ammotype_data,
 		base_stats.barrel_length.value,
@@ -123,9 +123,9 @@ function WeaponDescription._get_stats(name, category, slot, blueprint)
 
 	mods_stats.damage.value = tweak_data.weapon:nqr_energy(
 		mods_ammotype_data,
-		mods_stats.barrel_length.value~=0 and mods_stats.barrel_length.value or base_stats.barrel_length.value,
+		(mods_stats.barrel_length.value~=0 and mods_stats.barrel_length.value or base_stats.barrel_length.value),
 		name
-	) * 0.025
+	) * 0.025 * (mods_stats.bleedoff or 1)
 	mods_stats.spread.value = tweak_data.weapon:nqr_spread(
 		mods_ammotype_data,
 		mods_stats.barrel_length.value~=0 and mods_stats.barrel_length.value or base_stats.barrel_length.value,
@@ -216,6 +216,13 @@ function WeaponDescription._get_base_stats(name)
 			end
 		elseif tweak_default_stats[stat.name] then
 			base_stats[stat.name].value = type(wep_tweak[stat.name])=="number" and wep_tweak[stat.name] or 0 --stat.index and index or tweak_default_stats[stat.name][index] * tweak_data.gui.stats_present_multiplier
+		end
+	end
+
+	for o, l in pairs(default_blueprint) do
+		part_data = managers.weapon_factory:get_part_data_by_part_id_from_weapon(l, factory_id, default_blueprint)
+		if part_data.stats and part_data.stats.bleedoff then
+			base_stats.bleedoff = part_data.stats.bleedoff
 		end
 	end
 
@@ -320,6 +327,10 @@ function WeaponDescription._get_mods_stats(name, base_stats, equipped_mods, bonu
 					end
 				end
 
+				if part_data.stats.bleedoff then
+					mods_stats.bleedoff = part_data.stats.bleedoff
+				end
+
 				--mods_stats.length.value = mods_stats.length.value + --[[(part_data.stats.length or 0) +]] (part_data.stats.barrel_length or 0)
 			end
 		end
@@ -405,7 +416,7 @@ function WeaponDescription.get_stats_for_mod(mod_name, weapon_name, category, sl
 		base_ammotype_data,
 		base_stats.barrel_length.value,
 		name
-	) * 0.025
+	) * 0.025 * (base_stats.bleedoff or 1)
 	base_stats.spread.value = tweak_data.weapon:nqr_spread(
 		base_ammotype_data,
 		base_stats.barrel_length.value,

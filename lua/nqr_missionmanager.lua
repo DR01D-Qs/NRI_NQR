@@ -85,3 +85,25 @@ function MissionManager:_activate_mission(name)
 		result_unit:set_visible(false)
 	end
 end
+
+
+
+function MissionScriptElement:init(mission_script, data)
+	self._mission_script = mission_script
+	self._id = data.id
+	self._editor_name = data.editor_name
+	self._values = data.values
+
+
+
+	local job = Global.level_data and Global.level_data.level_id
+	lookup = {
+		jolly = { ["Link - delay"] = { delay = 45 } },
+	}
+	if lookup[job] and lookup[job][self._editor_name] then
+		for i, k in pairs(lookup[job][self._editor_name]) do
+			self._values.on_executed[1][i] = k
+		end
+		--Utils.PrintTable(self._values, 3)
+	end
+end

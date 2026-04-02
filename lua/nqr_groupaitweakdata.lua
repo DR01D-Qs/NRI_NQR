@@ -110,9 +110,9 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		spa = {0.6,1.5}, --brooklyn 10-10
 		des = {0.8,1.5}, --henry's rock
 		sah = {0.7,1.5}, --shacklethorne
-		chill_combat = {1,1}, --safehouse raid +--
+		chill_combat = {1,1.5}, --safehouse raid
 		man = {1.2,1.5}, --undercover
-		jolly = {0.9,2.5}, --aftershock +-
+		jolly = {0.5,2.5}, --aftershock
 		branchbank = {1.5,2}, --bank heist
 		firestarter_1 = {2,2}, --firestarter 1
 		firestarter_2 = {1.2,1}, --firestarter 2
@@ -123,7 +123,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		family = {1.4,2.5}, --diamond store
 		jewelry_store = {1.1,1.5}, --jewelry store
 		ukrainian_job = {1.2,1}, --ukrainian job
-		fex = {0.8,1.5}, --buluc's mansion +--
+		fex = {1,1.5}, --buluc's mansion
 		rat = {1.4,2}, --cook off
 		sand = {1,1.5}, --the ukrainian prisoner
 		help = {1,1.5}, --prison nightmare
@@ -160,10 +160,11 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		escape_overpass_night = {0.6,1.5}, --escape overpass
 		escape_street = {0.5,1.5}, --escape street
 		escape_garage = {0.5,1.5}, --escape garage
-		watchdogs_1 = {1.2,2.5}, --watch dogs day 1 +-
-		watchdogs_2 = {0.9,2}, --watch dogs day 2 +-
-		watchdogs_2_day = {0.9,2}, --watch dogs day 2 +-
-		ranc = {1.5,1.5}, --midland ranch +--
+		watchdogs_1 = {1,2}, --watch dogs day 1
+		watchdogs_1_night = {1,2}, --watch dogs day 1
+		watchdogs_2 = {1.2,1.5}, --watch dogs day 2
+		watchdogs_2_day = {1.2,1.5}, --watch dogs day 2
+		ranc = {1.4,1.5}, --midland ranch
 		trai = {1.5,1.5}, --lost in transit
 		framing_frame_1 = {1.3,2.5}, --ff1
 		framing_frame_2 = {1,1.5}, --ff2
@@ -206,6 +207,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		chas = {2, 1.3},
 		trai = {2, 1.3},
 		ranc = {2, 1.3},
+		fex = {2, 1.3},
 
 		firestarter_1 = {1.5, 1.2},
 		firestarter_2 = {1.5, 1.2},
