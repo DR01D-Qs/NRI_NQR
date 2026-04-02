@@ -2380,12 +2380,15 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_upg_o_marksmansight_rear.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_upg_o_rmr.parent = nil
 	self.parts.wpn_fps_upg_o_rmr.value = 7
+	self.parts.wpn_fps_upg_o_rmr.stance_mod.wpn_fps_pis_welrod.translation = Vector3(0,0,-0.57)
 	self.parts.wpn_fps_upg_o_rmr.stats = { concealment = 2, weight = 1, sightheight = 1, use_stance_mod = true }
 	self.parts.wpn_fps_upg_o_rms.parent = nil
 	self.parts.wpn_fps_upg_o_rms.value = 7
+	self.parts.wpn_fps_upg_o_rms.stance_mod.wpn_fps_pis_welrod.translation = Vector3(0,0,-0.57)
 	self.parts.wpn_fps_upg_o_rms.stats = { concealment = 2, weight = 1, sightheight = 1, use_stance_mod = true }
 	self.parts.wpn_fps_upg_o_rikt.parent = nil
 	self.parts.wpn_fps_upg_o_rikt.value = 6
+	self.parts.wpn_fps_upg_o_rikt.stance_mod.wpn_fps_pis_welrod.translation = Vector3(0,0,-0.87)
 	self.parts.wpn_fps_upg_o_rikt.stats = { concealment = 3, weight = 1, sightheight = 1.7, use_stance_mod = true }
 
 

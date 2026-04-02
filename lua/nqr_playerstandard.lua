@@ -2632,8 +2632,9 @@ function PlayerStandard:_start_action_melee(t, input, instant)
 
 	local current_state_name = self._camera_unit:anim_state_machine():segment_state(self:get_animation("base"))
 
+	local attack_allowed_expire_t = melee_tweak.attack_allowed_expire_t or 0.15
 	self._state_data.melee_attack_allowed_t = t + (
-		current_state_name~=self:get_animation("melee_attack_state") and (melee_tweak.attack_allowed_expire_t or 0.15) or 0
+		current_state_name~=self:get_animation("melee_attack_state") and attack_allowed_expire_t or 0
 	)
 	local instant_hit = melee_tweak.instant
 
