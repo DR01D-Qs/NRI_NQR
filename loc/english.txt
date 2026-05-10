@@ -21,6 +21,8 @@
 
 	"menu_es_mission_xp_kills_bonus" : "Body Count Bonus",
 
+	"CRASH_NO_BEARDLIB" : "BEARDLIB NOT FOUND! If it seems like it's there, please redownload it manually. It happens."
+
 
 
 	"bm_menu_dodge" : "Protection",
@@ -40,6 +42,11 @@
 	"bm_menu_spread" : "Spread",
 	"bm_menu_recoil" : "Muzzle rise",
 	"bm_menu_totalammo" : "Spare Ammo",
+
+	"bm_menu_damage_type" : "Damage Type",
+	"bm_melee_dmg_striking" : "Striking",
+	"bm_melee_dmg_slashing" : "Slashing",
+	"bm_melee_dmg_piercing" : "Piercing",
 
 
 
@@ -128,6 +135,7 @@
 	"bm_wp_ironsight_folded_usable_desc" : "Still usable when folded.",
 	"bm_wp_ironsight_folded_usable_nostock_desc" : "Still usable when folded, although only when the weapon is not shouldered.",
 	"bm_wp_also_foregrip" : "Acts as a Foregrip.",
+	"bm_wp_bleedoff" : "Bleed-off Barrel makes supersonic rounds subsonic to produce less noise, at the cost of reduced Damage.",
 
 	"bm_wp_remove_o" : "Remove Sight",
 	"bm_wp_remove_extra" : "Remove Extra",
@@ -363,6 +371,7 @@
 	"bm_wp_r870_gadgetrail" : "Reinfeld Gadget Rail",
 	"bm_wp_model70_b_short" : "Short Barrel",
 	"bm_wp_rota_b_salvo" : "Shh! Barrel",
+	"bm_wp_1911_hicapa" : "Crosskill Hi-Capa Conversion Kit",
 
 	"bm_wp_upg_ass_74_b_legend" : "Vlad's Rodina Barrel",
 	"bm_wp_upg_ass_74_ns_legend" : "Vlad's Rodina Barrel Extension",

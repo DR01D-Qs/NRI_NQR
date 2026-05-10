@@ -21,6 +21,8 @@
 
 	"menu_es_mission_xp_kills_bonus" : "Бонус за убийства",
 
+	"CRASH_NO_BEARDLIB" : "BEARDLIB НЕ НАЙДЕН! Если кажется, что он на месте, пожалуйста, скачайте его заново вручную. Такое бывает."
+
 
 
 	"bm_menu_dodge" : "Защита",
@@ -40,6 +42,11 @@
 	"bm_menu_spread" : "Разброс",
 	"bm_menu_recoil" : "Подброс",
 	"bm_menu_totalammo" : "Боезапас",
+
+	"bm_menu_damage_type" : "Тип Урона",
+	"bm_melee_dmg_striking" : "Ударный",
+	"bm_melee_dmg_slashing" : "Режущий",
+	"bm_melee_dmg_piercing" : "Колющий",
 
 
 
@@ -128,6 +135,7 @@
 	"bm_wp_ironsight_folded_usable_desc" : "Можно использовать и в сложенном виде.",
 	"bm_wp_ironsight_folded_usable_nostock_desc" : "Можно использовать и в сложенном виде, но только без упора в Приклад.",
 	"bm_wp_also_foregrip" : "Является Цевьём.",
+	"bm_wp_bleedoff" : "Перфорированный Ствол делает из сверхзвуковых пуль дозвуковые для снижения шума засчёт сниженного Урона.",
 
 	"bm_wp_remove_o" : "Убрать Прицел",
 	"bm_wp_remove_extra" : "Убрать Доп",
@@ -363,6 +371,7 @@
 	"bm_wp_r870_gadgetrail" : "Планка Гаджета Reinfeld",
 	"bm_wp_model70_b_short" : "Укороченный Ствол",
 	"bm_wp_rota_b_salvo" : "Ствол Тсс!",
+	"bm_wp_1911_hicapa" : "Конверсия Crosskill Hi-Capa",
 
 	"bm_wp_upg_ass_74_b_legend" : "Ствол Vlad's Rodina",
 	"bm_wp_upg_ass_74_ns_legend" : "Насадка Vlad's Rodina",
