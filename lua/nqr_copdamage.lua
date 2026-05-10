@@ -576,40 +576,64 @@ function CopDamage:damage_bullet(attack_data)
 			absorb_chance = hit_back and armor.head[3] or (absorb_roll<armor.head[2] and armor.head[2] or armor.face[2]+armor.head[2])
 			damage = damage * 8
 			crit_chance = 0.8
-		elseif spot==Idstring("body_helmet") or spot==Idstring("body_helmet_glass") or spot==Idstring("body_helmet_plate") then
+		elseif spot==Idstring("body_helmet")
+		or spot==Idstring("body_helmet_glass")
+		or spot==Idstring("body_helmet_plate")
+		then
 			if spot==Idstring("body_helmet_glass") then switch = "glass_breakable" end
 			absorb_tier = armor.head[1]
 			absorb_chance = 2
 			damage = damage * 5
 			crit_chance = 0.8
-		elseif spot==Idstring("body_armor_chest") or spot==Idstring("body_armor_stomache") or spot==Idstring("body_armor_back") then
+		elseif spot==Idstring("body_armor_chest")
+		or spot==Idstring("body_armor_stomache")
+		or spot==Idstring("body_armor_back")
+		then
 			absorb_tier = 4
 			absorb_chance = 2
 			damage = damage * 1
 			crit_chance = 0.4
-		elseif spot==Idstring("body") or spot==Idstring("body_plate") then
+		elseif spot==Idstring("body")
+		or spot==Idstring("body_plate")
+		then
 			if spot==Idstring("body") then switch = true
 			elseif spot==Idstring("body_plate") and self._unit:base()._tweak_table=="tank_hw" then return end
 			absorb_tier = armor.whole_body or (hit_front and armor.body or armor.back)
 			absorb_chance = armor.whole_body and 2 or 1
 			damage = damage * 1
 			crit_chance = 0.4
-		elseif spot==Idstring("rag_LeftArm") or spot==Idstring("rag_RightArm") or spot==Idstring("LeftArm") or spot==Idstring("RightArm") then
+		elseif spot==Idstring("rag_LeftArm")
+		or spot==Idstring("rag_RightArm")
+		or spot==Idstring("LeftArm")
+		or spot==Idstring("RightArm")
+		then
 			absorb_tier = armor.whole_body or armor.upper_arm
 			absorb_chance = armor.whole_body and 2 or (hit_back and 0.9 or 1)
 			damage = damage * 0.6
 			switch = true
-		elseif spot==Idstring("rag_LeftForeArm") or spot==Idstring("rag_RightForeArm") or spot==Idstring("LeftForeArm") or spot==Idstring("RightForeArm") then
+		elseif spot==Idstring("rag_LeftForeArm")
+		or spot==Idstring("rag_RightForeArm")
+		or spot==Idstring("LeftForeArm")
+		or spot==Idstring("RightForeArm")
+		then
 			absorb_tier = armor.whole_body or armor.lower_arm
 			absorb_chance = armor.whole_body and 2 or 1
 			damage = damage * 0.4
 			switch = true
-		elseif spot==Idstring("rag_LeftUpLeg") or spot==Idstring("rag_RightUpLeg") or spot==Idstring("LeftUpLeg") or spot==Idstring("RightUpLeg") then
+		elseif spot==Idstring("rag_LeftUpLeg")
+		or spot==Idstring("rag_RightUpLeg")
+		or spot==Idstring("LeftUpLeg")
+		or spot==Idstring("RightUpLeg")
+		then
 			absorb_tier = armor.whole_body or armor.upper_legs
 			absorb_chance = armor.whole_body and 2 or 0.8
 			damage = damage * 0.8
 			switch = true
-		elseif spot==Idstring("rag_LeftLeg") or spot==Idstring("rag_RightLeg") or spot==Idstring("LeftLeg") or spot==Idstring("RightLeg") then
+		elseif spot==Idstring("rag_LeftLeg")
+		or spot==Idstring("rag_RightLeg")
+		or spot==Idstring("LeftLeg")
+		or spot==Idstring("RightLeg")
+		then
 			absorb_tier = armor.whole_body or armor.lower_legs
 			absorb_chance = armor.whole_body and 2 or (hit_back and 0 or 1)
 			damage = damage * 0.6

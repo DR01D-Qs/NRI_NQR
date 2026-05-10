@@ -175,7 +175,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		deep = {1.3,2}, --crude awakening
 		nightclub = {1.2,1.5}, --nightclub
 		haunted = {0.5,0.5}, --safehouse nightmare
-		four_stores = {1.5,1}, --four stores
+		four_stores = {1.3,1}, --four stores
 		mallcrasher = {1.2,0.5}, --mallcrasher
 		arm_par = {1.3,2.5}, --transport park
 		arm_und = {0.8,2}, --transport underpass

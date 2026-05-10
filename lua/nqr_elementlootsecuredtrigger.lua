@@ -8,6 +8,7 @@ function ElementLootSecuredTrigger:init(...)
     local job = Global.level_data and Global.level_data.level_id
     local lookup = {
         four_stores = { trigger_loot_secured_007 = 150000 },
+        branchbank = { trigger_loot_secured_001 = 100000 },
     }
     self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
 end

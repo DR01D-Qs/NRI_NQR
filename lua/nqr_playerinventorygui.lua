@@ -1116,29 +1116,13 @@ function PlayerInventoryGui:_update_stats(name)
 		self:_update_info_player_style(name)
 	elseif name == "melee" then
 		self:set_melee_stats(self._info_panel, {
-			{
-				range = true,
-				name = "damage"
-			},
-			{
-				range = true,
-				name = "damage_effect",
-				multiple_of = "damage"
-			},
-			{
-				inverse = true,
-				name = "charge_time",
-				num_decimals = 1,
-				suffix = managers.localization:text("menu_seconds_suffix_short")
-			},
-			{
-				range = true,
-				name = "range"
-			},
-			{
-				index = true,
-				name = "concealment"
-			}
+			{ name = "weight", inverse = true, },
+			{ name = "length", },
+			{ name = "concealment", inverse = true, },
+			--{ name = "damage", range = true, },
+			--{ name = "damage_effect", range = true, multiple_of = "damage" },
+			--{ name = "charge_time", inverse = true, num_decimals = 1, suffix = managers.localization:text("menu_seconds_suffix_short") },
+			--{ name = "range", range = true, },
 		})
 		self:_update_info_melee(name)
 	elseif name == "skilltree" then
@@ -1760,6 +1744,7 @@ function PlayerInventoryGui:_update_info_player_style(name)
 end
 
 function PlayerInventoryGui:_update_info_melee(name)
+	if not name or name=="melee" then return end
 	local player_loadout_data = managers.blackmarket:player_loadout_data()
 	local category = "melee_weapons"
 	local equipped_item = managers.blackmarket:equipped_item(category)
@@ -2307,7 +2292,7 @@ function PlayerInventoryGui:create_box(params)
 		local align = params.text_align or "left"
 		local vertical = params.text_vertical or "top"
 		local selected_color = params.text_selected_color or params.text_color or tweak_data.screen_colors.text
-		local unselected_color = params.text_unselected_color or params.text_color or tweak_data.screen_colors.button_stage_3:with_alpha(0.25)
+		local unselected_color = params.text_unselected_color or params.text_color or tweak_data.screen_colors.button_stage_3:with_alpha(0.5)
 		local blend_mode = params.text_blend_mode or params.blend_mode or "add"
 		local font = params.font or tweak_data.menu.pd2_small_font
 		local font_size = params.font_size or tweak_data.menu.pd2_small_font_size
@@ -4484,6 +4469,28 @@ function PlayerInventoryGui:_get_melee_weapon_stats(name)
 	local non_special = managers.player:upgrade_value("player", "non_special_melee_multiplier", 1) - 1
 	local special = managers.player:upgrade_value("player", "melee_damage_multiplier", 1) - 1
 
+	if not name or name=="melee" then
+		for i, stat in ipairs(self._stats_shown) do
+			base_stats[stat.name] = {
+				value = 0,
+				max_value = 0,
+				min_value = 0
+			}
+			mods_stats[stat.name] = {
+				value = 0,
+				max_value = 0,
+				min_value = 0
+			}
+			skill_stats[stat.name] = {
+				value = 0,
+				max_value = 0,
+				min_value = 0
+			}
+		end
+
+		return base_stats, mods_stats, skill_stats
+	end
+
 	for i, stat in ipairs(self._stats_shown) do
 		local skip_rounding = stat.num_decimals
 		base_stats[stat.name] = {
@@ -4676,8 +4683,8 @@ function PlayerInventoryGui:_get_armor_stats(name)
 			mod = mod + wep_base_stats.weight.value + wep_mods_stats.weight.value
 
 			local equipped_item = managers.blackmarket:equipped_item("melee_weapons")
-			local mel_base_stats, mel_mods_stats, mel_skill_stats = self:_get_melee_weapon_stats(equipped_item)
-			mod = mod + mel_base_stats.weight.value + mel_mods_stats.weight.value
+			--local mel_base_stats, mel_mods_stats, mel_skill_stats = self:_get_melee_weapon_stats(equipped_item)
+			--mod = mod + mel_base_stats.weight.value + mel_mods_stats.weight.value
 
 			base_stats[stat.name] = {
 				value = (base + mod) --* tweak_data.gui.stats_present_multiplier
@@ -5361,12 +5368,12 @@ function PlayerInventoryGui:init(ws, fullscreen_ws, node)
 		},
 		{
 			"armor",
-			"throwable",
+			"melee",
 			"crew"
 		},
 		{
 			"deployable",
-			"melee",
+			"throwable",
 			"infamy"
 		}
 	}

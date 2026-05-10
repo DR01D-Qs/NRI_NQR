@@ -82,6 +82,8 @@ Hooks:PostHook( BlackMarketTweakData, "_init_projectiles", "nqr_projectilestweak
 
     self.projectiles.xmas_snowball.throwable = nil
 
+    self.projectiles.laser_watch.throwable = nil
+
 
 
     self.projectiles.launcher_frag.time_cheat = 0.2

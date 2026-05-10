@@ -10,26 +10,21 @@ local INV_REMOVE = Idstring("remove_from_inventory")
 local CRAFT_ADD = Idstring("add_to_crafted")
 local CRAFT_REMOVE = Idstring("remove_from_crafted")
 local MASK_COLOR_CONVERT_MAP = {
-	color_b = "mask_colors",
-	material = "materials",
-	color_a = "mask_colors",
-	pattern = "textures"
-}
-local DEFAULT_MASK_BLUEPRINT = {
-	color = {
-		id = "nothing",
-		global_value = "normal"
-	},
-	pattern = {
-		id = "no_color_no_material",
-		global_value = "normal"
-	},
-	material = {
-		id = "plastic",
-		global_value = "normal"
-	}
+	pattern = "textures",
+	color_c = "materials",
+	color_a = "materials",
+	color_b = "materials",
+	material = "materials"
 }
 local DEFAULT_CUSTOMIZE_MASK_BLUEPRINT = {
+	materials = {
+		id = "plastic",
+		global_value = "normal"
+	},
+	textures = {
+		id = "no_color_full_material",
+		global_value = "normal"
+	},
 	mask_colors = {
 		id = "nothing",
 		global_value = "normal"
@@ -42,15 +37,72 @@ local DEFAULT_CUSTOMIZE_MASK_BLUEPRINT = {
 		id = "nothing",
 		global_value = "normal"
 	},
-	textures = {
-		id = "no_color_full_material",
-		global_value = "normal"
-	},
-	materials = {
-		id = "plastic",
+	color_c = {
+		id = "strip_paint",
 		global_value = "normal"
 	}
 }
+
+
+
+function BlackMarketManager:_setup()
+	if not BeardLib then error(managers.localization:text("CRASH_NO_BEARDLIB")) end
+
+	self._defaults = {
+		mask = "character_locked",
+		character = "locked",
+		armor = "level_1",
+		armor_skins = {},
+		armor_skin = "none",
+		player_style = "none",
+		glove_id = "default",
+		preferred_character = "russian",
+		grenade = "frag",
+		melee_weapon = "weapon"
+	}
+
+	if _G.IS_VR then
+		self._defaults.melee_weapon = "fists"
+	end
+
+	self._defaults.henchman = {
+		mask = "character_locked"
+	}
+
+	if not Global.blackmarket_manager then
+		Global.blackmarket_manager = {}
+
+		self:_setup_armors()
+		self:_setup_weapons()
+		self:_setup_characters()
+		self:_setup_track_global_values()
+		self:_setup_unlocked_mask_slots()
+		self:_setup_unlocked_weapon_slots()
+		self:_setup_grenades()
+		self:_setup_melee_weapons()
+		self:_setup_armor_skins()
+		self:_setup_player_styles()
+		self:_setup_gloves()
+
+		Global.blackmarket_manager.inventory = {}
+		Global.blackmarket_manager.crafted_items = {}
+		Global.blackmarket_manager.new_drops = {}
+		Global.blackmarket_manager.new_item_type_unlocked = {}
+		Global.blackmarket_manager.new_tradable_items = {}
+		Global.blackmarket_manager.tradable_items_received = {}
+		Global.blackmarket_manager.inventory_tradable = {}
+		Global.blackmarket_manager.tradable_inventory_sort = 1
+		Global.blackmarket_manager.tradable_dlcs = {}
+	end
+
+	self._global = Global.blackmarket_manager
+	self._preloading_list = {}
+	self._preloading_index = 0
+	self._category_resource_loaded = {}
+	self._skin_editor = SkinEditor:new()
+	self._armor_skin_editor = ArmorSkinEditor:new()
+	self._event_listener_holder = EventListenerHolder:new()
+end
 
 
 
@@ -546,9 +598,9 @@ function BlackMarketManager:get_suspicion_offset_from_custom_data(data, lerp)
 	return val, index == 1, index == tweak_data.weapon.stats.concealment - 1
 end
 function BlackMarketManager:_calculate_melee_weapon_concealment(melee_weapon)
-	local melee_weapon_data = tweak_data.blackmarket.melee_weapons[melee_weapon].stats
+	local melee_weapon_data = melee_weapon and tweak_data.blackmarket.melee_weapons[melee_weapon].stats
 
-	return melee_weapon_data.concealment or tweak_data.weapon.stats.concealment
+	return melee_weapon_data and melee_weapon_data.concealment or tweak_data.weapon.stats.concealment
 end
 
 
@@ -1181,7 +1233,7 @@ end
 	print("----------------------------------------------------------------------")
 	print("[BlackMarketManager:_cleanup_blackmarket] BLACKMARKET CLEANUP DONE")
 end]]
---[[function BlackMarketManager:_cleanup_blackmarket()
+function BlackMarketManager:_cleanup_blackmarket()
 	print("[BlackMarketManager:_cleanup_blackmarket] STARTING BLACKMARKET CLEANUP")
 	print("----------------------------------------------------------------------")
 
@@ -1308,6 +1360,14 @@ end]]
 						table.insert(blueprint, part)
 					end
 				end
+			end
+
+			local csc = { primaries = 2, secondaries = 1 }
+			if tweak_data.weapon[weapon_id]
+			and tweak_data.weapon[weapon_id].use_data
+			and tweak_data.weapon[weapon_id].use_data.selection_index~=csc[category] then
+				log("BlackMarketManager:_cleanup_blackmarket()", "Weapon is in the wrong category", weapon_id)
+				table.insert(invalid_weapons, slot)
 			end
 
 			local weapon_invalid = not Global.blackmarket_manager.weapons[weapon_id] or not tweak_data.weapon[weapon_id] or not tweak_data.weapon.factory[factory_id] or managers.weapon_factory:get_factory_id_by_weapon_id(weapon_id) ~= factory_id or managers.weapon_factory:get_weapon_id_by_factory_id(factory_id) ~= weapon_id or not chk_global_value_func(tweak_data.weapon[weapon_id].global_value)
@@ -1652,4 +1712,4 @@ end]]
 
 	print("----------------------------------------------------------------------")
 	print("[BlackMarketManager:_cleanup_blackmarket] BLACKMARKET CLEANUP DONE")
-end]]
+end

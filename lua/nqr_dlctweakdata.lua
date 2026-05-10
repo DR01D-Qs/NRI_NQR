@@ -60,6 +60,7 @@ Hooks:PostHook( DLCTweakData, "init", "nqr_DLCTweakData_init", function(self)
 
 		{ type_items = "weapon_mods", item_entry = "wpn_fps_gadgets_pos_a_fl2", },
 		{ type_items = "weapon_mods", item_entry = "wpn_fps_gadgets_pos_a_fl3", },
+		{ type_items = "weapon_mods", item_entry = "wpn_fps_gadgets_pos_a_fl_upper", },
 		{ type_items = "weapon_mods", item_entry = "wpn_fps_gadgets_pos_a_o", },
 		{ type_items = "weapon_mods", item_entry = "wpn_fps_gadgets_pos_a_vg", },
 		{ type_items = "weapon_mods", item_entry = "wpn_fps_o_pos_fg", },

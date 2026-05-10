@@ -383,6 +383,7 @@ function WeaponFactoryManager:_add_part(p_unit, factory_id, part_id, forbidden, 
 	end
 
 	local flip_a_fl = part.type=="gadget" and ((part.a_fl or 0) -(factory[factory_id].a_fl or 0))
+	local flip_ns = part.flip_a
 
 	if async_task_data then
 		parts[part_id] = {
@@ -396,7 +397,7 @@ function WeaponFactoryManager:_add_part(p_unit, factory_id, part_id, forbidden, 
 			steelsight_visible = part.steelsight_visible,
 			steelsight_swap_progress_trigger = part.steelsight_swap_progress_trigger,
 			animation_effects = part.animation_effects,
-			flip_a_fl = flip_a_fl,
+			flip_a_fl = flip_a_fl or flip_ns,
 		}
 
 		managers.dyn_resource:load(ids_unit, ids_unit_name, "packages/dyn_resources", callback(self, self, "clbk_part_unit_loaded", async_task_data))
@@ -517,12 +518,13 @@ function WeaponFactoryManager:_spawn_and_link_unit(u_name, a_obj, third_person, 
 	local res = link_to_unit:link(a_obj, unit, unit:orientation_object():name())
 
 	if flip_a_fl then
-		unit:set_rotation(unit:rotation())
+		--[[unit:set_rotation(unit:rotation())
 
 		local current_rot = unit:rotation()
 		local rot_90 = Rotation(0, 0, -90*flip_a_fl)
 		mrotation.multiply(current_rot, rot_90) 
-		unit:set_rotation(current_rot)
+		unit:set_rotation(current_rot)]]
+		unit:set_local_rotation(Rotation(0, 0, -90*flip_a_fl))
 	end
 
 	if managers.occlusion and not third_person then

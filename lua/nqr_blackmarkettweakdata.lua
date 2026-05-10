@@ -23,16 +23,19 @@ function BlackMarketTweakData:_init_deployables(tweak_data)
 		dlc = "mxm",
 		texture_bundle_folder = "mxm"
 	}
+	self.deployables.spy_camera = {
+		name_id = "bm_equipment_spy_camera",
+		texture_bundle_folder = "esp",
+		dlc = "esp"
+	}
 
 	self:_add_desc_from_name_macro(self.deployables)
 end
 
 Hooks:PostHook( BlackMarketTweakData, "_init_melee_weapons", "nqr_projectilestweakdata:_init_melee_weapons", function(self, tweak_data)
 	self.melee_weapons.taser.tase_data = nil
-	self.melee_weapons.taser.sounds.charge = "fist_charge"
-
 	self.melee_weapons.zeus.tase_data = nil
-	self.melee_weapons.zeus.sounds.charge = "fist_charge"
+	self.melee_weapons.funder_strike.tase_data = nil
 
 	self.melee_weapons.cqc.fire_dot_data = nil
 

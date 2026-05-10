@@ -15,6 +15,10 @@ Hooks:PostHook(EquipmentsTweakData, "init", "nqr_EquipmentsTweakData:init", func
 
 
 
-	self.specials.cable_tie.quantity = 95
-	self.specials.cable_tie.max_quantity = 95
+	self.spy_camera.quantity = { 4 }
+
+
+
+	self.specials.cable_tie.quantity = 99
+	self.specials.cable_tie.max_quantity = 99
 end)

@@ -164,7 +164,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 			local mod_td = tweak_data.weapon.factory.parts[part_id]
 			local part_data = parts[part_id]
 
-			if colors[mod_td.sub_type] then
+			if part_data and colors[mod_td.sub_type] then
 				local alpha = part_data.unit:base().GADGET_TYPE == "laser" and tweak_data.custom_colors.defaults.laser_alpha or 1
 
 				part_data.unit:base():set_color(colors[mod_td.sub_type]:with_alpha(alpha))
@@ -200,6 +200,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		["x_judge"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["x_2006m"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["contraband"] = "units/pd2_dlc_spa/weapons/wpn_fps_snp_tti/wpn_fps_snp_tti",
+		["pmm"] = "units/pd2_dlc_afp/weapons/wpn_fps_pis_stech/wpn_fps_pis_stech",
 
 		--regressions
 		["amcar"] = "units/payday2/weapons/wpn_fps_ass_amcar/wpn_fps_ass_amcar",
@@ -219,7 +220,7 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		["serbu"] = "units/payday2/weapons/wpn_fps_shot_shorty/wpn_fps_shot_shorty",
 		["serbu_crew"] = "units/payday2/weapons/wpn_fps_shot_shorty/wpn_fps_shot_shorty_npc",
 		["glock_17"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17",
-		["glock_17_crew"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17_npc",
+		["g17_crew"] = "units/payday2/weapons/wpn_fps_pis_g17/wpn_fps_pis_g17_npc",
 		["g22c"] = "units/payday2/weapons/wpn_fps_pis_g22c/wpn_fps_pis_g22c",
 		["g22c_crew"] = "units/payday2/weapons/wpn_fps_pis_g22c/wpn_fps_pis_g22c_npc",
 		["x_g17"] = "units/pd2_dlc_butcher_mods/weapons/wpn_fps_pis_x_g17/wpn_fps_pis_x_g17",
@@ -234,7 +235,17 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 			end
 		end
 	end
-
+	local to_load_melee = {
+		["taser"] = "units/pd2_dlc_arena/weapons/wpn_fps_mel_microphone/wpn_fps_mel_microphone",
+		["zeus"] = "units/payday2/weapons/wpn_fps_mel_brassknuckle/wpn_fps_mel_brassknuckle",
+		["funder_strike"] = "units/pd2_dlc_joy/weapons/wpn_fps_mel_happy/wpn_fps_mel_happy",
+	}
+	local equipped_melee = managers.blackmarket:equipped_melee_weapon()
+	if to_load_melee[equipped_melee] then 
+		if not managers.dyn_resource:is_resource_ready(Idstring("unit"), Idstring(to_load_melee[equipped_melee]), "packages/dyn_resources") then
+			managers.dyn_resource:load(Idstring("unit"), Idstring(to_load_melee[equipped_melee]), "packages/dyn_resources", false)
+		end
+	end
 
 	clbk()
 end
@@ -251,6 +262,19 @@ end
 
 
 
+function NewRaycastWeaponBase:_default_damage_falloff()
+	local weapon_tweak = tweak_data.weapon[self._name_id]
+	local falloff_data = weapon_tweak.damage_falloff or {
+		optimal_range = weapon_tweak.damage_near,
+		far_falloff = weapon_tweak.damage_far
+	}
+	self._optimal_distance = falloff_data.optimal_distance or 0
+	self._optimal_range = falloff_data.optimal_range or 0
+	self._near_falloff = falloff_data.near_falloff or 0
+	self._far_falloff = falloff_data.far_falloff or 0
+	self._near_multiplier = falloff_data.near_multiplier or 0
+	self._far_multiplier = falloff_data.far_multiplier or 0
+end
 --STAT TABLES TO NUMERIC
 function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data)
 	local wep_tweak = self:weapon_tweak_data() --tweak_data.weapon[self._name_id]
@@ -578,7 +602,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	self._barrel_length = self._current_stats.barrel_length or self._barrel_length
 	self._result_energy = tweak_data.weapon:nqr_energy(self._ammotype_data, self._barrel_length) * (self._bleedoff or 1)
 	self._result_speed = math.sqrt(2 * self._result_energy / (self._ammotype_data.proj_weight/15432))
-	self._current_stats.mag_weight = ((self._current_stats.CLIP_AMMO_MAX or 1)*(self._ammotype_data.cartridge_weight or 1)*0.01) + (self._current_stats.empty_mag_weight or 0)
+	self._current_stats.mag_weight = ((self._current_stats.CLIP_AMMO_MAX or 1)*(self._ammotype_data.caliber_weight or 1)*0.01) + (self._current_stats.empty_mag_weight or 0)
 	if self._name_id=="m134" then self._current_stats.mag_weight = 10 end
 	self._rise_factor = self._current_stats.rise_factor or self._rise_factor
 	self._weight = (self._current_stats.weight or self._weight) + (self._current_stats.mag_weight or 0)

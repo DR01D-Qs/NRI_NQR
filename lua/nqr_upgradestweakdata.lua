@@ -75,7 +75,6 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			"welrod",
 		}, [2] = {
 			"model3",
-			"push",
 		}, [3] = {
 		}, [4] = {
 			"c96",
@@ -88,6 +87,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			"shrew",
 		}, [9] = {
 			"g26",
+			"pmm",
 		}, [10] = {
 			"type54",
 		}, [11] = {
@@ -143,7 +143,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [36] = {
 			"glock_18c",
 		}, [37] = {
-			"fmg9",
+
 		}, [38] = {
 			"deagle",
 		}, [39] = {
@@ -164,6 +164,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			"mp9",
 		}, [47] = {
 		}, [48] = {
+			"fmg9",
 		}, [49] = {
 		}, [50] = {
 		}, [51] = {
@@ -279,6 +280,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [34] = {
 			"sterling",
 		}, [35] = {
+			"speen",
 			"ultima",
 		}, [36] = {
 			"uzi",
@@ -299,7 +301,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [44] = {
 			"vityaz",
 		}, [45] = {
-			"basset",
+			"saiga",
 			"new_mp5",
 		}, [46] = {
 			"awp",
@@ -307,11 +309,11 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [47] = {
 			"asval",
 		}, [48] = {
-			"sko12",
+			"basset",
 		}, [49] = {
 			"siltstone",
 		}, [50] = {
-			"saiga",
+			"sko12",
 		}, [51] = {
 			"p90",
 		}, [52] = {
@@ -424,9 +426,213 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			"akm_gold",
 		},
 	}
+	local lvl_swaps_melees = {
+		   [0] = {
+			"sword",
+			"toothbrush",
+			"whiskey",
+			"slot_lever",
+			"chac",
+			"brick",
+			"sap",
+			"boxing_gloves",
+			"aziz",
+			"micstand",
+			"microphone",
+			"hockey",
+			"selfie",
+			"briefcase",
+		}, [1] = {
+			"moneybundle",
+			"boxcutter",
+			"fork",
+			"spatula",
+			"shawn",
+			"tenderizer",
+			"clean",
+			"chef",
+			"road",
+			"swagger",
+			"stick",
+			"croupier_rake",
+			"baseballbat",
+			"hammer",
+			"cleaver",
+			"meat_cleaver",
+			"branding_iron",
+			"meter",
+			"poker",
+			"pitchfork",
+			"shovel",
+			"shock",
+			"cutters",
+		}, [2] = {
+			"catch",
+			"bullseye",
+			"machete",
+			"iceaxe",
+			"mining_pick",
+			"fireaxe",
+			"cs",
+			"nin",
+		}, [3] = {
+			"shillelagh",
+			"barbedwire",
+			"push",
+		}, [4] = {
+			"detector",
+			"model24",
+			"oldbaton",
+		}, [5] = {
+			"buck",
+		}, [6] = {
+			"brass_knuckles",
+		}, [7] = {
+			"cqc",
+		}, [8] = {
+			"twins",
+		}, [9] = {
+			"fairbair",
+		}, [10] = {
+			"tiger",
+		}, [11] = {
+			"scoutknife",
+		}, [12] = {
+			"gerber",
+		}, [13] = {
+			"switchblade",
+		}, [14] = {
+			"wing",
+		}, [15] = {
+			"scalper",
+		}, [16] = {
+			"pugio",
+		}, [17] = {
+			"bowie",
+		}, [18] = {
+			"grip",
+		}, [19] = {
+			"happy",
+			"baton",
+		}, [20] = {
+			"bayonet",
+			"x46",
+			"kabar",
+			"kampfmesser",
+			"kabartanto",
+		}, [21] = {
+			"funder_strike",
+		}, [22] = {
+			"rambo",
+			"becker",
+		}, [23] = {
+			"zeus",
+			"oxide",
+			"gator",
+		}, [24] = {
+			"taser",
+		}, [25] = {
+			"agave",
+		}, [26] = {
+			"tomahawk",
+		}, [27] = {
+			"ballistic",
+		}, [28] = {
+			"hauteur",
+		}, [29] = {
+			"morning",
+		}, [30] = {
+			"beardy",
+		}, [31] = {
+			"sandsteel",
+		}, [32] = {
+			"dingdong",
+		}, [33] = {
+			"great",
+		}, [34] = {
+		}, [35] = {
+		}, [36] = {
+		}, [37] = {
+		}, [38] = {
+		}, [39] = {
+		}, [40] = {
+		}, [41] = {
+		}, [42] = {
+		}, [43] = {
+		}, [44] = {
+		}, [45] = {
+		}, [46] = {
+		}, [47] = {
+		}, [48] = {
+		}, [49] = {
+		}, [50] = {
+		}, [51] = {
+		}, [52] = {
+		}, [53] = {
+		}, [54] = {
+		}, [55] = {
+		}, [56] = {
+		}, [57] = {
+		}, [58] = {
+		}, [59] = {
+		}, [60] = {
+		}, [61] = {
+		}, [62] = {
+		}, [63] = {
+		}, [64] = {
+		}, [65] = {
+		}, [66] = {
+		}, [67] = {
+		}, [68] = {
+		}, [69] = {
+		}, [70] = {
+		}, [71] = {
+		}, [72] = {
+		}, [73] = {
+		}, [74] = {
+		}, [75] = {
+		}, [76] = {
+		}, [77] = {
+		}, [78] = {
+		}, [79] = {
+		}, [80] = {
+		}, [81] = {
+		}, [82] = {
+		}, [83] = {
+		}, [84] = {
+		}, [85] = {
+		}, [86] = {
+		}, [87] = {
+		}, [88] = {
+		}, [89] = {
+		}, [90] = {
+		}, [91] = {
+		}, [92] = {
+		}, [93] = {
+		}, [94] = {
+		}, [95] = {
+		}, [96] = {
+		}, [97] = {
+		}, [98] = {
+		}, [99] = {
+		}, [100] = {
+			"spoon",
+			"spoon_gold",
+			"alien_maul",
+			"ostry",
+			"piggy_hammer",
+		},
+	}
 	lvl_swaps = deep_clone(lvl_swaps_pistols)
 	for i, k in pairs(lvl_swaps_primaries) do
-		for u, j in pairs(k) do table.insert(lvl_swaps[i], j) end
+		for u, j in pairs(k) do
+			table.insert(lvl_swaps[i], j)
+		end
+	end
+	for i, k in pairs(lvl_swaps_melees) do
+		for u, j in pairs(k) do
+			--table.insert(lvl_swaps[i], j)
+		end
 	end
 
 

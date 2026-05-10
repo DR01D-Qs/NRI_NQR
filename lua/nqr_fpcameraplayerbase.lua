@@ -10,6 +10,116 @@ function FPCameraPlayerBase:play_sound(unit, event)
 	end
 end
 
+function FPCameraPlayerBase:play_melee_sound(unit, sound_id)
+	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
+	local keep_charge = {
+		--moneybundle = true,
+		--chac = true,
+		wing = true,
+		road = true,
+		ostry = true,
+		cs = true,
+	}
+	--if not keep_charge[melee_entry] then return end
+	local tweak_data = tweak_data.blackmarket.melee_weapons[melee_entry]
+
+	if not tweak_data.sounds or not tweak_data.sounds[sound_id] then
+		return
+	end
+
+	if alive(self._parent_unit) then
+		self._parent_unit:sound():play(tweak_data.sounds[sound_id], nil, false)
+	end
+end
+function FPCameraPlayerBase:spawn_melee_item()
+	if self._melee_item_units then
+		return
+	end
+
+	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
+	local unit_name = tweak_data.blackmarket.melee_weapons[melee_entry].unit
+
+	if unit_name then
+		local aligns = tweak_data.blackmarket.melee_weapons[melee_entry].align_objects or { "a_weapon_left" }
+		local graphic_objects = tweak_data.blackmarket.melee_weapons[melee_entry].graphic_objects or {}
+		self._melee_item_units = {}
+
+		for _, align in ipairs(aligns) do
+			local align_obj_name = Idstring(align)
+			local align_obj = self._unit:get_object(align_obj_name)
+			local unit = World:spawn_unit(Idstring(unit_name), align_obj:position(), align_obj:rotation())
+
+			unit:anim_stop()
+			self._unit:link(align_obj:name(), unit, unit:orientation_object():name())
+
+			local m_pos = self.m_shifts and self.m_shifts[align] and self.m_shifts[align].pos
+			if m_pos then
+				unit:set_local_position(m_pos)
+			end
+			local m_rot = self.m_shifts and self.m_shifts[align] and self.m_shifts[align].rot
+			if m_rot then
+				unit:set_local_rotation(m_rot)
+			end
+
+			for a_object, g_object in pairs(graphic_objects) do
+				local graphic_obj_name = Idstring(g_object)
+				local graphic_obj = unit:get_object(graphic_obj_name)
+
+				graphic_obj:set_visibility(Idstring(a_object) == align_obj_name)
+			end
+
+			if melee_entry=="hauteur" then
+				local graphic_obj_name = Idstring("g_sheet")
+				local graphic_obj = unit:get_object(graphic_obj_name)
+
+				graphic_obj:set_visibility(false)
+			end
+
+			if alive(unit) and unit:damage() and unit:damage():has_sequence("game") then
+				unit:damage():run_sequence_simple("game")
+			end
+
+			table.insert(self._melee_item_units, unit)
+		end
+
+		self:play_anim_melee_item("charge")
+	end
+end
+function FPCameraPlayerBase:unspawn_melee_item()
+	if not self._melee_item_units then
+		return
+	end
+
+	for _, unit in ipairs(self._melee_item_units) do
+		if alive(unit) then
+			unit:unlink()
+			World:delete_unit(unit)
+		end
+	end
+
+	self._melee_item_units = nil
+	self._melee_item_anim = nil
+end
+function FPCameraPlayerBase:shift_melee_item(shifts)
+	if not self._melee_item_units then
+		return
+	end
+
+	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
+	local aligns = tweak_data.blackmarket.melee_weapons[melee_entry].align_objects or { "a_weapon_left" }
+	for i, align in pairs(aligns) do
+		local m_pos = shifts and shifts[align] and shifts[align].pos
+		if m_pos then
+			self._melee_item_units[i]:set_local_position(m_pos)
+		end
+		local m_rot = shifts and shifts[align] and shifts[align].rot
+		if m_rot then
+			self._melee_item_units[i]:set_local_rotation(m_rot)
+		end
+
+	end
+end
+
 
 
 --ROTANIM'S MODIFIERS
@@ -263,6 +373,46 @@ function FPCameraPlayerBase:nqr_rotanim_upd()
 		self.nqr_rot_pitch = math.lerp(self.nqr_rotanim.start_pitch, self.nqr_rotanim.end_pitch, step)
 	end
 end
+
+
+
+--[[function FPCameraPlayerBase:play_anim_melee_item(tweak_name)
+	if not self._melee_item_units then
+		return
+	end
+
+	local melee_entry = "nin" --managers.blackmarket:equipped_melee_weapon()
+	local anims = tweak_data.blackmarket.melee_weapons[melee_entry].anims
+	local anim_data = anims and anims[tweak_name]
+
+	if not anim_data then
+		return
+	end
+
+	if self._melee_item_anim then
+		for _, unit in ipairs(self._melee_item_units) do
+			unit:anim_stop(self._melee_item_anim)
+		end
+
+		self._melee_item_anim = nil
+	end
+
+	local ids = anim_data.anim and Idstring(anim_data.anim)
+
+	if ids then
+		for _, unit in ipairs(self._melee_item_units) do
+			local length = unit:anim_length(ids)
+
+			if anim_data.loop then
+				unit:anim_play_loop(ids, 0, length, 1)
+			else
+				unit:anim_play_to(ids, length, 1)
+			end
+		end
+
+		self._melee_item_anim = ids
+	end
+end]]
 
 
 

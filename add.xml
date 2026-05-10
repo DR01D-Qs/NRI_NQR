@@ -107,6 +107,7 @@
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_atibal\wpn_fps_upg_o_atibal_reddot" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_o_hamr\wpn_fps_upg_o_hamr" force="true"/>
 	<model path="units\pd2_dlc_mxm\weapons\wpn_upg_ak_mod_pts\wpn_fps_upg_ak_body_upperreceiver_zenitco" force="true"/>
+	<model path="units\pd2_dlc_mxm\weapons\wpn_fps_upg_fl_dbal_laser\wpn_fps_upg_fl_dbal_laser" force="true"/>
 	<model path="units\pd2_dlc_osa\weapons\wpn_fps_pis_x_g18c\wpn_fps_pis_x_g18c" force="true"/>
 	<model path="units\pd2_dlc_osa\weapons\wpn_fps_smg_x_cobray\wpn_fps_smg_x_cobray" force="true"/>
 	<object path="units\pd2_dlc_osa\weapons\wpn_fps_smg_x_cobray\wpn_fps_smg_x_cobray" force="true"/>

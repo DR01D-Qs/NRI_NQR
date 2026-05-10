@@ -10,12 +10,11 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	end
 
 	self.crate_loot_crowbar.interact_distance = 180
-	self.place_flare.interact_distance = 200
-	--[[self.place_flare.interact_distance = 400
+	self.place_flare.interact_distance = 400
 	self.place_flare.timer = 1
 	self.place_flare.sound_start = "bar_light_fireworks"
 	self.place_flare.sound_interupt = "bar_light_fireworks_cancel"
-	self.place_flare.sound_done = "bar_light_fireworks_finished"]]
+	self.place_flare.sound_done = "bar_light_fireworks_finished"
 	self.ignite_flare.interact_distance = 400
 	self.ignite_flare.timer = 1
 	self.ignite_flare.sound_start = "bar_light_fireworks"
@@ -152,6 +151,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.hold_turn_off.timer = 2
 	self.pex_place_evidance.interact_distance = 180
 	self.pex_set_burnable_liquid.interact_distance = 180
+	self.sand_open_slide_gate.interact_distance = 240
+	self.sand_pickup_harddrive.timer = nil
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2
@@ -177,6 +178,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 
 	self.doctor_bag.timer = 8
 	self.first_aid_kit.timer = 4
+	self.spy_camera_access.interact_distance = 6000
 
 	self.nqr_corpse_loot = {
 		icon = "equipment_ammo_bag",
@@ -206,7 +208,8 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		friend = { pick_lock_x_axis = { interact_distance = 110 }, rewire_friend_fuse_box = { interact_distance = 100 } },
 		arm_for = { pickup_harddrive = { timer = false } },
 		wwh = { money_luggage = { interact_distance = 120 } },
-		fex = { ignite_flare = { interact_distance = 120 } },
+		fex = { ignite_flare = { interact_distance = 120 }, place_flare = { timer = false, interact_distance = 200 } },
+		sand = { atm_interaction = { timer = 0.5 } },
 	}
 	for i, k in pairs(lookup[job] or {}) do for u, j in pairs(k or {}) do self[i][u] = j end end
 
