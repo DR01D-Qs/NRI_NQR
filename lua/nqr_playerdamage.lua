@@ -1,3 +1,13 @@
+function PlayerDamage:get_real_health()
+	return Application:digest_value(self._health, false)
+end
+
+function PlayerDamage:get_real_armor()
+	return Application:digest_value(self._armor, false)
+end
+
+
+
 --FALL DAMAGE: LIGHT FALL DUCKING
 function PlayerDamage:damage_fall(data)
 	local damage_info = { result = { variant = "fall", type = "hurt" } }

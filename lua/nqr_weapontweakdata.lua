@@ -640,6 +640,7 @@ end
 		"system",
 		"hailstorm",
 		"dart",
+		"flun",
 	} for _, wep in pairs(disabled_weps) do self[wep].use_data.selection_index = 3 end
 
 --SECONDARY TO PRIMARY

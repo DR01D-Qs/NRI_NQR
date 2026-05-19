@@ -2077,6 +2077,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_a_dragons_breath.pcs = nil
 	--self.parts.wpn_fps_upg_a_dragons_breath.custom_stats = nil
 	self.parts.wpn_fps_upg_a_dragons_breath.stats = { ammotype = "Dragon's Breath" }
+	self.parts.wpn_fps_upg_a_flun_shell.pcs = nil
 
 	self.parts.wpn_fps_upg_a_subfmj = deep_clone(self.parts.wpn_fps_upg_cal_9x19)
 	self.parts.wpn_fps_upg_a_subfmj.name_id = "bm_wp_upg_a_subfmj"
