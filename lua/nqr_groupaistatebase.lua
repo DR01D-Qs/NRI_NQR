@@ -1,3 +1,15 @@
+local mvec3_dot = mvector3.dot
+local mvec3_set = mvector3.set
+local mvec3_sub = mvector3.subtract
+local mvec3_dis_sq = mvector3.distance_sq
+local mvec3_dir = mvector3.direction
+local mvec3_l_sq = mvector3.length_sq
+local tmp_vec1 = Vector3()
+local tmp_vec2 = Vector3()
+local ids_unit = Idstring("unit")
+
+
+
 --OVK_PLS: CHECK PHALANX BREAKUP BEFORE ITS ASSEMBLY, BREAKUP VOICELINE
 function GroupAIStateBase:on_enemy_unregistered(unit)
 	if self:is_unit_in_phalanx_minion_data(unit:key()) then
