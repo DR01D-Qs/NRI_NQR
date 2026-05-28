@@ -47,3 +47,32 @@ function SecurityCamera:_sound_the_alarm(detected_unit)
 		self:set_detection_enabled(false, nil, nil)
 	end
 end
+
+function SecurityCamera:_upd_sound(unit, t)
+	if self._alarm_sound then
+		return
+	end
+
+	local suspicion_level = self._suspicion
+
+	for u_key, attention_info in pairs(self._detected_attention_objects or {}) do
+		if AIAttentionObject.REACT_SCARED <= attention_info.reaction then
+			if attention_info.identified then
+				self:_sound_the_alarm(attention_info.unit)
+
+				return
+			elseif not suspicion_level or suspicion_level < attention_info.notice_progress then
+				suspicion_level = attention_info.notice_progress
+			end
+		end
+	end
+
+	if not suspicion_level then
+		self:_set_suspicion_sound(0)
+		self:_stop_all_sounds()
+
+		return
+	end
+
+	self:_set_suspicion_sound(suspicion_level)
+end
