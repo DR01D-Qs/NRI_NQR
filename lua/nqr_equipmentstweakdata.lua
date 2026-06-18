@@ -19,6 +19,6 @@ Hooks:PostHook(EquipmentsTweakData, "init", "nqr_EquipmentsTweakData:init", func
 
 
 
-	self.specials.cable_tie.quantity = 99
-	self.specials.cable_tie.max_quantity = 99
+	self.specials.cable_tie.quantity = 50
+	self.specials.cable_tie.max_quantity = 50
 end)

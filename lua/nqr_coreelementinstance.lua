@@ -35,6 +35,12 @@ function ElementInstanceSetParams:_apply_instance_params()
 			self._values.params.var_amount_very_hard = 4
 			self._values.params.var_amount_overkill = 4
 			self._values.params.var_amount_death_wish = 4
+		elseif self._values.params.var_objective=="heist_shoutout_raid5" then
+			self._values.params.var_amount_normal = 2
+			self._values.params.var_amount_hard = 4
+			self._values.params.var_amount_very_hard = 4
+			self._values.params.var_amount_overkill = 4
+			self._values.params.var_amount_death_wish = 4
 		end
 	end
 

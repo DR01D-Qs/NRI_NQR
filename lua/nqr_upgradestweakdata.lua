@@ -439,6 +439,8 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 			"aziz",
 			"micstand",
 			"microphone",
+			"bonk",
+			"bonk2",
 			"hockey",
 			"selfie",
 			"briefcase",
@@ -528,8 +530,8 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 		}, [23] = {
 			"zeus",
 			"oxide",
-			"gator",
 		}, [24] = {
+			"gator",
 			"taser",
 		}, [25] = {
 			"agave",
@@ -631,7 +633,7 @@ Hooks:PostHook(UpgradesTweakData, "init", "nqr_UpgradesTweakData:init", function
 	end
 	for i, k in pairs(lvl_swaps_melees) do
 		for u, j in pairs(k) do
-			--table.insert(lvl_swaps[i], j)
+			table.insert(lvl_swaps[i], j)
 		end
 	end
 

@@ -1,3 +1,97 @@
+PlayerInventory = PlayerInventory or class()
+PlayerInventory._all_event_types = {
+	"add",
+	"equip",
+	"unequip",
+	"shield_equip",
+	"shield_unequip"
+}
+local ids_unit = Idstring("unit")
+PlayerInventory._NET_EVENTS = {
+	feedback_start = 3,
+	jammer_start = 1,
+	jammer_stop = 2,
+	feedback_stop = 4
+}
+
+
+
+function PlayerInventory._get_weapon_name_from_sync_index(w_index)
+	if not w_index then return end
+
+	if w_index <= #tweak_data.character.weap_unit_names then
+		return tweak_data.character.weap_unit_names[w_index]
+	end
+
+	w_index = w_index - #tweak_data.character.weap_unit_names
+
+	PlayerInventory._chk_create_w_factory_indexes()
+
+	return PlayerInventory._weapon_factory_indexed[w_index]
+end
+
+
+
+function PlayerInventory:hide_equipped_unit()
+	local unit = self._equipped_selection and self._available_selections[self._equipped_selection].unit
+
+	if unit then
+		unit:base():set_visibility_state(false)
+
+		--log("hide_equipped_unit1", unit:base()._name_id, unit:base()._last_gadget_idx)
+
+		if unit:base():enabled() then
+			local was_gadget_on = unit:base().is_gadget_on and unit:base()._gadget_on or false
+			if was_gadget_on then
+				unit:base()._last_gadget_idx = was_gadget_on
+			end
+
+			--unit:base():set_gadget_on(0)
+			unit:base():on_disabled()
+		end
+
+		--log("hide_equipped_unit2", unit:base()._name_id, unit:base()._last_gadget_idx)
+	end
+end
+function PlayerInventory:show_equipped_unit()
+	local unit = self._equipped_selection and self._available_selections[self._equipped_selection].unit
+
+	if unit then
+		unit:base():set_visibility_state(true)
+		unit:base():on_enabled()
+
+		--log("show_equipped_unit1", unit:base()._name_id, unit:base()._last_gadget_idx)
+
+		if unit:base()._last_gadget_idx and unit:base()._last_gadget_idx > 0 then
+			unit:base():set_gadget_on(unit:base()._last_gadget_idx)
+		end
+
+		--log("show_equipped_unit2", unit:base()._name_id, unit:base()._last_gadget_idx)
+	end
+end
+
+
+
+function PlayerInventory:set_melee_weapon(melee_weapon_id, is_npc)
+	if not melee_weapon_id then return end
+	self._melee_weapon_data = managers.blackmarket:get_melee_weapon_data(melee_weapon_id)
+	self._melee_weapon_id = melee_weapon_id
+
+	if is_npc then
+		if self._melee_weapon_data.third_unit then
+			self._melee_weapon_unit_name = Idstring(self._melee_weapon_data.third_unit)
+		end
+	elseif self._melee_weapon_data.unit then
+		self._melee_weapon_unit_name = Idstring(self._melee_weapon_data.unit)
+	end
+
+	if self._melee_weapon_unit_name then
+		managers.dyn_resource:load(Idstring("unit"), self._melee_weapon_unit_name, "packages/dyn_resources", false)
+	end
+end
+
+
+
 function PlayerInventory:need_ammo()
 	local refillable = nil
 

@@ -204,7 +204,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 		sand = { atm_interaction = { interact_distance = 170, interact_dont_interupt_on_distance = true } },
 		dah = { ignite_flare = { interact_distance = 300 }, use_flare = { interact_distance = 300 }, place_flare = { interact_distance = 300 } },
 		short2_stage2b = { gen_pku_cocaine = { timer = false } },
-		pbr = { hold_approve_req = { timer = 1 }, c4_bag = { timer = 2 } },
+		pbr = { hold_approve_req = { timer = 1 }, c4_bag = { timer = 2 }, c4_diffusible = { interact_distance = 130 } },
 		friend = { pick_lock_x_axis = { interact_distance = 110 }, rewire_friend_fuse_box = { interact_distance = 100 } },
 		arm_for = { pickup_harddrive = { timer = false } },
 		wwh = { money_luggage = { interact_distance = 120 } },

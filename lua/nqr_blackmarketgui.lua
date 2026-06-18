@@ -3187,6 +3187,7 @@ function BlackMarketGui:update_info_text()
 			updated_texts[4].text = managers.localization:text("bm_menu_empty_weapon_slot_buy_info")
 		end
 	elseif identifier == self.identifiers.melee_weapon then
+		local melee_tweak = tweak_data.blackmarket.melee_weapons[slot_data.name]
 		updated_texts[1].text = self._slot_data.name_localized
 
 		updated_texts[2].text = (string.match(managers.localization:to_upper_text("menu_st_req_level_skill_switch"), "(.*) ") or managers.localization:to_upper_text("menu_st_req_level_skill_switch"))..": "..(slot_data.level or 0)
@@ -3222,7 +3223,7 @@ function BlackMarketGui:update_info_text()
 		end
 
 		updated_texts[4].resource_color = {}
-		local desc_text = managers.localization:text(tweak_data.blackmarket.melee_weapons[slot_data.name].desc_id)
+		local desc_text = managers.localization:text(melee_tweak.desc_id)
 
 		if slot_data.global_value and slot_data.global_value ~= "normal" then
 			updated_texts[4].text = updated_texts[4].text .. "##" .. managers.localization:to_upper_text(tweak_data.lootdrop.global_values[slot_data.global_value].desc_id) .. "##"
@@ -3232,10 +3233,28 @@ function BlackMarketGui:update_info_text()
 
 		updated_texts[4].below_stats = true
 
-		if tweak_data.blackmarket.melee_weapons[slot_data.name].info_id then
-			updated_texts[4].text = managers.localization:text(tweak_data.blackmarket.melee_weapons[slot_data.name].info_id).."\n\n"..updated_texts[4].text
-			updated_texts[4].below_stats = true
+
+
+		local nqr_desc = ""
+
+		local dmg_types = melee_tweak.stats and melee_tweak.stats.damage_types or {}
+		nqr_desc = nqr_desc .. managers.localization:text("bm_menu_damage_type_plural")..": ".."\n"
+		local sides = {
+			"front",
+			"back",
+			"tip",
+		}
+		for i, side in pairs(sides) do
+			nqr_desc = nqr_desc .. " "..managers.localization:text("bm_melee_dmg_"..side)..": "..managers.localization:text("bm_melee_dmg_"..(dmg_types[side] or "striking")).."\n"
 		end
+		nqr_desc = nqr_desc.."\n"
+
+		if melee_tweak.large then
+			nqr_desc = nqr_desc .. managers.localization:text("bm_melee_noakimbo").."\n\n"
+		end
+
+		updated_texts[4].text = nqr_desc..updated_texts[4].text
+		updated_texts[4].below_stats = true
 	elseif identifier == self.identifiers.grenade then
 		updated_texts[1].text = self._slot_data.name_localized
 
@@ -4534,6 +4553,170 @@ end
 
 
 
+function BlackMarketGui:populate_melee_weapons_new(data)
+	local lookup = {
+		weapon = true,
+		fists = true,
+		fight = true,
+	}
+	for i, melee_weapon_data in ipairs(data.on_create_data) do
+		melee_weapon_id = melee_weapon_data[1]
+		if lookup[melee_weapon_id] then
+			table.remove(data.on_create_data, i)
+		end
+	end
+
+	local max_items = math.ceil(#data.on_create_data / (data.override_slots[1] or 3)) * (data.override_slots[1] or 3)
+	local new_data = {}
+
+	for i = 1, max_items do
+		data[i] = nil
+	end
+
+	local index = 0
+	local guis_catalog, m_tweak_data, melee_weapon_id = nil
+
+	for i, melee_weapon_data in ipairs(data.on_create_data) do
+		melee_weapon_id = melee_weapon_data[1]
+		m_tweak_data = tweak_data.blackmarket.melee_weapons[melee_weapon_data[1]] or {}
+		guis_catalog = "guis/"
+		local bundle_folder = m_tweak_data.texture_bundle_folder
+
+		if bundle_folder then
+			guis_catalog = guis_catalog .. "dlcs/" .. tostring(bundle_folder) .. "/"
+		end
+
+		new_data = {
+			name = melee_weapon_id
+		}
+		new_data.name_localized = managers.localization:text(tweak_data.blackmarket.melee_weapons[new_data.name].name_id)
+		new_data.category = "melee_weapons"
+		new_data.slot = i
+		new_data.unlocked = melee_weapon_data[2].unlocked
+		new_data.equipped = melee_weapon_data[2].equipped
+		new_data.equippedx2 = melee_weapon_data[2].equippedx2
+		new_data.level = melee_weapon_data[2].level
+		new_data.stream = true
+		new_data.global_value = tweak_data.lootdrop.global_values[m_tweak_data.dlc] and m_tweak_data.dlc or "normal"
+		new_data.dlc = tweak_data.blackmarket.melee_weapons[new_data.name].dlc or managers.dlc:global_value_to_dlc(new_data.global_value)
+		new_data.unlock_dlc = tweak_data.blackmarket.melee_weapons[new_data.name].unlock_dlc or new_data.dlc
+		new_data.skill_based = melee_weapon_data[2].skill_based
+		new_data.skill_name = "bm_menu_skill_locked_" .. new_data.name
+		new_data.func_based = melee_weapon_data[2].func_based
+
+		if _G.IS_VR then
+			new_data.vr_locked = melee_weapon_data[2].vr_locked
+		end
+
+		if not new_data.unlocked then
+			local gv_dlc = new_data.dlc
+
+			if gv_dlc and not managers.dlc:is_dlc_unlocked(gv_dlc) then
+				new_data.dlc_based = true
+				new_data.dlc_locked = tweak_data.lootdrop.global_values[new_data.global_value].unlock_id or managers.dlc:get_unavailable_id(new_data.global_value)
+				new_data.lock_texture = self:get_lock_icon(new_data, "guis/textures/pd2/lock_community")
+			elseif new_data.level > 0 then
+				new_data.lock_texture = "guis/textures/pd2/lock_level"
+			end
+
+			if m_tweak_data and m_tweak_data.locks then
+				local func = m_tweak_data.locks.func
+				local achievement = m_tweak_data.locks.achievement
+				local dlc = m_tweak_data.locks.dlc
+				new_data.dlc_based = true
+
+				if func and not BlackMarketGui.get_func_based(func) then
+					local _, name, icon = BlackMarketGui.get_func_based(func)
+					new_data.dlc_locked = name
+					new_data.lock_texture = icon or "guis/textures/pd2/skilltree/padlock"
+				elseif achievement and managers.achievment:get_info(achievement) and not managers.achievment:get_info(achievement).awarded then
+					local achievement_lock_id = m_tweak_data.locks.achievement_lock_id
+					new_data.dlc_locked = achievement_lock_id or "menu_bm_achievement_locked_" .. tostring(achievement)
+					new_data.lock_texture = "guis/textures/pd2/lock_achievement"
+				elseif dlc and not managers.dlc:is_dlc_unlocked(dlc) then
+					new_data.dlc_locked = tweak_data.lootdrop.global_values[dlc] and tweak_data.lootdrop.global_values[dlc].unlock_id or managers.dlc:get_unavailable_id(dlc)
+					local gv = managers.dlc:dlc_to_global_value(dlc)
+					local gv_tweak = tweak_data.lootdrop.global_values[gv]
+					new_data.lock_texture = gv_tweak and gv_tweak.unique_lock_icon or "guis/textures/pd2/lock_dlc"
+				else
+					new_data.dlc_based = false
+				end
+			end
+
+			new_data.lock_color = self:get_lock_color(new_data)
+		end
+
+		new_data.bitmap_texture = guis_catalog .. "textures/pd2/blackmarket/icons/melee_weapons/" .. tostring(new_data.name)
+
+		if managers.blackmarket:got_new_drop("normal", "melee_weapons", melee_weapon_id) then
+			new_data.mini_icons = new_data.mini_icons or {}
+
+			table.insert(new_data.mini_icons, {
+				texture = "guis/textures/pd2/blackmarket/inv_newdrop",
+				name = "new_drop",
+				h = 16,
+				w = 16,
+				top = 0,
+				layer = 1,
+				stream = false,
+				right = 0
+			})
+
+			new_data.new_drop_data = {
+				"normal",
+				"melee_weapons",
+				melee_weapon_id
+			}
+		end
+
+		local active = true
+		new_data.comparision_data = managers.blackmarket:get_melee_weapon_stats(melee_weapon_id)
+
+		if active then
+			if new_data.unlocked and not new_data.equipped then
+				table.insert(new_data, "lo_mw_equip")
+			end
+
+			if new_data.equipped then
+				if not m_tweak_data.large then
+					if not new_data.equippedx2 then
+						table.insert(new_data, "lo_mw_equipx2")
+					else
+						new_data.equipped_text = managers.localization:text("bm_menu_equipped").." x2"
+					end
+				end
+				table.insert(new_data, "lo_mw_unequip")
+			end
+
+			if data.allow_preview and m_tweak_data.unit and not m_tweak_data.no_inventory_preview then
+				table.insert(new_data, "lo_mw_preview")
+			end
+
+			local dlc_data = Global.dlc_manager.all_dlc_data[new_data.global_value]
+
+			if dlc_data and dlc_data.app_id and not dlc_data.external and not managers.dlc:is_dlc_unlocked(new_data.global_value) then
+				table.insert(new_data, "bw_buy_dlc")
+			end
+		end
+
+		data[i] = new_data
+		index = i
+	end
+
+	for i = 1, max_items do
+		if not data[i] then
+			new_data = {
+				name = "empty",
+				name_localized = "",
+				category = "melee_weapons",
+				slot = i,
+				unlocked = true,
+				equipped = false
+			}
+			data[i] = new_data
+		end
+	end
+end
 
 function BlackMarketGui:populate_mods(data)
 	local new_data = {}
@@ -7262,6 +7445,18 @@ function BlackMarketGui:_setup(is_start_page, component_data)
 				name = "bm_menu_btn_equip_melee_weapon",
 				callback = callback(self, self, "lo_equip_melee_weapon_callback")
 			},
+			lo_mw_equipx2 = {
+				btn = "BTN_A",
+				prio = 1,
+				name = "bm_menu_btn_equip_secondary_deployable",
+				callback = callback(self, self, "lo_equip_melee_weaponx2_callback")
+			},
+			lo_mw_unequip = {
+				btn = "BTN_A",
+				prio = 1,
+				name = "bm_menu_btn_unequip_weapon",
+				callback = callback(self, self, "lo_unequip_melee_weapon_callback")
+			},
 			lo_mw_preview = {
 				btn = "BTN_STICK_R",
 				name = "bm_menu_btn_preview_melee_weapon",
@@ -8460,6 +8655,21 @@ function BlackMarketGui:_setup(is_start_page, component_data)
 	self._in_setup = nil
 end
 
+function BlackMarketGui:lo_unequip_melee_weapon_callback(data)
+	data.target_slot = managers.blackmarket:equipped_melee_weapon_slot(data.name)
+
+	if not data.target_slot then return end
+
+	data.name = nil
+	managers.blackmarket:equip_melee_weapon(data.name)
+	managers.blackmarket:equip_melee_weaponx2(data.name)
+
+	self:reload()
+end
+function BlackMarketGui:lo_equip_melee_weaponx2_callback(data)
+	managers.blackmarket:equip_melee_weaponx2(data.name)
+	self:reload()
+end
 
 
 

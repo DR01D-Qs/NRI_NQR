@@ -1,6 +1,7 @@
 function FPCameraPlayerBase:play_sound(unit, event)
 	local lookup = {
-		m4_equip = "primary_steel_sight_exit",--"primary_steel_sight_enter",
+		--m4_equip = "primary_steel_sight_exit",--"primary_steel_sight_enter",
+		m4_equip = "",--"primary_steel_sight_enter",
 		m4_unequip_a = "pistol_steel_sight_exit",--"primary_steel_sight_exit",
 		foley_run_m4_02 = "",
 	}
@@ -12,36 +13,47 @@ end
 
 function FPCameraPlayerBase:play_melee_sound(unit, sound_id)
 	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = tweak_data.blackmarket.melee_weapons[melee_entry]
 	local keep_charge = {
 		--moneybundle = true,
 		--chac = true,
-		wing = true,
+		--wing = true,
 		road = true,
 		ostry = true,
 		cs = true,
 	}
-	--if not keep_charge[melee_entry] then return end
-	local tweak_data = tweak_data.blackmarket.melee_weapons[melee_entry]
+	if not keep_charge[melee_entry] then return end
 
-	if not tweak_data.sounds or not tweak_data.sounds[sound_id] then
+	if not melee_tweak.sounds or not melee_tweak.sounds[sound_id] then
 		return
 	end
 
 	if alive(self._parent_unit) then
-		self._parent_unit:sound():play(tweak_data.sounds[sound_id], nil, false)
+		self._parent_unit:sound():play(melee_tweak.sounds[sound_id], nil, false)
 	end
 end
 function FPCameraPlayerBase:spawn_melee_item()
-	if self._melee_item_units then
-		return
-	end
+	--log("spawn_melee_item")
+	if self._melee_item_units then return end
 
 	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
-	local unit_name = tweak_data.blackmarket.melee_weapons[melee_entry].unit
+	local melee_tweak = tweak_data.blackmarket.melee_weapons[melee_entry]
+	local unit_name = melee_tweak.unit
 
 	if unit_name then
-		local aligns = tweak_data.blackmarket.melee_weapons[melee_entry].align_objects or { "a_weapon_left" }
-		local graphic_objects = tweak_data.blackmarket.melee_weapons[melee_entry].graphic_objects or {}
+		local hands = {
+			{ "a_weapon_left" },
+			{ "a_weapon_right" },
+			{ "a_weapon_left", "a_weapon_right" },
+		}
+		local aligns = (
+			self._parent_movement_ext.m_akimbo and hands[3]
+			or melee_tweak.twohanded and melee_tweak.align_objects
+			or self._parent_movement_ext.m_main_hand and hands[self._parent_movement_ext.m_main_hand]
+			or melee_tweak.align_objects
+			or hands[1]
+		)
+		local graphic_objects = melee_tweak.graphic_objects or {}
 		self._melee_item_units = {}
 
 		for _, align in ipairs(aligns) do
@@ -52,26 +64,42 @@ function FPCameraPlayerBase:spawn_melee_item()
 			unit:anim_stop()
 			self._unit:link(align_obj:name(), unit, unit:orientation_object():name())
 
+			local m_rot = self.m_shifts and self.m_shifts[align] and self.m_shifts[align].rot
+			if m_rot then
+				unit:set_local_rotation(m_rot)
+			end
 			local m_pos = self.m_shifts and self.m_shifts[align] and self.m_shifts[align].pos
 			if m_pos then
 				unit:set_local_position(m_pos)
 			end
-			local m_rot = self.m_shifts and self.m_shifts[align] and self.m_shifts[align].rot
-			if m_rot then
-				unit:set_local_rotation(m_rot)
+
+			local w_rot = melee_tweak.shifts and melee_tweak.shifts.rot
+			if w_rot then
+				unit:set_local_rotation(unit:local_rotation() * w_rot)
+			end
+
+			local w_pos = melee_tweak.shifts and melee_tweak.shifts.pos
+			if w_pos then
+				local weapon_facing = unit:local_rotation()
+
+				local right_dir   = weapon_facing:x()
+				local forward_dir = weapon_facing:y()
+				local up_dir      = weapon_facing:z()
+
+				local final_offset = (right_dir * w_pos.x) + (forward_dir * w_pos.y) + (up_dir * w_pos.z)
+
+				unit:set_local_position(unit:local_position() + final_offset)
 			end
 
 			for a_object, g_object in pairs(graphic_objects) do
 				local graphic_obj_name = Idstring(g_object)
 				local graphic_obj = unit:get_object(graphic_obj_name)
-
 				graphic_obj:set_visibility(Idstring(a_object) == align_obj_name)
 			end
 
 			if melee_entry=="hauteur" then
 				local graphic_obj_name = Idstring("g_sheet")
 				local graphic_obj = unit:get_object(graphic_obj_name)
-
 				graphic_obj:set_visibility(false)
 			end
 
@@ -82,10 +110,13 @@ function FPCameraPlayerBase:spawn_melee_item()
 			table.insert(self._melee_item_units, unit)
 		end
 
-		self:play_anim_melee_item("charge")
+		if not melee_tweak.nochargeanim then
+			self:play_anim_melee_item("charge", melee_tweak.chargeanimoffset)
+		end
 	end
 end
 function FPCameraPlayerBase:unspawn_melee_item()
+	--log("unspawn_melee_item")
 	if not self._melee_item_units then
 		return
 	end
@@ -106,17 +137,104 @@ function FPCameraPlayerBase:shift_melee_item(shifts)
 	end
 
 	local melee_entry = self.melee_instant_hit and "weapon" or self.custom_melee or managers.blackmarket:equipped_melee_weapon()
-	local aligns = tweak_data.blackmarket.melee_weapons[melee_entry].align_objects or { "a_weapon_left" }
+	local melee_tweak = tweak_data.blackmarket.melee_weapons[melee_entry]
+	local hands = {
+		{ "a_weapon_left" },
+		{ "a_weapon_right" },
+		{ "a_weapon_left", "a_weapon_right" },
+	}
+	local aligns = (
+		self._parent_movement_ext.m_akimbo and hands[3]
+		or melee_tweak.twohanded and melee_tweak.align_objects
+		or self._parent_movement_ext.m_main_hand and hands[self._parent_movement_ext.m_main_hand]
+		or melee_tweak.align_objects
+		or hands[1]
+	)
 	for i, align in pairs(aligns) do
-		local m_pos = shifts and shifts[align] and shifts[align].pos
-		if m_pos then
-			self._melee_item_units[i]:set_local_position(m_pos)
-		end
+		local unit = self._melee_item_units[i]
+
 		local m_rot = shifts and shifts[align] and shifts[align].rot
 		if m_rot then
-			self._melee_item_units[i]:set_local_rotation(m_rot)
+			unit:set_local_rotation(m_rot)
+		end
+		local m_pos = shifts and shifts[align] and shifts[align].pos
+		if m_pos then
+			unit:set_local_position(m_pos)
 		end
 
+		local w_rot = melee_tweak.shifts and melee_tweak.shifts.rot
+		if w_rot then
+			unit:set_local_rotation(unit:local_rotation() * w_rot)
+		end
+
+		local w_pos = melee_tweak.shifts and melee_tweak.shifts.pos
+		if w_pos then
+			local weapon_facing = unit:local_rotation()
+	
+			local right_dir   = weapon_facing:x()
+			local forward_dir = weapon_facing:y() -- The direction the weapon looks
+			local up_dir      = weapon_facing:z()
+	
+			local final_offset = (right_dir * w_pos.x) + (forward_dir * w_pos.y) + (up_dir * w_pos.z)
+	
+			unit:set_local_position(unit:local_position() + final_offset)
+		end
+	end
+end
+
+function FPCameraPlayerBase:play_anim_melee_item(tweak_name, offset)
+	if not self._melee_item_units then
+		return
+	end
+
+	local melee_entry = managers.blackmarket:equipped_melee_weapon()
+	local anims = tweak_data.blackmarket.melee_weapons[melee_entry].anims
+	local anim_data = anims and anims[tweak_name]
+
+	if not anim_data then
+		return
+	end
+
+	if self._melee_item_anim then
+		for _, unit in ipairs(self._melee_item_units) do
+			unit:anim_stop(self._melee_item_anim)
+		end
+
+		self._melee_item_anim = nil
+	end
+
+	local anim_ids = anim_data.anim and Idstring(anim_data.anim)
+
+	if anim_ids then
+		for _, unit in ipairs(self._melee_item_units) do
+			local anim_length = unit:anim_length(anim_ids)
+
+			if anim_data.loop then
+				unit:anim_play_loop(anim_ids, 0, anim_length, 1)
+			else
+				if anim_data.from then
+					unit:anim_set_time(anim_ids, anim_data.from)
+				end
+
+				unit:anim_play_to(anim_ids, anim_length, 1)
+			end
+
+			if type(anim_data.start_time) == "number" then
+				local start_time = anim_data.start_time
+
+				if start_time == -1 then
+					start_time = anim_length
+				end
+
+				unit:anim_set_time(start_time)
+			end
+
+			if offset then
+				unit:anim_set_time(anim_ids, offset)
+			end
+		end
+
+		self._melee_item_anim = anim_ids
 	end
 end
 
@@ -427,9 +545,16 @@ end
 
 
 function FPCameraPlayerBase:show_weapon()
+	--log("FPCameraPlayerBase:show_weapon")
 	if alive(self._parent_unit) then
 		self._parent_unit:inventory():show_equipped_unit()
 		managers.player:player_unit():movement():current_state():_stance_entered()
+	end
+end
+function FPCameraPlayerBase:hide_weapon()
+	--log("FPCameraPlayerBase:hide_weapon")
+	if alive(self._parent_unit) then
+		self._parent_unit:inventory():hide_equipped_unit()
 	end
 end
 
@@ -456,28 +581,29 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "nqr_FPCameraPlayerBase:update", fu
 	push_vec = push_vec or Vector3()
 
 	if wep_base and wep_base._length then
+		local plr = managers.player:player_unit():movement():current_state()
 		local wep_length = wep_base._length*2.5
 		local overall_length = math.max(40, wep_length + (wep_base._current_stats.shouldered and -10 or (wep_base:selection_index()==1 and 30 or 10)))
+		if plr:_is_meleeing() then overall_length = 45 end
 		local from = camera:position() + camera:forward()
 		local to = camera:position() + camera:forward() * overall_length
 		local z = 0
-		local plr = managers.player:player_unit():movement():current_state()
 
 		local wallpush_ignores = {}
 		local testray = self._unit:raycast("ray", from, to, "slot_mask", managers.slot:get_mask("bullet_impact_targets_no_criminals"))
-		local push_dist = overall_length - (testray and testray.unit and testray.distance or overall_length)
-		plr._wall_push = nil
-
-		if plr._state_data.on_ladder and wep_base:selection_index()==2 and (push_dist<9) then push_dist = 9 end
-
-		if push_dist>0 and not (testray and (
+		local invalid_push = testray and (
 			testray.unit:base() and testray.unit:base()._thrower_unit
 			or testray.unit:damage() and testray.unit:damage()._collision_event and string.find(testray.unit:damage()._collision_event, "wp_clip_")
 			or testray.unit:name()==Idstring("units/payday2/equipment/gen_equipment_zipline_motor/gen_equipment_zipline_motor")
-		) )
-		then
+		)
+		local push_dist = overall_length - (testray and testray.unit and not invalid_push and testray.distance or overall_length)
+		plr._wall_push = nil
+
+		if plr._state_data.on_ladder and wep_base:selection_index()==2 then push_dist = math.min(push_dist, 9) end
+
+		if push_dist>0 then
 			if push_dist>4 then plr._wall_push = true plr:_interupt_action_steelsight() end
-			if push_dist>8 then z = -10 end
+			if push_dist>8 then z = -10 plr._wall_melee_block = 3 end
 			if (push_dist>24) and (wep_base:selection_index()==2) then plr._wall_unequip = true end
 		end
 
@@ -501,6 +627,15 @@ end)
 
 
 function FPCameraPlayerBase:play_redirect(redirect_name, speed, offset_time)
+	local lookup = {
+		[Idstring("recoil"):key()] = true,
+		[Idstring("recoil_steelsight"):key()] = true,
+		[Idstring("recoil_enter"):key()] = true,
+		[Idstring("recoil_loop"):key()] = true,
+		[Idstring("recoil_exit"):key()] = true,
+	}
+	if (self.interact_redirect_t and self.interact_redirect_t>managers.player:player_timer():time()) and lookup[redirect_name:key()] then return end
+
 	self:set_anims_enabled(true)
 
 	self._anim_empty_state_wanted = false

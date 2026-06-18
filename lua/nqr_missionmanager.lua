@@ -97,7 +97,7 @@ function MissionScriptElement:init(mission_script, data)
 
 
 	local job = Global.level_data and Global.level_data.level_id
-	lookup = {
+	local lookup = {
 		jolly = { ["Link - delay"] = { delay = 45 } },
 	}
 	if lookup[job] and lookup[job][self._editor_name] then

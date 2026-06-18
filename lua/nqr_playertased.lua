@@ -195,6 +195,12 @@ function PlayerTased:_check_action_primary_attack(t, input)
 					new_action = true
 
 					if fired then
+						local onehanded = wep_base.AKIMBO or self._state_data.interact_redirect_t or self._state_data.on_ladder
+						if onehanded then
+							wep_base:interupt_bolting(true, true)
+							self._ext_camera:play_redirect(self:get_animation("idle"))
+						end
+
 						local weap_tweak_data = tweak_data.weapon[weap_base:get_name_id()]
 						local recoil_multiplier = weap_base:recoil() * weap_base:recoil_multiplier() + weap_base:recoil_addend()
 						local kick_tweak_data = weap_tweak_data.kick[fire_mode] or weap_tweak_data.kick
@@ -206,23 +212,6 @@ function PlayerTased:_check_action_primary_attack(t, input)
 
 						self._equipped_unit:base():tweak_data_anim_stop("unequip")
 						self._equipped_unit:base():tweak_data_anim_stop("equip")
-
-						if managers.player:has_category_upgrade(primary_category, "stacking_hit_damage_multiplier") then
-							self._state_data.stacking_dmg_mul = self._state_data.stacking_dmg_mul or {}
-							self._state_data.stacking_dmg_mul[primary_category] = self._state_data.stacking_dmg_mul[primary_category] or {
-								nil,
-								0
-							}
-							local stack = self._state_data.stacking_dmg_mul[primary_category]
-
-							if fired.hit_enemy then
-								stack[1] = t + managers.player:upgrade_value(primary_category, "stacking_hit_expire_t", 1)
-								stack[2] = math.min(stack[2] + 1, tweak_data.upgrades.max_weapon_dmg_mul_stacks or 5)
-							else
-								stack[1] = nil
-								stack[2] = 0
-							end
-						end
 
 						managers.hud:set_ammo_amount(weap_base:selection_index(), weap_base:ammo_info())
 

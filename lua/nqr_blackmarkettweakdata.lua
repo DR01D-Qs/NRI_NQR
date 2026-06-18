@@ -32,7 +32,7 @@ function BlackMarketTweakData:_init_deployables(tweak_data)
 	self:_add_desc_from_name_macro(self.deployables)
 end
 
-Hooks:PostHook( BlackMarketTweakData, "_init_melee_weapons", "nqr_projectilestweakdata:_init_melee_weapons", function(self, tweak_data)
+Hooks:PostHook( BlackMarketTweakData, "_init_melee_weapons", "nqr_BlackMarketTweakData:_init_melee_weapons", function(self, tweak_data)
 	self.melee_weapons.taser.tase_data = nil
 	self.melee_weapons.zeus.tase_data = nil
 	self.melee_weapons.funder_strike.tase_data = nil

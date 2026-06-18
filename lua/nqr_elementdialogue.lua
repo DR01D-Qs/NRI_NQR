@@ -91,12 +91,6 @@ function ElementDialogue:on_executed(instigator)
 			["4min"] = "none",
 			["5min"] = "none",
 		},
-		escape_street = {
-			["2min"] = "none",
-			["3min"] = "none",
-			["4min"] = "none",
-			["5min"] = "none",
-		},
 		escape_overpass = {
 			["leaving_in_1min_HELI"] = "none",
 			["leaving_in_1min_VAN"] = "none",

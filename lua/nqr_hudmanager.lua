@@ -404,3 +404,10 @@ function HUDManager:on_crit_confirmed(damage_scale) end
 
 function HUDManager:_create_suspicion(hud) end
 function HUDManager:set_suspicion(status) end
+
+
+
+function HUDManager:set_cable_ties_amount(i, amount)
+	log(amount)
+	self._teammate_panels[i]:set_cable_ties_amount(amount)
+end

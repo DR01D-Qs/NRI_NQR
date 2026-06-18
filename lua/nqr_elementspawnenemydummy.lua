@@ -16,7 +16,7 @@ function ElementSpawnEnemyDummy:init(...)
 	}
 	if lookup_cut[job] and lookup_cut[job][self._editor_name] and self._values.on_executed then
 		for i, k in pairs(self._values.on_executed) do
-			if lookup_cut[job][self._editor_name][k.id] then table.remove(self._values.on_executed, i) end
+			if lookup_cut[job][self._editor_name][k.id] then table.delete(self._values.on_executed, k) end
 		end
 		self._values.enabled = false
 	end
@@ -360,6 +360,7 @@ function ElementSpawnEnemyDummy:produce(params)
 			or sfind_plain(editor_name, "supres") or sfind_plain(instance_name, "supres")
 			or sfind_plain(instance_name, "pbr_stationary")
 			or sfind_plain(instance_name, "pet_helicopter_swat")
+			or sfind_plain(instance_name, "shout_helicopter_swat_")
 		) then
 			hrss_buffer[editor_name] = true
 			harasser = true

@@ -1011,6 +1011,8 @@ function NQR:Reset()
         nqr_wanted_sight = 2,
 		nqr_retention_time = 0.2,
 		nqr_secondsightangle_value = 45,
+		nqr_meleehand = 2,
+		nqr_meleebuttonsscheme = 1,
 	}
 end
 function NQR:Save()
@@ -1023,13 +1025,20 @@ end
 function NQR:Load()
 	local file = io.open( NQR._settings_path, "r" )
 	if file then
-		NQR.settings = json.decode( file:read("*all") )
+		NQR:Reset() 
+
+		local saved_settings = json.decode( file:read("*all") ) or {}
+		for k, v in pairs(saved_settings) do
+			NQR.settings[k] = v
+		end
+
 		file:close()
 	else
 		NQR:Reset()
 		NQR:Save()
 	end
 end
+
 NQR:Load()
 
 Hooks:Add("LocalizationManagerPostInit", "LocalizationManagerPostInit_NQR", function( loc )
@@ -1059,11 +1068,23 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_NQR", function( menu_
 		NQR:Save()
 	end
 
+	MenuCallbackHandler.nqr_meleehand_callback = function(self, item)
+		NQR.settings.nqr_meleehand = item:value()
+		NQR:Save()
+	end
+
+	MenuCallbackHandler.nqr_meleebuttonsscheme_callback = function(self, item)
+		NQR.settings.nqr_meleebuttonsscheme = item:value()
+		NQR:Save()
+	end
+
 	MenuCallbackHandler.nqr_reset_callback = function(self, item)
 		NQR:Reset()
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_wanted_sight_choice"] = true}, NQR.settings.nqr_wanted_sight)
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_retention_slider"] = true}, NQR.settings.nqr_retention_time)
 		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_secondsightangle_slider"] = true}, NQR.settings.nqr_secondsightangle_value)
+		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_meleehand_choice"] = true}, NQR.settings.nqr_meleehand)
+		MenuHelper:ResetItemsToDefaultValue(item, {["nqr_meleebuttonsscheme_choice"] = true}, NQR.settings.nqr_meleebuttonsscheme)
 		NQR:Save()
 	end
 
@@ -1072,3 +1093,9 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_NQR", function( menu_
 
 end)
 
+
+
+local bind = BLT.Keybinds:get_keybind("nqr_key_melee")
+if bind and not bind:Key() then
+    bind:SetKey("5")
+end

@@ -201,7 +201,6 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 --DELET
 	for i, k in pairs(self) do
 		if k.uses_parts then
-			table.delete(k.uses_parts, "wpn_fps_upg_m4_s_ubr")
 			if i~="wpn_fps_ass_shak12" then
 				table.delete(k.uses_parts, "wpn_fps_ass_shak12_ns_suppressor")
 				table.delete(k.uses_parts, "wpn_fps_ass_shak12_ns_muzzle")
@@ -209,6 +208,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 				table.delete(k.uses_parts, "wpn_fps_ass_shak12_ns_muzzle")
 			end
 
+			table.delete(k.uses_parts, "wpn_fps_upg_m4_s_ubr")
 			table.delete(k.uses_parts, "wpn_fps_upg_o_health")
 
 			for u, j in pairs(k.default_blueprint or {}) do
@@ -245,6 +245,23 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_ammo_type.pcs = nil
 	self.parts.wpn_fps_m4_uupg_s_fold.pcs = nil
 
+	local add_ipsc = {
+		wpn_fps_pis_shrew = true,
+		wpn_fps_pis_g26 = true,
+		wpn_fps_pis_type54 = true,
+		wpn_fps_pis_m1911 = true,
+		wpn_fps_pis_1911 = true,
+		wpn_fps_pis_pl14 = true,
+		wpn_fps_pis_p226 = true,
+		wpn_fps_pis_hs2000 = true,
+		wpn_fps_pis_beretta = true,
+		wpn_fps_pis_usp = true,
+		wpn_fps_pis_g17 = true,
+		wpn_fps_pis_g22c = true,
+		wpn_fps_pis_czech = true,
+		wpn_fps_pis_beer = true,
+		wpn_fps_pis_g18c = true,
+	}
 	local delete_ipsc = {
 		wpn_fps_pis_korth = true,
 		wpn_fps_pis_ppk = true,
@@ -262,6 +279,10 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 		if self[i] and self[i].uses_parts then
 			table.delete(self[i].uses_parts, "wpn_fps_upg_ns_pis_meatgrinder")
 			table.delete(self[i].uses_parts, "wpn_fps_upg_ns_pis_ipsccomp")
+			if add_ipsc[i] then
+				table.insert(self[i].uses_parts, "wpn_fps_upg_ns_pis_meatgrinder")
+				table.insert(self[i].uses_parts, "wpn_fps_upg_ns_pis_ipsccomp")
+			end
 		end
 	end
 --
@@ -1689,7 +1710,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	}
 	for i, k in pairs(self.nqr.all_gadgets) do
 		self.parts.wpn_fps_gadgets_pos_a_o.override[k] = {
-			a_obj = "a_o", a_fl = (self.parts[k].a_fl or 0)+1, forbids = deep_clone(self.nqr.all_main_sights),
+			a_obj = "a_o", a_fl = (self.parts[k].a_fl or 0)+1, forbids = table.combine(self.nqr.all_main_sights, self.nqr.all_second_sights),
 		}
 	end
 
@@ -2116,10 +2137,14 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_upg_ns_pis_typhoon.stats = { concealment = 3, weight = 1, length = 2, md_code = {0,1,2,0,0} }
 	self.parts.wpn_fps_upg_ns_pis_ipsccomp.dlc = "pd2_clan"
 	self.parts.wpn_fps_upg_ns_pis_ipsccomp.parent = "barrel"
+	self.parts.wpn_fps_upg_ns_pis_ipsccomp.sort_number = 21000
 	self.parts.wpn_fps_upg_ns_pis_ipsccomp.stats = { concealment = 6, weight = 2, length = 2, md_code = {0,0,3,0,0} }
 	self.parts.wpn_fps_upg_ns_pis_meatgrinder.dlc = "pd2_clan"
 	self.parts.wpn_fps_upg_ns_pis_meatgrinder.parent = "barrel"
-	self.parts.wpn_fps_upg_ns_pis_meatgrinder.stats = { concealment = 6, weight = 2, length = 2 }
+	self.parts.wpn_fps_upg_ns_pis_meatgrinder.sub_type = "bayonet"
+	self.parts.wpn_fps_upg_ns_pis_meatgrinder.sort_number = 5000
+	self.parts.wpn_fps_upg_ns_pis_meatgrinder.has_description = true
+	self.parts.wpn_fps_upg_ns_pis_meatgrinder.stats = { concealment = 6, weight = 2, length = 2, custom_butt_anim = { "melee_nin", 1 }, damage_types = { tip = "puncturing" } }
 
 	self.parts.wpn_fps_upg_ns_shot_shark.stats = { concealment = 1, weight = 1, length = 1, md_code = {0,1,0,1,0} }
 	self.parts.wpn_fps_upg_shot_ns_king.stats = { concealment = 2, weight = 1, length = 2, md_code = {0,2,0,0,0} }
@@ -4245,6 +4270,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_ass_groza_m_speed.stats = { concealment = 7, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["9x39"] = 20 } }
 	self.parts.wpn_fps_ass_groza_m_standard.pcs = {}
 	self.parts.wpn_fps_ass_groza_m_standard.name_id = "bm_wp_fps_ass_groza_m_standard"
+	self.parts.wpn_fps_ass_groza_m_standard.bullet_objects = { amount = 1, prefix = "g_bullet" }
 	self.parts.wpn_fps_ass_groza_m_standard.stats = { concealment = 7, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["9x39"] = 20 } }
 	self.parts.wpn_fps_ass_groza_o_adapter.pcs = {}
 	self.parts.wpn_fps_ass_groza_o_adapter.name_id = "bm_wp_groza_sightrail"
@@ -4566,8 +4592,6 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_addon_ris")
 	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_remove_ns")
 	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_fold_ironsight")
-	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_upg_cal_300blk")
-	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_upg_a_subfmj")
 	table.insert(self.wpn_fps_ass_komodo.default_blueprint, "wpn_fps_upg_blankcal_556")
 	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_upg_blankcal_556")
 	table.insert(self.wpn_fps_ass_komodo.uses_parts, "wpn_fps_upg_cal_545x39")
@@ -5442,7 +5466,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_snp_tti_fg_standard.forbids = { "wpn_fps_para_b_medium", "wpn_fps_para_b_medium_os3", "wpn_fps_m4_uupg_b_short", "wpn_fps_m4_uupg_b_short_os3", "wpn_fps_snp_victor_b_sbr", "wpn_fps_para_b_short", "wpn_fps_m4_uupg_b_sd", }
 	self.parts.wpn_fps_snp_tti_fg_standard.override = {}
 	self.parts.wpn_fps_snp_tti_fg_standard.stats = { concealment = 0, weight = 4 }
-	self.parts.wpn_fps_snp_tti_g_grippy.stats = { concealment = 0, weight = 0 }
+	self.parts.wpn_fps_snp_tti_g_grippy.stats = { concealment = 0, weight = 1 }
 	self.parts.wpn_fps_snp_tti_m_standard.stats = { concealment = 8, weight = 2, mag_amount = { 2, 4, 6 }, CLIP_AMMO_MAX = { ["7.62x51"] = 20 } }
 	self.parts.wpn_fps_snp_tti_ns_hex.texture_bundle_folder = "spa"
 	self.parts.wpn_fps_snp_tti_ns_hex.dlc = "spa"
@@ -5782,7 +5806,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_snp_mosin_iron_sight.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_snp_mosin_m_standard.bullet_objects = { amount = 1, prefix = "g_bullet" }
 	self.parts.wpn_fps_snp_mosin_m_standard.stats = { concealment = 3, weight = 0, mag_amount = { 3, 6, 9 }, CLIP_AMMO_MAX = 5 }
-	self.parts.wpn_fps_snp_mosin_ns_bayonet.stats = { concealment = 6, weight = 3, length = 15, min_damage = 4, max_damage = 4, min_damage_effect = 1.75, max_damage_effect = 1.75, }
+	self.parts.wpn_fps_snp_mosin_ns_bayonet.stats = { concealment = 6, weight = 3, length = 12, butt_t = 4, damage_types = { tip = "piercing" } }
 	self.parts.wpn_fps_snp_mosin_rail.pcs = {} --todo a_o
 	self.parts.wpn_fps_snp_mosin_rail.name_id = "bm_wp_mosin_sightrail"
 	self.parts.wpn_fps_snp_mosin_rail.type = "ironsight"
@@ -6650,7 +6674,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_smg_shepheard_dh_standard.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_smg_shepheard_g_standard.pcs = {}
 	self.parts.wpn_fps_smg_shepheard_g_standard.name_id = "bm_wp_fps_smg_shepheard_g_standard"
-	self.parts.wpn_fps_smg_shepheard_g_standard.stats = { concealment = 0, weight = 0 }
+	self.parts.wpn_fps_smg_shepheard_g_standard.stats = { concealment = 0, weight = 1 }
 	self.parts.wpn_fps_smg_shepheard_mag_standard.stats = { concealment = 3, weight = 1, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 20 }
 	self.parts.wpn_fps_smg_shepheard_mag_extended.stats = { concealment = 5, weight = 2, mag_amount = { 4, 6, 8 }, CLIP_AMMO_MAX = 30 }
 	self.parts.wpn_fps_smg_shepheard_ns_standard.stats = { concealment = 0, weight = 0 }
@@ -7512,7 +7536,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_sho_boot_b_legendary_axe.type = "bayonet"
 	self.parts.wpn_fps_sho_boot_b_legendary_axe.depends_on = "exclusive_set"
 	self.parts.wpn_fps_sho_boot_b_legendary_axe.visibility = { { objects = { g_barrel = false, g_legend = false, g_sharp = false } } }
-	self.parts.wpn_fps_sho_boot_b_legendary_axe.stats = { concealment = 0, weight = 10, length = 2, gadget_power = { laser = 1 } }
+	self.parts.wpn_fps_sho_boot_b_legendary_axe.stats = { concealment = 0, weight = 10, length = 2, gadget_power = { laser = 1 }, damage_types = { tip = "slashing" } }
 	self.parts.wpn_fps_sho_boot_b_legendary.is_a_unlockable = true
 	self.parts.wpn_fps_sho_boot_b_legendary.pcs = {}
 	self.parts.wpn_fps_sho_boot_b_legendary.type = "exclusive_set"
@@ -8316,7 +8340,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_sho_sko12_b_standard.stats = { concealment = 0, weight = 9, barrel_length = 18.9 }
 	self.parts.wpn_fps_sho_sko12_b_long.value = 18
 	self.parts.wpn_fps_sho_sko12_b_long.stats = { concealment = 0, weight = 11, barrel_length = 21 } --roughly
-	self.parts.wpn_fps_sho_sko12_body_grip.stats = { concealment = 0, weight = 0 }
+	self.parts.wpn_fps_sho_sko12_body_grip.stats = { concealment = 0, weight = 1 }
 	self.parts.wpn_fps_sho_sko12_body_lower.stats = { concealment = 0, weight = 0, length = 10 }
 	self.parts.wpn_fps_sho_sko12_body_upper.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_sho_sko12_conversion.is_a_unlockable = nil
@@ -9549,6 +9573,7 @@ Hooks:PostHook( WeaponFactoryTweakData, "init", "nqr_weaponfactorytweakdata", fu
 	self.parts.wpn_fps_snp_contender_frontgrip_short.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_snp_contender_frontgrip_long.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_upg_contender_o_ironsight.pcs = nil
+	self.parts.wpn_fps_upg_contender_o_ironsight.type = "ironsight"
 	self.parts.wpn_fps_upg_contender_o_ironsight.stats = { concealment = 0, weight = 0 }
 	self.parts.wpn_fps_snp_contender_conversion.stats = { concealment = 0, weight = 0 }
 	self.wpn_fps_snp_contender.override = {}

@@ -1,7 +1,4 @@
-local melee_vars = {
-	"player_melee",
-	"player_melee_var2"
-}
+local melee_vars = { "player_melee", "player_melee_var2" }
 local mvec3_dis_sq = mvector3.distance_sq
 local mvec3_set = mvector3.set
 local mvec3_set_z = mvector3.set_z
@@ -13,6 +10,9 @@ local mvec3_norm = mvector3.normalize
 local mvec_pos_new = Vector3()
 local mvec_achieved_walk_vel = Vector3()
 local mvec_move_dir_normalized = Vector3()
+
+local melee_td = tweak_data.blackmarket.melee_weapons
+local m_animsets = tweak_data.blackmarket.m_animsets
 
 function PlayerStandard:get_animation(anim)
 	local wep_base = self._equipped_unit:base()
@@ -34,6 +34,7 @@ end
 --INSPECT: SHOW STATS
 function PlayerStandard:_check_action_cash_inspect(t, input)
 	if not input.btn_cash_inspect_press then return end
+
 	local action_forbidden = self:_interacting()
 	or self:is_deploying()
 	or self:_changing_weapon()
@@ -49,6 +50,8 @@ function PlayerStandard:_check_action_cash_inspect(t, input)
 	or not self._movement_equipped
 	or not self._wall_equipped
 	if action_forbidden then return end
+
+	self._state_data.reload_exit_expire_t = nil
 
 	self._ext_camera:play_redirect(self:get_animation("cash_inspect"), 1.6)
 	managers.player:send_message(Message.OnCashInspectWeapon)
@@ -84,6 +87,7 @@ function PlayerStandard:init(unit)
 	self._slotmask_gnd_ray = World:make_slot_mask(1, 8, 11, 15, 39) --8 shields, 12 enemies
 	self._slotmask_fwd_ray = slot_manager:get_mask("bullet_impact_targets")
 	self._slotmask_foley_ray = slot_manager:get_mask("bullet_impact_targets")
+	self._slotmask_enemies = slot_manager:get_mask("enemies")
 	self._slotmask_bullet_impact_targets = slot_manager:get_mask("bullet_impact_targets")
 	self._slotmask_bullet_impact_targets = managers.mutators:modify_value("PlayerStandard:modify_melee_slot_mask", self._slotmask_bullet_impact_targets)
 	self._slotmask_pickups = slot_manager:get_mask("pickups")
@@ -157,6 +161,8 @@ function PlayerStandard:init(unit)
 			managers.dyn_resource:load(Idstring("unit"), unit_name, managers.dyn_resource.DYN_RESOURCES_PACKAGE)
 		end
 	end
+
+	self._arms_length = melee_td.fists.stats.length or 30
 end
 --ENTER: CHECK LYING TILT
 function PlayerStandard:enter(state_data, enter_data)
@@ -474,24 +480,41 @@ function PlayerStandard:_check_change_weapon(t, input)
 end
 function PlayerStandard:_check_action_equip(t, input)
 	local new_action = nil
-	local selection_wanted = input.btn_primary_choice
+	local selection_wanted = self._nqr_key_melee or input.btn_primary_choice
 	if selection_wanted then
 		local action_forbidden = self:chk_action_forbidden("equip")
 		action_forbidden = action_forbidden
-		or not self._ext_inventory:is_selection_available(selection_wanted)
-		or self:_is_meleeing()
+		or (selection_wanted~=3 and not self._ext_inventory:is_selection_available(selection_wanted))
+		or (selection_wanted==3 and not managers.blackmarket:equipped_melee_weapon())
+		or self._state_data.melee_expire_t
 		or self._use_item_expire_t
 		or self:_interacting()
 		or self:_is_throwing_projectile()
 		or (not self._movement_equipped and self._move_dir)
 
 		if not action_forbidden then
-			if not self._ext_inventory:is_equipped(selection_wanted) and not self._unequip_weapon_expire_t then
+			if selection_wanted==3 then
+				if not self._state_data.meleeing then
+					self._change_weapon_data = { melee = true }
+					if not self._unequip_weapon_expire_t then
+						self:_start_action_unequip_weapon(t, self._change_weapon_data)
+					end
+				end
+			elseif self._state_data.meleeing then
+				self._change_weapon_data = self._ext_inventory:is_equipped(selection_wanted) and { selection_wanted = selection_wanted } or { next = true }
+				self:_start_action_equip_weapon(t)
+			elseif not self._ext_inventory:is_equipped(selection_wanted) and not self._unequip_weapon_expire_t then
 				self:_start_action_unequip_weapon(t, { selection_wanted = selection_wanted })
-				local wep_base = self._equipped_unit:base()
-			elseif self._ext_inventory:is_equipped(selection_wanted) and self._unequip_weapon_expire_t then
+			elseif self._ext_inventory:is_equipped(selection_wanted)
+			and not self._state_data.meleeing
+			and self._unequip_weapon_expire_t
+			and self._change_weapon_data and self._change_weapon_data.selection_wanted~=selection_wanted then
 				self:_start_action_equip_weapon0(t)
-				local wep_base = self._equipped_unit:base()
+			elseif self._ext_inventory:is_equipped(selection_wanted) then
+				self._change_weapon_data = { none = true }
+				if not self._unequip_weapon_expire_t then
+					self:_start_action_unequip_weapon(t, self._change_weapon_data)
+				end
 			end
 		end
 	end
@@ -534,6 +557,18 @@ function PlayerStandard:nqr_eq_speed(is_unequip)
 	return eq_t, eq_tt, anim_spd
 end
 function PlayerStandard:_start_action_unequip_weapon(t, data, mul)
+	self:_interupt_action_running(t)
+	self:_interupt_action_charging_weapon(t)
+	self:_interupt_action_reload(t)
+	self:_interupt_action_steelsight(t)
+	self:_interupt_action_bagthrow(t)
+	self._running_enter_end_t = nil
+
+	if self._state_data.meleeing then
+		self:_start_action_melee(t, input, nil, self._camera_unit:base().custom_melee)
+		return
+	end
+
 	self._change_weapon_data = data
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
@@ -542,12 +577,6 @@ function PlayerStandard:_start_action_unequip_weapon(t, data, mul)
 	eq_t = (eq_t or 0.5) / speed_multiplier
 	eq_tt = (eq_tt or 0) / speed_multiplier
 	anim_spd = (anim_spd or 1) * speed_multiplier
-
-	self:_interupt_action_running(t)
-	self:_interupt_action_charging_weapon(t)
-	self:_interupt_action_reload(t)
-	self:_interupt_action_steelsight(t)
-	self._running_enter_end_t = nil
 
 	wep_base:tweak_data_anim_stop(wep_tweak.anim_equip_swap or "equip")
 	wep_base:tweak_data_anim_play(wep_tweak.anim_unequip_swap or "unequip", anim_spd)
@@ -570,6 +599,10 @@ end
 function PlayerStandard:_start_action_equip_weapon(t)
 	self._unequip_weapon_expire_t = nil
 	self._unequip_weapon_expire_t0 = nil
+	self:_interupt_action_running(t)
+	self:_interupt_action_melee(t)
+	self:_interupt_action_bagthrow(t)
+	self._ext_camera:play_redirect(self:get_animation("equip"), 0)
 
 	self._change_weapon_data = self._change_weapon_data or { next = false }
 	if self._change_weapon_data.next then
@@ -587,6 +620,12 @@ function PlayerStandard:_start_action_equip_weapon(t)
 		select_equip = select_equip and select_equip.unit
 		if select_equip then self:set_animation_state(self:_is_underbarrel_attachment_active(select_equip) and "underbarrel" or "standard") end
 		self._ext_inventory:equip_selection(self._change_weapon_data.selection_wanted, false)
+	elseif self._change_weapon_data.none then
+		self:_start_action_melee(t, input, nil, "fists")
+		return
+	elseif self._change_weapon_data.melee then
+		self:_start_action_melee(t, input)
+		return
 	end
 	self:set_animation_weapon_hold(nil)
 
@@ -602,12 +641,22 @@ function PlayerStandard:_start_action_equip_weapon(t)
 
 	managers.upgrades:setup_current_weapon()
 	self:_stance_entered()
-	self._change_weapon_data = nil
+
+	if wep_base:selection_index()==1 then
+		wep_base:play_sound("wp_foley_generic_back_in_hand")
+	end
+
+	self._ext_camera:play_redirect(self:get_animation("equip"), 0)
 end
 function PlayerStandard:_start_action_equip_weapon0(t)
 	self._unequip_weapon_expire_t = nil
 	self._unequip_weapon_expire_t0 = nil
 	self._running_enter_end_t = nil
+
+	if self._state_data.meleeing then
+		self:_start_action_melee(t, input, nil, self._camera_unit:base().custom_melee)
+		return
+	end
 
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
@@ -619,6 +668,11 @@ function PlayerStandard:_start_action_equip_weapon0(t)
 
 	self:_stance_entered()
 	self._camera_unit:base():show_weapon()
+
+	wep_base:play_sound("gadget_steelsight_enter")
+	if wep_base:selection_index()==2 then
+		self._ext_camera:play_shaker("player_start_running", 0.02+(wep_base._current_stats.weight*0.002))
+	end
 
 	self._ext_camera:play_redirect(self:get_animation("equip"), anim_spd, (wep_tweak.eq_fr and wep_tweak.eq_fr[1] or 0)/30)
 	wep_base:tweak_data_anim_stop(wep_tweak.anim_unequip_swap or "unequip")
@@ -651,7 +705,8 @@ function PlayerStandard:_check_use_item(t, input)
 		or self:_interacting()
 		--or self:_changing_weapon()
 		or self:_is_throwing_projectile()
-		or self:_is_meleeing()
+		--or self:_is_meleeing()
+		or self._state_data.melee_expire_t
 		or not self._movement_equipped
 		--or not self._wall_equipped
 
@@ -743,8 +798,13 @@ function PlayerStandard:_play_equip_animation(speed_multiplier)
 	self._ext_camera:play_redirect(self:get_animation("equip"), speed_multiplier)
 end
 function PlayerStandard:_play_unequip_animation(speed_multiplier)
-	local wep_tweak = self._equipped_unit:base():weapon_tweak_data()
-	self._ext_camera:play_redirect(self:get_animation("unequip"), speed_multiplier)
+	if self._state_data.meleeing then
+		self._ext_camera:play_redirect(self:get_animation("equip"), 0)
+		self._camera_unit:base():unspawn_melee_item()
+	else
+		local wep_tweak = self._equipped_unit:base():weapon_tweak_data()
+		self._ext_camera:play_redirect(self:get_animation("unequip"), speed_multiplier)
+	end
 end
 
 --NEW FUNCTION: REEQUIP FORCED
@@ -762,6 +822,7 @@ function PlayerStandard:_nqr_force_reequip(t)
 	self:_interupt_action_throw_projectile(t)
 	self:_interupt_action_throw_grenade(t)
 	self:_interupt_action_ladder(t)
+	self:_interupt_action_bagthrow(t)
 
 	local speed_multiplier = 2
 	self._change_weapon_data = { reequip = true }
@@ -773,32 +834,62 @@ function PlayerStandard:_update_equip_weapon_timers(t, input)
 	if self._unequip_weapon_expire_t and self._unequip_weapon_expire_t <= t then
 		self._unequip_weapon_expire_t = nil
 
+		if not self._unequip_weapon_expire_t0 and not (self._change_weapon_data and self._change_weapon_data.reequip) then
+			if wep_base:selection_index()==2 then
+				self._ext_camera:play_shaker("fire_weapon_rot", 0.05+(wep_base._current_stats.weight*0.0005))
+			elseif wep_base:selection_index()==1 then
+				self._ext_camera:play_shaker("player_land", 0.05)
+				self._ext_camera:play_shaker("fire_weapon_rot", 0.06+(wep_base._current_stats.weight*0.01))
+				wep_base:play_sound("wp_p90_lever_pull")
+			end
+		end
+
 		if self._change_weapon_data and self._change_weapon_data.unequip_callback and not self._change_weapon_data.unequip_callback() then return end
 
 		if not self._equip_weapon_expire_t and not self:_interacting() and not self:is_deploying() then
 			self:_start_action_equip_weapon(t)
-			if wep_base:selection_index()~=1 then wep_base:play_sound("m4_equip") end
 		end
 	end
 	if self._unequip_weapon_expire_t0 and self._unequip_weapon_expire_t0 <= t then
 		self._unequip_weapon_expire_t0 = nil
-		wep_base:play_sound("m4_equip")
+
+		wep_base:play_sound("wp_m4_clip_in_contact")
+		self._ext_camera:play_shaker("fire_weapon_rot", 0.08)
 	end
 
 	if self._equip_weapon_expire_t and self._equip_weapon_expire_t <= t then
 		self._equip_weapon_expire_t = nil
 		self._equipping_mask = nil
+		self._change_weapon_data = nil
 		if input.btn_steelsight_state then self._steelsight_wanted = true end
+
+		if wep_base._current_stats.shouldered then
+			wep_base:play_sound("wp_foley_generic_back_in_hand")
+			self._ext_camera:play_shaker("fire_weapon_kick", 0.1)
+			self._ext_camera:play_shaker("fire_weapon_rot", 0.01)
+		end
+
 		TestAPIHelper.on_event("load_weapon")
 		TestAPIHelper.on_event("mask_up")
 	end
 	if self._equip_weapon_expire_t0 and self._equip_weapon_expire_t0 <= t then
 		self._equip_weapon_expire_t0 = nil
 		self:_start_action_equip_weapon0(t)
+
+		if not (self._change_weapon_data and self._change_weapon_data.reequip) then
+			if wep_base:selection_index()==2 then
+				wep_base:play_sound("wp_m4_clip_grab")
+			elseif wep_base:selection_index()==1 then
+				wep_base:play_sound("wp_p90_mag_in")
+				self._ext_camera:play_shaker("player_land", 0.08)
+			end
+		end
+
 		if input.btn_steelsight_state then self._steelsight_wanted = true end
 		TestAPIHelper.on_event("load_weapon")
 		TestAPIHelper.on_event("mask_up")
 	end
+	if not self._equip_weapon_expire_t and self._equipping_mask then self._equipping_mask = nil end
 end
 --CHECK ACTION GADGET: RERUN ON GADGET
 function PlayerStandard:_check_action_weapon_gadget(t, input)
@@ -852,8 +943,10 @@ function PlayerStandard:_check_action_weapon_gadget(t, input)
 
 		if t >= self._reequip_gadget_expire_t then
 			self._reequip_gadget_expire_t = nil
-			self._ext_camera:play_redirect(self:get_animation("stop_running"), 1.2)
-			self._equip_weapon_expire_t = t + 0.2
+			if not self:_is_meleeing() then
+				self._ext_camera:play_redirect(self:get_animation("stop_running"), 1.2)
+				self._equip_weapon_expire_t = t + 0.2
+			end
 		end
 	end
 
@@ -896,8 +989,10 @@ function PlayerStandard:_update_reequip_gadget_timers(t, input)
 
 		if t >= self._reequip_gadget_expire_t then
 			self._reequip_gadget_expire_t = nil
-			self._ext_camera:play_redirect(self:get_animation("stop_running"), 1.2)
-			self._equip_weapon_expire_t = t + 0.2
+			if not self:_is_meleeing() then
+				self._ext_camera:play_redirect(self:get_animation("stop_running"), 1.2)
+				self._equip_weapon_expire_t = t + 0.2
+			end
 		end
 	end
 
@@ -999,6 +1094,8 @@ function PlayerStandard:_update_check_actions(t, dt, paused)
 	self:_check_action_steelsight(t, input)
 	self:_check_action_night_vision(t, input)
 	self:_find_pickups(t)
+
+	self._nqr_key_melee = nil
 end
 --TOGGLE_GADGET: JUST A COMPAT FIX
 function PlayerStandard:_toggle_gadget(wep_base)
@@ -1018,7 +1115,11 @@ function PlayerStandard:_toggle_gadget(wep_base)
 		if gadget and gadget.color then
 			local col = gadget:color()
 
-			--self._unit:network():send("set_weapon_gadget_color", col.r * 255, col.g * 255, col.b * 255)
+			local orig_v = math.max(0, col.a) ^ (1 / 4)
+			local h, s, v = CoreMath.rgb_to_hsv(col.r, col.g, col.b)
+			local rgb = Color(CoreMath.hsv_to_rgb(h, s, orig_v))
+
+			self._unit:network():send("set_weapon_gadget_color", rgb.r * 255, rgb.g * 255, rgb.b * 255)
 		end
 
 		if alive(self._equipped_unit) then
@@ -1053,22 +1154,29 @@ function PlayerStandard:_check_action_deploy_bipod(t, input)
 
 	return new_action
 end
---FORBID FIREMODE ON SOME STUFF
+--FORBID FIREMODE ON SOME STUFF, MELEE FIREMODE
 function PlayerStandard:_check_action_weapon_firemode(t, input)
 	local action_forbidden = (
 		self:is_shooting_count()
 		or self:_is_reloading()
 		or not self._movement_equipped
 		or self._running
-		or self:_is_meleeing()
+		--or self:_is_meleeing()
 		or self._use_item_expire_t
 		or self:_interacting()
 		or self:_is_throwing_projectile()
 		or self:_is_deploying_bipod()
 	)
 
-	if input.btn_weapon_firemode_press and not action_forbidden then
-		if self._equipped_unit:base().toggle_firemode then
+	if input.btn_weapon_firemode_press and not action_forbidden and not self._camera_unit:base().custom_melee then
+		local melee_tweak = melee_td[self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon()]
+		local animset = (self._ext_movement.m_akimbo and melee_tweak.twohanded and melee_tweak.animset=="sword") and "knife" or melee_tweak.animset
+		if self:_is_meleeing() then
+			if m_animsets[(animset or "").."_reversed"] and not self._state_data.melee_expire_t then
+				self._ext_movement.m_reverse = not self._ext_movement.m_reverse
+				self:_start_action_melee(t, input, nil, self._camera_unit:base().custom_melee)
+			end
+		elseif self._equipped_unit:base().toggle_firemode then
 			self:_check_stop_shooting()
 
 			if self._equipped_unit:base():toggle_firemode() then
@@ -1114,6 +1222,8 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 	wep_base.delayed = delayed
 	local rof = (wep_base:weapon_fire_rate()/wep_base:fire_rate_multiplier())*(wep_base.AKIMBO and self._shooting and 0.5 or 1)
 	if not wep_base.force_fire_t then wep_base.force_fire_t = -1 end
+	local quick_onehanded = self._state_data.interact_redirect_t
+	local onehanded = quick_onehanded or wep_base.AKIMBO or self._state_data.on_ladder
 
 	if not action_forbidden and action_wanted
 	and not (wep_base:use_shotgun_reload() and not wep_base.r_stage)
@@ -1244,8 +1354,10 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 								self._shooting = true
 								start_shooting = true
 
-								if fire_mode == "auto" then
-									self._unit:camera():play_redirect(self:get_animation((wep_tweak.anim_shoot_stop_hands or wep_tweak.anim_no_full) and "idle" or "recoil_enter"))
+								if fire_mode=="auto" then
+									if not quick_onehanded then
+										self._unit:camera():play_redirect(self:get_animation((wep_tweak.anim_shoot_stop_hands or wep_tweak.anim_no_full) and "idle" or "recoil_enter"))
+									end
 
 									if (not wep_base.akimbo or wep_base:weapon_tweak_data().allow_akimbo_autofire) and (not wep_base.third_person_important or wep_base.third_person_important and not wep_base:third_person_important()) then
 										self._ext_network:send("sync_start_auto_fire_sound", 0)
@@ -1329,17 +1441,25 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 							--end
 						end
 
-						if (wep_tweak.action=="bolt_action" or wep_tweak.ads_reset) and self._state_data.in_steelsight then
-							self:_interupt_action_steelsight(t)
-							self._steelsight_wanted = true
+						local dont_fire = quick_onehanded
+						if (wep_tweak.action=="bolt_action" or wep_tweak.ads_reset) then
+							if onehanded then
+								wep_base:interupt_bolting(true, true)
+								dont_fire = true
+							elseif self._state_data.in_steelsight then
+								self:_interupt_action_steelsight(t)
+								self._steelsight_wanted = true
+							end
 						end
-						if (fire_mode == "single" or fire_mode == "burst") and wep_base:get_name_id() ~= "saw" then
-							self._ext_camera:play_redirect(Idstring(wep_tweak.shot_anim_steelsight and "recoil_steelsight" or wep_tweak.anim_no_semi and "recoil_exit" or "recoil"), wep_base:fire_rate_multiplier() * (hands_mul or wep_tweak.shot_anim_hands or 1), wep_tweak.shot_anim_hands_offset or 0)
-						elseif fire_mode == "auto" and wep_tweak.anim_no_full then
-							self._ext_camera:play_redirect(Idstring(wep_tweak.shot_anim_steelsight and "recoil_steelsight" or "recoil"), wep_base:fire_rate_multiplier() * (hands_mul or wep_tweak.shot_anim_hands or 1), wep_tweak.shot_anim_hands_offset or 0)
+						if not dont_fire then
+							if (fire_mode == "single" or fire_mode == "burst") and wep_base:get_name_id()~="saw" then
+								self._ext_camera:play_redirect(Idstring(wep_tweak.shot_anim_steelsight and "recoil_steelsight" or wep_tweak.anim_no_semi and "recoil_exit" or "recoil"), wep_base:fire_rate_multiplier() * (hands_mul or wep_tweak.shot_anim_hands or 1), wep_tweak.shot_anim_hands_offset or 0)
+							elseif fire_mode == "auto" and wep_tweak.anim_no_full then
+								self._ext_camera:play_redirect(Idstring(wep_tweak.shot_anim_steelsight and "recoil_steelsight" or "recoil"), wep_base:fire_rate_multiplier() * (hands_mul or wep_tweak.shot_anim_hands or 1), wep_tweak.shot_anim_hands_offset or 0)
+							end
 						end
 
-						local recoil_multiplier = (wep_base:recoil()) * (wep_base.AKIMBO and 1.5 or 1) -- + wep_base:recoil_addend()) * wep_base:recoil_multiplier()
+						local recoil_multiplier = (wep_base:recoil()) * (onehanded and 1.75 or 1) -- + wep_base:recoil_addend()) * wep_base:recoil_multiplier()
 						local up, down, left, right = 1.6, 1.2, -0.1, 1.0 --unpack(wep_tweak.kick[self._state_data.in_steelsight and "steelsight" or self._state_data.ducking and "crouching" or "standing"])
 						if wep_tweak.reverse_rise then up, down, left, right = -1, -1.2, -0.1, 1.0 end
 						self._camera_unit:base():recoil_kick(up * recoil_multiplier, down * recoil_multiplier, left * recoil_multiplier, right * recoil_multiplier)
@@ -1515,6 +1635,15 @@ function PlayerStandard:recoil_kick(up, down, left, right)
 
 	local h = math.lerp(left, right, math.random())
 	self._recoil_kick.h.accumulated = (self._recoil_kick.h.accumulated or 0) + h
+end
+
+
+
+function PlayerStandard:_interupt_action_bagthrow(t)
+	self._throw_redirect_t = nil
+	self._throw_down = nil
+	self._throw_time = nil
+	self._throw_released = nil
 end
 
 
@@ -2032,7 +2161,13 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 
 					if input.btn_steelsight_state then
 						self._steelsight_wanted = true
-					elseif self.RUN_AND_RELOAD and self._running and not self._end_running_expire_t and not wep_base:run_and_shoot_allowed() and self._wall_equipped then
+					elseif self.RUN_AND_RELOAD
+					and self._running
+					and not self._end_running_expire_t
+					and not wep_base:run_and_shoot_allowed()
+					and self._wall_equipped
+					and not self:_is_meleeing()
+					then
 						self._ext_camera:play_redirect(self:get_animation("start_running"))
 						self._ext_network:send("set_stance", 2, false, false)
 					end
@@ -2099,7 +2234,14 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 			end
 
 			if (wep_tweak.action~="pump_action" and wep_tweak.action~="lever_action") or wep_tweak.force_anim_reload_transition then
-				self._state_data.reload_exit_expire_t = t + wep_base.r_steps["r_ending"]
+				self._state_data.reload_exit_expire_t = t + (
+					(
+						wep_tweak.force_anim_reload_transition
+						and wep_tweak.force_anim_reload_transition~=true
+						and wep_tweak.force_anim_reload_transition*wep_base._current_reload_speed_multiplier
+					)
+					or wep_base.r_steps["r_ending"]
+				)
 			end
 
 			self._state_data.reload_enter_expire_t = nil
@@ -2137,7 +2279,13 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 
 			if input.btn_steelsight_state then
 				self._steelsight_wanted = true
-			elseif self.RUN_AND_RELOAD and self._running and not self._end_running_expire_t and not self._equipped_unit:base():run_and_shoot_allowed() and self._wall_equipped then
+			elseif self.RUN_AND_RELOAD
+			and self._running
+			and not self._end_running_expire_t
+			and not self._equipped_unit:base():run_and_shoot_allowed()
+			and self._wall_equipped
+			and not self:_is_meleeing()
+			then
 				self._ext_camera:play_redirect(self:get_animation("start_running"))
 				self._ext_network:send("set_stance", 2, false, false)
 			end
@@ -2280,6 +2428,10 @@ end
 function PlayerStandard:do_bolting(t)
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
+
+	local onehanded = self._state_data.interact_redirect_t or self._state_data.on_ladder
+	if onehanded then return end
+
 	local offset = 0.07
 
 	wep_base:set_casing_visibility(wep_base.chamber_state~=0)
@@ -2444,7 +2596,7 @@ function PlayerStandard:_check_action_throw_projectile(t, input)
 		or self:_interacting()
 		or self:is_deploying()
 		--or self:_changing_weapon()
-		or self:_is_meleeing()
+		or self._state_data.melee_expire_t --self:_is_meleeing()
 		or self:_is_using_bipod()
 		or not self._movement_equipped
 	)
@@ -2537,251 +2689,589 @@ end
 
 
 
+local m_animdata = {
+	melee_brick = { end_fs = { 29 }, strike_fs = { 4,4 }, shifts = { a_weapon_right = { rot = Rotation(0,90,0) } } },
+	melee_great = { end_fs = { 40 }, strike_fs = { 16,16,16,16 }, shifts = { a_weapon_right = { pos = Vector3(0,-3,0) } } },
+	melee_sandsteel = { end_fs = { 25,25,18,25 }, strike_fs = { 11,10,8,10 }, shifts = { a_weapon_left = { pos = Vector3(0,0,-10000) }, a_weapon_right = { pos = Vector3(0,-7,0) } } },
+	melee_blunt = { end_fs = { 29 }, strike_fs = { 5,5,5,5 } },
+	melee_chac = { end_fs = { 30,12,12,12 }, strike_fs = { 7,17,17,17 }, shifts = { a_weapon_left = { pos = Vector3(0,0,-10000) } } },
+	melee_stab = { end_fs = { 22 }, strike_fs = { 8,8,9,8 } },
+	melee_cs = { end_fs = { 30,26,26,26 }, strike_fs = { 14,14,17,15 } },
+	melee_knife2 = { end_fs = { 18 }, strike_fs = { 10,10,10,12 } },
+	melee_clean = { end_fs = { 6,6 }, strike_fs = { 24,24 }, shifts = { a_weapon_right = { rot = Rotation(-90,0,180) } } },
+	melee_knife = { end_fs = { 30 }, strike_fs = { 6,4,6,6 }, shifts = { a_weapon_left = { rot = Rotation(0,180,0) } } },
+	melee_pickaxe = { end_fs = { 30 }, strike_fs = { 6,5,6,5 } },
+	melee_boxing = { end_fs = { 15,20,17,20 }, strike_fs = { 11,9,10,9 } },
+	melee_pitchfork = { end_fs = { 22 }, strike_fs = { 16,14,16,14 } },
+	melee_briefcase = { end_fs = { 33,34,34,33 }, strike_fs = { 9,10,9,9 }, shifts = { a_weapon_right = { rot = Rotation(-90,0,0) } } },
+	melee_cutters = { end_fs = { 30 }, strike_fs = { 10,10,10,11 } },
+	melee_taser = { end_fs = { 19 }, strike_fs = { 5,5,5,5 } },
+	melee_grip = { end_fs = { 11 }, strike_fs = { 9,9,9,10 }, shifts = { a_weapon_left = { rot = Rotation(0,0,180) }, a_weapon_right = { rot = Rotation(0,0,180) } } }, --strike_fs = { 6,6,6,7 }
+	melee_agave = { end_fs = { 9 }, strike_fs = { 14,16,16,16 } },
+	melee_catch = { end_fs = { 8 }, strike_fs = { 11,12,11 } },
+	melee_fireaxe = { end_fs = { 40 }, strike_fs = { 16,16,16,16 } },
+	melee_twins = { end_fs = { 20 }, strike_fs = { 11,9,10,12 }, shifts = { a_weapon_left = { pos = Vector3(0,6,0), rot = Rotation(180,0,105) } } },
+	melee_fight = { end_fs = { 20,18,24,24 }, strike_fs = { 6,8,6,7 } },
+	melee_baseballbat_miami = { end_fs = { 29 }, strike_fs = { 11,11,11,11 } },
+	melee_axe = { end_fs = { 12 }, strike_fs = { 13,12,12,13 } },
+	melee_cleaver = { end_fs = { 24 }, strike_fs = { 9,6,4,11 }, shifts = { a_weapon_right = { pos = Vector3(10000,0,0) } } },
+	melee_buck = { end_fs = { 28 }, strike_fs = { 14,16 }, shifts = { a_weapon_left = { rot = Rotation(0,0,180) } } },
+	melee_beardy = { end_fs = { 40 }, strike_fs = { 16,16,16 } },
+	melee_ballistic = { end_fs = { 20 }, strike_fs = { 11,8,9,9 }, shifts = { a_weapon_left = { pos = Vector3(0,3,0), rot = Rotation(180,0,195) }, a_weapon_right = { pos = Vector3(0,5,0), rot = Rotation(0,0,180) } } },
+	melee_wing = { end_fs = { 16 }, strike_fs = { 7,7,7,7 } },
+	melee_road = { end_fs = { 18 }, strike_fs = { 21,21,21,21 }, shifts = { a_weapon_right = { pos = Vector3(20,0,0), rot = Rotation(-90,0,-90) } } },
+	melee_machete = { end_fs = { 12 }, strike_fs = { 16,16,16,15 } },
+	melee_nin = { end_fs = { 30 }, strike_fs = { 5,5,5,5 }, shifts = { a_weapon_right = { rot = Rotation(0,90,0) } } },
+	melee_boxcutter = { end_fs = { 12 }, strike_fs = { 13,16,13,16 } },
+	melee_baseballbat = { end_fs = { 29 }, strike_fs = { 11,11,11,11 } },
+	melee_hauteur = { end_fs = { 30 }, strike_fs = { 4 }, shifts = { a_weapon_right = { rot = Rotation(0,0,180) } } },
+	melee_ostry = { end_fs = { 13 }, strike_fs = { 10,8,14 }, shifts = { a_weapon_left = { rot = Rotation(0,90,-90) }, a_weapon_right = { rot = Rotation(0,90,-90) } } },
+	melee_happy = { end_fs = { 9 }, strike_fs = { 16,16,16,16 } },
+	melee_fist = { end_fs = { 20 }, strike_fs = { 12,16,17,12 }, shifts = { a_weapon_left = { pos = Vector3(0,0,-2), rot = Rotation(0,0,180) }, a_weapon_right = { pos = Vector3(0,0,-1), rot = Rotation(0,180,0) } } },
+	melee_psycho = { end_fs = { 20 }, strike_fs = { 6,4,4,4 }, shifts = { a_weapon_left = { rot = Rotation(0,180,0) }, a_weapon_right = { rot = Rotation(0,180,0) } } },
+}
+local melee_anims = {
+	"melee_brick", --1rd 2rld 31 42
+	"melee_great", --1bld 2brd 3bf 4bd
+	"melee_sandsteel", --1rr 2bl 3bld 42
+	"melee_blunt", --1rd 2rld 32 41 --melee_brick but different order and further away and the left hand goes forward on charge
+	"melee_chac", --1rd 2rd 3rdl 4rd --1 hit 234 miss
+	"melee_stab", --1rf 2rf 3rfl 4rf
+	"melee_cs", --1bl 2br 3bl 4bd --funny chainsaw grip
+	"melee_knife2", --1lr 21 3ll 4ll --z180
+	"melee_clean", --1rld 2rrd --x90?
+	"melee_knife", --1lfd 2lru 3lld 43 --reversed grip
+	"melee_pickaxe", --1bdr 2bdr 3bdr 42 --z180, all hit
+	"melee_boxing", --unusable
+	"melee_pitchfork", --1bf 2bf 31 42
+	"melee_briefcase", --1bf 2bf 3bd 4bd --probably unusable
+	"melee_cutters", --1bld 2bld 3bd 4bf --probably unusable
+	"melee_taser", --1rf 2rfl 31 42 --similar to stab but straighter strikes and stronger shake
+	"melee_grip", --1lru 2lld 3rrd 4rlu --reversed grip
+	"melee_agave", --1rr 2rld 3rl 4rr --funny spin charge and then goes out of the view, z180
+	"melee_catch", --1rl 2rld 31 42 --reversed grip, z180, fist slap attacks
+	"melee_fireaxe", --1bld 2bd 32 42 --z180, very slow
+	"melee_twins", --1rdl 2rf 3lf 4rru --z180, l is reversed, 2 is fist
+	"melee_fight", --1rf 2rrd 3lf 4ldl 5ldl --5 has a reversed wep
+	"melee_baseballbat_miami", --1bld 2bd 32 42 --basically fireaxe but not slow and not as far forward
+	"melee_axe", --1rd 2rdl 3rld 41 --z180
+	"melee_cleaver", --1ldr 2ll 3ld 4ll --z180, 23 hit
+	"melee_buck", --1rfr 2rr --z180, 1 hit and fist slap
+	"melee_beardy", --1bdl 2bd 3bd --basically fireaxe again but not as far forward and no 4
+	--"melee_freedom", --1bf 21 31 41 --pitchfork but with 1 attack
+	"melee_ballistic", --1rdl 2rfl 3lr 4lfdl --l is reversed
+	"melee_wing", --0rfu 1rf 2rf 3rf 42 --funny balisong spin, z180
+	--"melee_fear", --1rf 21
+	"melee_road", --0bl 10 2bdl 30 42 --charge is probably unusable
+	"melee_machete", --1rld 2rdl 31 4rd --basically axe but different order.
+	"melee_nin", --0rf 1rf 2rf --z180?
+	"melee_boxcutter", --1rl 2rd 3rl 42 --z180
+	"melee_baseballbat", --1bld 2bd 32 41
+	"melee_hauteur", --1rf --probably unusable
+	"melee_ostry", --1lr 2rl 3lr 42 --funny spin, fist punches, charge is probably unusable
+	"melee_happy", --1rld 2rl 31 42 --charge is silly and behind the cam, based on agave
+	"melee_fist", --1rf 2rfl 3lfr 4lf
+	"melee_psycho", --1rd 21 3rd 43
+}
+local attack_ts = {
+	{ delay_t = 0.20, repeat_t = 0.10, dmg_sides = { tip = 1.0 }, combers1 = {}, combers2 = { [1]=true, [2]=true } },
+	{ delay_t = 0.15, repeat_t = 0.50, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = { [3]=true }, combers2 = { [5]=true } },
+	{ delay_t = 0.25, repeat_t = 0.40, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = {}, combers2 = { [1]=true, [2]=true, [3]=true, [4]=true, [5]=true }, start_t = 0.1 },
+	{ delay_t = 0.20, repeat_t = 0.55, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = {}, combers2 = { [1]=true, [2]=true, [5]=true } },
+	{ delay_t = 0.15, repeat_t = 0.55, dmg_sides = {}, combers1 = {}, combers2 = {} },
+	false,false,false,false,false,
+	{ delay_t = 0.30, repeat_t = 0.30, dmg_sides = { tip = 1.0 }, combers1 = {}, combers2 = {} },
+	{ delay_t = 0.25, repeat_t = 0.60, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = { [1]=true, [3]=true }, combers2 = { [5]=true } },
+	{ delay_t = 0.30, repeat_t = 0.55, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = { [1]=true, [2]=true }, combers2 = { [5]=true } },
+	{ delay_t = 0.40, repeat_t = 0.50, dmg_sides = { front = 0.7, tip = 0.3 }, combers1 = { [1]=true }, combers2 = {} },
+	{ delay_t = 0.20, repeat_t = 0.60, dmg_sides = {}, combers1 = { [2]=true, [3]=true, [4]=true }, combers2 = {} },
+}
+for i=1, 5 do attack_ts[5+i] = deep_clone(attack_ts[i]) end
+attack_ts[8].dmg_sides = { back = 0.3, tip = 0.7 }
+attack_ts[9].dmg_sides = { back = 0.3, tip = 0.7 }
+
+function PlayerStandard:_is_meleeing()
+	return self._state_data.meleeing or self._state_data.melee_expire_t and true
+end
+function PlayerStandard:_get_melee_charge_lerp_value(t, offset)
+	return 0
+end
+function PlayerStandard:_update_melee_timers(t, input)
+	if self._state_data.melee_repeat_expire_t and self._state_data.melee_repeat_expire_t<=t then
+		self._state_data.melee_repeat_expire_t = nil
+
+		if self._state_data.melee_attack_wanted then
+			self:_do_action_melee(t, input, nil, nil, self._camera_unit:base().custom_melee, self._state_data.melee_attack_wanted)
+			self._state_data.melee_attack_wanted = nil
+		end
+	end
+
+	if self._state_data.meleeing then
+		local lerp_value = self:_get_melee_charge_lerp_value(t, nil, self._camera_unit:base().custom_melee)
+		self._camera_unit:anim_state_machine():set_parameter(
+			self:get_animation("melee_charge_state"),
+			"charge_lerp",
+			math.bezier({0, 0, 1, 1}, lerp_value)
+		)
+	end
+
+	if self._state_data.melee_damage_delay_t and self._state_data.melee_damage_delay_t <= t then
+		self._state_data.melee_damage_delay_t = nil
+		self._state_data.melee_hit_ray = nil
+		local melee_entry = self._state_data.melee_last_attack_data.melee_entry --self._camera_unit:base().melee_instant_hit and "weapon" or self._camera_unit:base().custom_melee
+		--self:_do_melee_damage(t, self._state_data.bayonet_melee, self:_calc_melee_hit_ray(t, nil, melee_entry, self._state_data.melee_last_attack_data), melee_entry, self._state_data.melee_last_attack_data)
+		self:_fire_melee_raycast(self._state_data.melee_last_attack_data)
+	end
+
+	if self._state_data.melee_attack_allowed_t and self._state_data.melee_attack_allowed_t <= t then
+		self._state_data.melee_attack_allowed_t = nil
+	end
+
+	if self._state_data.melee_expire_t and self._state_data.melee_expire_t <= t then
+		self._state_data.melee_expire_t = nil
+
+		if self._camera_unit:base().melee_instant_hit then
+			self._camera_unit:base().melee_instant_hit = nil
+		else
+			local melee_entry = self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon()
+			self._state_data.melee_charge_wanted = not melee_td[melee_entry].instant and true
+		end
+	end
+
+	if self._state_data.melee_anim_expire_t and self._state_data.melee_anim_expire_t <= t then
+		self._state_data.melee_anim_expire_t = nil
+		self._ext_camera:play_redirect(self:get_animation("melee_attack"), 0, 0.99)
+	end
+
+	if self._state_data.m_anim_start_t and self._state_data.m_anim_start_t<=t then
+		self._state_data.m_anim_start_t = nil
+		self._ext_camera:play_redirect(self:get_animation("melee_attack"), 1, 0.05)
+		self._camera_unit:anim_state_machine():set_parameter(self._state_data.m_anim_data.state, self._state_data.m_anim_data.anim_attack_param, 1)
+		self._camera_unit:anim_state_machine():set_speed(self._state_data.m_anim_data.state, self._state_data.m_anim_data.speed_mul)
+		self._state_data.m_anim_data = nil
+		--local melee_entry = self._camera_unit:base().melee_instant_hit and "weapon" or self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon()
+		self:_play_melee_sound(self._state_data.melee_last_attack_data.melee_entry, "hit_air", self._melee_attack_var)
+	end
+
+
+
+	self._queue_fire_melee_raycast = self._queue_fire_melee_raycast or {}
+	local i = 1
+	while i <= #self._queue_fire_melee_raycast do
+		local ray_data = self._queue_fire_melee_raycast[i]
+
+		if ray_data.expire_t < t then
+			table.remove(self._queue_fire_melee_raycast, i)
+
+			local data = ray_data.data
+			self:_fire_melee_raycast(unpack(data))
+		else
+			i = i + 1
+		end
+	end
+end
 --CHECK MELEE: BOLTING INTERUPT
 function PlayerStandard:_check_action_melee(t, input)
-	if self._state_data.melee_attack_wanted then
+	--[[if self._state_data.melee_attack_wanted then
 		if not self._state_data.melee_attack_allowed_t then
 			self._state_data.melee_attack_wanted = nil
 
-			self:_do_action_melee(t, input)
+			self:_start_action_melee(t, input, input.btn_melee_press and not self._state_data.meleeing, self._camera_unit:base().custom_melee)
 		end
 
 		return
-	end
+	end]]
 
-	local action_wanted = input.btn_melee_press or input.btn_melee_release or self._state_data.melee_charge_wanted
-
-	if not action_wanted then
-		return
-	end
-
-	if input.btn_melee_release then
-		if self._state_data.meleeing then
-			if self._state_data.melee_attack_allowed_t then
-				self._state_data.melee_attack_wanted = true
-
-				return
-			end
-
-			self:_do_action_melee(t, input)
-		end
-
-		return
-	end
-
-	local action_forbidden =
-		not self:_melee_repeat_allowed()
-		or self._use_item_expire_t
+	local melee_entry = self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = melee_td[melee_entry] or {}
+	local action_forbidden = (
+		self._use_item_expire_t
 		or (self._equip_weapon_expire_t and self._equip_weapon_expire_t0)
 		or self:_interacting()
 		or self:_is_throwing_projectile()
 		or self:_is_using_bipod()
 		or self:is_shooting_count()
 		or not self._movement_equipped
-		or self._state_data.lying
+		--or self._state_data.lying
+	)
+	local main_hand = (self._ext_movement.m_akimbo or melee_tweak.large) and 1 or (NQR.settings.nqr_meleehand or 1)
+	self._ext_movement.m_main_hand = main_hand
+	local schemes = {
+		{ 1, 2 },
+		{ 2, 1 },
+		{ main_hand, 3-main_hand },
+		{ 3-main_hand, main_hand },
+	}
+	local melee_scheme = schemes[NQR.settings.nqr_meleebuttonsscheme or 1]
+	local hand_id = (
+		input.btn_melee_press and 3
+		or input.btn_primary_attack_press and melee_scheme[1]
+		or input.btn_steelsight_press and melee_scheme[2]
+	)
 
-	if action_forbidden then
+	if hand_id and self._state_data.meleeing and not action_forbidden then
+		hand_id = self._wall_melee_block or hand_id
+		self._wall_melee_block = nil
+		local hand_add = melee_tweak.twohanded and not self._ext_movement.m_akimbo and 9 or hand_id==1 and 5 or 0
+		local angle = self._move_dir and mvector3.angle(self._stick_move, math.Y) or 0
+		local angle_sign = (self._stick_move.x<0 and 0 or 1)
+		local swing_id = 1
+		if hand_id==3 then
+			swing_id = 5
+		elseif angle>150 then
+			swing_id = 4
+		elseif angle>30 then
+			swing_id = hand_add==5 and (3 - angle_sign) or (2 + angle_sign)
+		end
+		local attack_data = self._state_data.melee_last_attack_data
+
+		local attack_time = attack_data and (attack_data.delay_t + attack_data.swing_duration) + (
+			(attack_data.hand_id==hand_id)
+			and (attack_data.combers1[swing_id] and (attack_data.repeat_t*0.25) or attack_data.repeat_t)
+			or (attack_data.combers2[swing_id] and 0 or (attack_data.repeat_t*0.5))
+		)
+		if not (attack_data and attack_time and ((attack_data.t + attack_time)>t)) then
+			if self._state_data.melee_repeat_expire_t then
+				self._state_data.melee_attack_wanted = { hand_id = hand_id, swing_id = swing_id, angle_sign = angle_sign }
+			else
+				self:_do_action_melee(t, input, nil, nil, self._camera_unit:base().custom_melee, { hand_id = hand_id, swing_id = swing_id, angle_sign = angle_sign })
+			end
+
+			return
+		end
+	elseif hand_id==3 and not self._state_data.meleeing and not action_forbidden then
+		if not self._state_data.melee_repeat_expire_t then
+			self:_do_action_melee(t, input, nil, true, nil, { hand_id = hand_id, swing_id = 5 })
+		end
 		return
 	end
+	self._wall_melee_block = nil
 
-	local melee_entry = managers.blackmarket:equipped_melee_weapon()
-	local instant = tweak_data.blackmarket.melee_weapons[melee_entry].instant
+	local has_melee = managers.blackmarket:equipped_melee_weapon()
+	local melee_wep_btn = self._nqr_key_melee and has_melee
+	if melee_wep_btn
+	and self._state_data.meleeing
+	and (self._ext_movement.m_akimbo or not managers.blackmarket:equipped_melee_weaponx2())
+	and not self._state_data.melee_expire_t
+	and not self._camera_unit:base().custom_melee
+	then
+		self:_interupt_action_melee(t)
+		self:_start_action_melee(t, input, nil, "fists")
+		return
+	end
+	local action_wanted = (
+		(input.btn_melee_press and not self._state_data.meleeing)
+		or (melee_wep_btn and self._state_data.meleeing)
+		or self._state_data.melee_charge_wanted
+	)
+
+	if not action_wanted then return end
+	if melee_wep_btn and self._camera_unit:base().custom_melee then self:_interupt_action_melee(t) end
+	if action_forbidden then return end
+
+	if managers.blackmarket:equipped_melee_weaponx2() and melee_wep_btn and self._state_data.meleeing and not melee_tweak.large then self._ext_movement.m_akimbo = not self._ext_movement.m_akimbo end
 
 	self._unequip_weapon_expire_t = nil
-	self:_start_action_melee(t, input, instant)
-	local wep_base = self._equipped_unit:base()
+	self:_start_action_melee(t, input, input.btn_melee_press and not self._state_data.meleeing, self._camera_unit:base().custom_melee)
 	self._running_enter_end_t = nil
 	self._running_exit_start_t = nil
 
 	return true
 end
-function PlayerStandard:_start_action_melee(t, input, instant)
+function PlayerStandard:_get_melee_shifts(animdata_shifts, attack_animdata_shifts, reverse)
+	local shifts = { a_weapon_left = {}, a_weapon_right = {} }
+
+	shifts.a_weapon_left.pos = animdata_shifts.a_weapon_left and animdata_shifts.a_weapon_left.pos or Vector3(0,0,0)
+	shifts.a_weapon_left.rot = animdata_shifts.a_weapon_left and animdata_shifts.a_weapon_left.rot or Rotation(0,0,0)
+	shifts.a_weapon_right.pos = animdata_shifts.a_weapon_right and animdata_shifts.a_weapon_right.pos or Vector3(0,0,0)
+	shifts.a_weapon_right.rot = animdata_shifts.a_weapon_right and animdata_shifts.a_weapon_right.rot or Rotation(0,0,0)
+
+	shifts.a_weapon_left.pos = (shifts.a_weapon_left.pos
+		+ (attack_animdata_shifts.a_weapon_left and attack_animdata_shifts.a_weapon_left.pos or Vector3(0,0,0))
+	)
+	shifts.a_weapon_left.rot = (shifts.a_weapon_left.rot
+		* (attack_animdata_shifts.a_weapon_left and attack_animdata_shifts.a_weapon_left.rot or Rotation(0,0,0))
+		* reverse
+	)
+	shifts.a_weapon_right.pos = (shifts.a_weapon_right.pos
+		+ (attack_animdata_shifts.a_weapon_right and attack_animdata_shifts.a_weapon_right.pos or Vector3(0,0,0))
+	)
+	shifts.a_weapon_right.rot = (shifts.a_weapon_right.rot
+		* (attack_animdata_shifts.a_weapon_right and attack_animdata_shifts.a_weapon_right.rot or Rotation(0,0,0))
+		* reverse
+	)
+
+	return shifts
+end
+function PlayerStandard:_start_action_melee(t, input, instant, custom_wep)
+	self._state_data.melee_anim_expire_t = nil
+	self._state_data.melee_expire_t = nil
+	local melee_entry = instant and "weapon" or custom_wep or managers.blackmarket:equipped_melee_weapon()
+	if not melee_entry then return end
+	local melee_tweak = melee_td[melee_entry]
+	local is_reversed = self._ext_movement.m_reverse and not (melee_tweak.twohanded and not self._ext_movement.m_akimbo)
+	local reverse = is_reversed and (melee_tweak.reverse_axis or Rotation(180,0,0)) or Rotation(0,0,0)
+
 	self._equipped_unit:base():tweak_data_anim_stop("fire")
 	self:_interupt_action_reload(t)
 	self:_interupt_action_steelsight(t)
-	self:_interupt_action_running(t)
+	--self:_interupt_action_running(t)
 	self:_interupt_action_charging_weapon(t)
 
 	self._state_data.melee_charge_wanted = nil
-	self._state_data.meleeing = true
-	self._state_data.melee_start_t = nil
-	local melee_entry = managers.blackmarket:equipped_melee_weapon()
-	local melee_tweak = tweak_data.blackmarket.melee_weapons[melee_entry]
-	local bayonet_melee = false
-	local primary = managers.blackmarket:equipped_primary()
-	local primary_id = primary.weapon_id
-	local bayonet_id = managers.blackmarket:equipped_bayonet(primary_id)
+	self._state_data.meleeing = not instant --true
+	self._camera_unit:base().melee_instant_hit = instant
+	self._camera_unit:base().custom_melee = custom_wep
 
-	if bayonet_id and melee_entry == "weapon" and self._equipped_unit:base():selection_index() == 2 then
-		bayonet_melee = true
-	end
+	self:_stance_entered()
 
 	if instant then
-		self:_do_action_melee(t, input)
-
+		self:_do_action_melee(t, input, nil, instant, custom_wep)
 		return
 	end
 
-	self:_stance_entered()
+	local animset = (self._ext_movement.m_akimbo and melee_tweak.twohanded and melee_tweak.animset=="sword") and "knife" or melee_tweak.animset
+	local animset_data = animset and (m_animsets[animset..(is_reversed and "_reversed" or "")] or m_animsets[animset])
+	local attack_animdata = animset_data and animset_data[1]
 
 	if self._state_data.melee_global_value then
 		self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 0)
 	end
-	self._state_data.melee_global_value = melee_tweak.anim_global_param
+	self._state_data.melee_global_value = (
+		melee_anims[self.nqr_offset]
+		--or "melee_wing"
+		or (attack_animdata and attack_animdata[1])
+		or melee_tweak.anim_global_param
+	)
 	self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 1)
 
-	local current_state_name = self._camera_unit:anim_state_machine():segment_state(self:get_animation("base"))
+	local animdata = m_animdata[self._state_data.melee_global_value]
+	self._camera_unit:base().m_shifts = self:_get_melee_shifts(animdata.shifts or {}, attack_animdata and attack_animdata[3] or {}, reverse)
 
-	local attack_allowed_expire_t = melee_tweak.attack_allowed_expire_t or 0.15
-	self._state_data.melee_attack_allowed_t = t + (
-		current_state_name~=self:get_animation("melee_attack_state") and attack_allowed_expire_t or 0
-	)
-	local instant_hit = melee_tweak.instant
-
-	if not instant_hit then
+	if not melee_tweak.instant then
+		if custom_wep then
+			self._ext_network:send("action_change_speed", -2)
+		else
+			self._ext_network:send("action_change_speed", -1)
+		end
 		self._ext_network:send("sync_melee_start", 0)
 	end
 
-	if current_state_name == self:get_animation("melee_attack_state") then
-		self._ext_camera:play_redirect(self:get_animation("melee_charge"))
+	self._camera_unit:base():unspawn_melee_item()
+	self._ext_camera:play_redirect(self:get_animation("melee_enter"), nil, 0.99)
 
-		return
-	end
-
-	local offset = nil
-
-	if current_state_name == self:get_animation("melee_exit_state") then
-		local segment_relative_time = self._camera_unit:anim_state_machine():segment_relative_time(self:get_animation("base"))
-		offset = (1 - segment_relative_time) * 0.9
-	end
-
-	offset = math.max(offset or 0, attack_allowed_expire_t)
-
-	self._ext_camera:play_redirect(self:get_animation("melee_enter"), nil, offset)
+	self._state_data.melee_repeat_expire_t = t + 5/30
 end
 --DO MELEE: RATE OF FIRE
-function PlayerStandard:_do_action_melee(t, input, skip_damage)
-	self._state_data.meleeing = nil
+function PlayerStandard:_do_action_melee(t, input, skip_damage, instant, custom_wep, attack_data)
+	self:_interupt_action_reload(t)
+	self:_interupt_action_steelsight(t)
+
+	self._state_data.melee_charge_wanted = nil
+	self._state_data.melee_last_attack_data = nil
+	local melee_entry = instant and "weapon" or custom_wep or managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = melee_td[melee_entry]
+	local melee_tweak_orig = melee_tweak
 	local wep_base = self._equipped_unit:base()
+	local wep_tweak = wep_base:weapon_tweak_data()
 	local wep_weight = wep_base._current_stats.weight
-	local is_secondary = wep_base:weapon_tweak_data().use_data.selection_index==1 and 1 or 1
-	local melee_entry = managers.blackmarket:equipped_melee_weapon()
-	local instant_hit = tweak_data.blackmarket.melee_weapons[melee_entry].instant
-	local pre_calc_hit_ray = tweak_data.blackmarket.melee_weapons[melee_entry].hit_pre_calculation
-	local melee_damage_delay = tweak_data.blackmarket.melee_weapons[melee_entry].melee_damage_delay or 0
-	melee_damage_delay = math.min(melee_damage_delay, tweak_data.blackmarket.melee_weapons[melee_entry].repeat_expire_t)
-	local primary = managers.blackmarket:equipped_primary()
-	local primary_id = primary.weapon_id
-	local bayonet_id = managers.blackmarket:equipped_bayonet(primary_id)
-	local bayonet_melee = false
 
-	if bayonet_id and self._equipped_unit:base():selection_index() == 2 then
-		bayonet_melee = true
+	local stamina_factor = self._unit:movement():is_above_stamina_threshold() and 1 or 1.25
+
+	local bayonet_melee = instant and not self._wall_unequip and wep_base:get_bayonet()
+	self._state_data.bayonet_melee = bayonet_melee
+
+	self._camera_unit:base().melee_instant_hit = instant
+
+	local angle_sign = attack_data and attack_data.angle_sign or nil
+	local swing_id = attack_data and attack_data.swing_id or 1
+	local hand_id = attack_data and attack_data.hand_id or 1
+	local hand_add = melee_tweak.twohanded and not self._ext_movement.m_akimbo and 9 or hand_id==1 and 5 or 0
+	if melee_entry~="weapon" and hand_add~=9 and hand_id~=3 and not self._ext_movement.m_akimbo and hand_id~=self._ext_movement.m_main_hand then
+		melee_tweak = melee_td.fists
+		melee_entry = "fists"
 	end
-
-	self._state_data.melee_expire_t = t + (tweak_data.blackmarket.melee_weapons[melee_entry].expire_t + wep_weight*0.01) / is_secondary
-	self._state_data.melee_repeat_expire_t = t + (math.min(tweak_data.blackmarket.melee_weapons[melee_entry].repeat_expire_t, tweak_data.blackmarket.melee_weapons[melee_entry].expire_t) + wep_weight/100) / is_secondary
-
-	if melee_damage_delay~=0 and not skip_damage then
-		self._state_data.melee_damage_delay_t = t + melee_damage_delay
-
-		if pre_calc_hit_ray then
-			self._state_data.melee_hit_ray = self:_calc_melee_hit_ray(t, 20) or true
-		else
-			self._state_data.melee_hit_ray = nil
-		end
-	end
-
-	local send_redirect = instant_hit and (bayonet_melee and "melee_bayonet" or "melee") or "melee_item"
-
-	if instant_hit then
-		managers.network:session():send_to_peers_synched("play_distance_interact_redirect", self._unit, send_redirect)
-	else
-		self._ext_network:send("sync_melee_discharge")
-	end
-
-	if self._state_data.melee_charge_shake then
-		self._ext_camera:shaker():stop(self._state_data.melee_charge_shake)
-
-		self._state_data.melee_charge_shake = nil
-	end
+	local attack_id = (1+swing_id+hand_add)
+	local is_reversed = self._ext_movement.m_reverse and not (melee_tweak_orig.twohanded and not self._ext_movement.m_akimbo)
+	local reverse = is_reversed and (melee_tweak.reverse_axis or Rotation(180,0,0)) or Rotation(0,0,0)
 
 	self._melee_attack_var = 0
 
-	if instant_hit then
-		local hit = skip_damage or self:_do_melee_damage(t, bayonet_melee)
+	if melee_tweak.instant then
+		managers.network:session():send_to_peers_synched("play_distance_interact_redirect", self._unit, bayonet_melee and "melee_bayonet" or "melee")
 
-		if hit then
-			self._ext_camera:play_shaker("fire_weapon_rot", 2 * (self._state_data.in_steelsight and 1.5 or 1))
-			--self._ext_camera:play_shaker("fire_weapon_kick", 1 * (self._state_data.in_steelsight and 0.4 or 1), 1, 0.15)
-			self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_bayonet") or self:get_animation("melee"))
+		local weight_factor = 1+wep_weight*0.02
+		local damage_delay = (bayonet_melee and 0 or 0.1) + 0.1*weight_factor*stamina_factor
+
+		attack_data = {}
+		attack_data.delay_t = damage_delay
+		attack_data.repeat_t = damage_delay*2
+		attack_data.combers1 = {}
+		attack_data.combers2 = {}
+		attack_data.hand_id = 3
+		attack_data.swing_id = bayonet_melee and 1 or 5
+		attack_data.swing_duration = 0
+		attack_data.t = t
+		attack_data.melee_entry = "weapon"
+		if bayonet_melee then
+			attack_data.dmg_sides = { tip = 1 }
+		end
+
+		local hit_t = (self._state_data.bayonet_melee and self._state_data.bayonet_melee.butt_t) or wep_tweak.butt_t or 7
+		local speed_mul = (hit_t/45) / damage_delay
+
+		self._state_data.melee_damage_delay_t = t + damage_delay
+		self._state_data.melee_expire_t = t + damage_delay*3
+		self._state_data.melee_repeat_expire_t = t + damage_delay*3
+		self._state_data.melee_last_attack_data = attack_data
+
+		if bayonet_melee and bayonet_melee.custom_butt_anim then
+			self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 0)
+			self._state_data.melee_global_value = bayonet_melee.custom_butt_anim and bayonet_melee.custom_butt_anim[1]
+			self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 1)
+			local redir = self._ext_camera:play_redirect(Idstring("melee_attack"), 1)
+			self._camera_unit:anim_state_machine():set_parameter(redir, "var"..(bayonet_melee.custom_butt_anim[2] or 1), 1)
+			self._camera_unit:anim_state_machine():set_parameter(redir, "hit", 1)
 		else
-			self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_miss_bayonet") or self:get_animation("melee_miss"))
+			self._state_data.melee_hit_ray = self:_fire_melee_raycast(attack_data, nil, true) --or true
+			if self._state_data.melee_hit_ray then
+				self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_bayonet") or self:get_animation("melee"), speed_mul)
+			else
+				self._ext_camera:play_redirect(bayonet_melee and self:get_animation("melee_miss_bayonet") or self:get_animation("melee_miss"), speed_mul)
+			end
 		end
 	else
-		local state = self._ext_camera:play_redirect(self:get_animation("melee_attack"))
-		local anim_attack_vars = tweak_data.blackmarket.melee_weapons[melee_entry].anim_attack_vars
-		self._melee_attack_var = anim_attack_vars and math.random(#anim_attack_vars)
+		self._ext_network:send("sync_melee_discharge")
 
-		self:_play_melee_sound(melee_entry, "hit_air", self._melee_attack_var)
+		local animset_orig = (self._ext_movement.m_akimbo and melee_tweak_orig.twohanded and melee_tweak_orig.animset=="sword") and "knife" or melee_tweak_orig.animset
+		local animset = (self._ext_movement.m_akimbo and melee_tweak.twohanded and melee_tweak.animset=="sword") and "knife" or melee_tweak.animset
+		local animset_data_orig = not melee_anims[self.nqr_offset] and animset_orig and (m_animsets[animset_orig..(is_reversed and "_reversed" or "")] or m_animsets[animset_orig])
+		local animset_data = not melee_anims[self.nqr_offset] and animset and (m_animsets[animset..(is_reversed and "_reversed" or "")] or m_animsets[animset])
+		local attack_animdata_orig = animset_data_orig and animset_data_orig[attack_id]
+		local attack_animdata = animset_data and animset_data[attack_id]
+		--log(melee_tweak.animset)
+		--Utils.PrintTable(attack_animdata_orig, 3)
+
+		local attack_data = deep_clone(attack_ts)[swing_id+(hand_add==9 and 10 or is_reversed and 5 or 0)]
+		--attack_data.start_t = 0
+		attack_data.angle_sign = angle_sign
+		attack_data.hand_id = hand_id
+		attack_data.hand_add = hand_add
+		attack_data.swing_id = swing_id
+		attack_data.swing_duration = 0
+		attack_data.t = t
+		attack_data.melee_entry = melee_entry
+
+		self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 0)
+		self._state_data.melee_global_value = attack_animdata and attack_animdata[1] or self._state_data.melee_global_value
+		self._camera_unit:anim_state_machine():set_global(self._state_data.melee_global_value, 1)
+
+		local animdata = m_animdata[self._state_data.melee_global_value]
+		self._camera_unit:base():shift_melee_item(self:_get_melee_shifts(animdata.shifts or {}, attack_animdata_orig and attack_animdata_orig[3] or {}, reverse))
+
+		if attack_animdata and attack_animdata[2] then
+			self._melee_attack_var = attack_animdata and attack_animdata[2]
+		else
+			if input.btn_steelsight_press then
+				self._melee_attack_var = (((self.m_attack_var or 0) - 2) % 2) + 3
+			else
+				self._melee_attack_var = ((self.m_attack_var or 0) % 2) + 1
+			end
+		end
+		--managers.mission._fading_debug_output:script().log(tostring(self._melee_attack_var), Color.white)
+
+		wep_weight = melee_tweak.stats.weight or 1
+		local weight_factor = (1+wep_weight*0.05)*(hand_add==9 and 0.75 or 1)
+
+		attack_data.delay_t = attack_data.delay_t*weight_factor*stamina_factor
+		local damage_delay = attack_data.delay_t
+		attack_data.repeat_t = attack_data.repeat_t*weight_factor*stamina_factor
+		attack_data.swing_duration = swing_id~=1 and swing_id~=5 and (0.25 * (1 + (1-weight_factor)*0.25 ) * stamina_factor) or 0
+
+		local expire_t = (animdata and animdata.end_fs and (animdata.end_fs[self._melee_attack_var or 1] or animdata.end_fs[1]))
+		local hit_t = animdata and animdata.strike_fs and (animdata.strike_fs[self._melee_attack_var or 1] or 30)
+		local hit_t_adjusted = (expire_t*(hit_t/30))/30
+		local speed_mul = hit_t_adjusted / ((damage_delay+(attack_data.swing_duration*0.5)) - (attack_data.start_t or 0)*weight_factor*stamina_factor)
+		local state = nil
+		if attack_data.start_t then
+			state = self._ext_camera:play_redirect(self:get_animation("melee_attack"), 0, 0.05)
+		else
+			state = self._ext_camera:play_redirect(self:get_animation("melee_attack"))
+			self:_play_melee_sound(melee_entry, "hit_air", self._melee_attack_var)
+		end
 
 		local melee_item_tweak_anim = "attack"
 		local melee_item_prefix = ""
 		local melee_item_suffix = ""
-		local anim_attack_param = anim_attack_vars and anim_attack_vars[self._melee_attack_var]
-
+		local anim_attack_param = melee_tweak.anim_attack_vars and melee_tweak.anim_attack_vars[self._melee_attack_var]
 		if anim_attack_param then
 			self._camera_unit:anim_state_machine():set_parameter(state, anim_attack_param, 1)
-
 			melee_item_prefix = anim_attack_param .. "_"
 		end
-
-		if self._state_data.melee_hit_ray and self._state_data.melee_hit_ray ~= true then
+		self._state_data.melee_hit_ray = self:_fire_melee_raycast(attack_data, nil, true) --or true
+		if (self._state_data.melee_hit_ray and self._state_data.melee_hit_ray~=true) or (attack_animdata and attack_animdata.force_hit) then
 			self._camera_unit:anim_state_machine():set_parameter(state, "hit", 1)
-
 			melee_item_suffix = "_hit"
 		end
+		if attack_data.start_t then
+			self._state_data.m_anim_start_t = t + (attack_data.start_t or 0)*weight_factor*stamina_factor
+			self._state_data.m_anim_data = { state = state, speed_mul = speed_mul, anim_attack_param = anim_attack_param }
+		else
+			self._camera_unit:anim_state_machine():set_speed(state, speed_mul)
+		end
+		melee_item_tweak_anim = melee_item_prefix .. melee_item_tweak_anim --.. melee_item_suffix
+		if not melee_tweak.noswinganim then
+			self._camera_unit:base():play_anim_melee_item(melee_item_tweak_anim)
+		end
 
-		melee_item_tweak_anim = melee_item_prefix .. melee_item_tweak_anim .. melee_item_suffix
-
-		self._camera_unit:base():play_anim_melee_item(melee_item_tweak_anim)
+		self._state_data.melee_damage_delay_t = t + damage_delay
+		local attack_time = attack_data.repeat_t + damage_delay
+		self._state_data.melee_anim_expire_t = t + ((expire_t/30)/speed_mul) + (attack_data.start_t or 0)
+		self._state_data.melee_expire_t = t + math.max(((expire_t/30)/speed_mul) + (attack_data.start_t or 0), attack_time) -0.05
+		self._state_data.melee_last_attack_data = attack_data
+		--self._state_data.melee_repeat_expire_t = t + attack_data.repeat_t or ((expire_t/30)/speed_mul)*0.5
 	end
-end
---DO MELEE DAMAGE: WEIGHT DEPENDANCY, STAMINA DRAIN
-function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_entry, hand_id)
-	melee_entry = melee_entry or managers.blackmarket:equipped_melee_weapon()
-	local instant_hit = tweak_data.blackmarket.melee_weapons[melee_entry].instant
-	local melee_damage_delay = tweak_data.blackmarket.melee_weapons[melee_entry].melee_damage_delay or 0
-	local charge_lerp_value = instant_hit and 0 or self:_get_melee_charge_lerp_value(t, melee_damage_delay)
 
-	self._ext_camera:play_shaker(melee_vars[math.random(#melee_vars)], math.max(0.3, charge_lerp_value))
+	if self._state_data.lying then self._state_data.lying_t = self._state_data.melee_expire_t end
 
-	local wep_base = self._equipped_unit:base()
-	local wep_weight = wep_base._current_stats.weight
-	local stamina_factor = self._unit:movement():is_above_stamina_threshold() and 1 or 3
 	self._unit:movement():subtract_stamina(tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN * 0.1 * (1+wep_weight*0.04) / managers.player:body_armor_value("stamina"))
 	self._ext_movement:activate_regeneration()
+end
+--DO MELEE DAMAGE: WEIGHT DEPENDANCY, STAMINA DRAIN
+function PlayerStandard:_do_melee_damage(t, bayonet_melee, col_ray, melee_entry, attack_data, already_hit)
+	melee_entry = melee_entry or managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = melee_td[melee_entry]
+	local instant_hit = melee_tweak.instant
+	local melee_damage_delay = melee_tweak.melee_damage_delay or 0
+	local charge_lerp_value = instant_hit and 0 or self:_get_melee_charge_lerp_value(t, melee_damage_delay)
 
-	local sphere_cast_radius = 20
-	local col_ray = nil
-
-	if melee_hit_ray then
-		col_ray = melee_hit_ray ~= true and melee_hit_ray or nil
-	else
-		col_ray = self:_calc_melee_hit_ray(t, sphere_cast_radius)
+	if not already_hit then
+		self._ext_camera:play_shaker(melee_vars[math.random(#melee_vars)], math.max(0.3, charge_lerp_value))
 	end
 
+	local wep_base = self._equipped_unit:base()
+	local wep_weight = (melee_entry=="weapon" and wep_base._current_stats.weight or melee_tweak.stats.weight or 1) -- + tweak_data.blackmarket.melee_weapons.fists.stats.weight
+	local stamina_factor = self._unit:movement():is_above_stamina_threshold() and 1 or 0.5
+
+	if melee_entry~="weapon" and attack_data and attack_data.hand_add~=9 and attack_data.hand_id~=3 and not self._ext_movement.m_akimbo and attack_data.hand_id~=self._ext_movement.m_main_hand then
+		melee_tweak = melee_td.fists
+		melee_entry = "fists"
+	end
+	local melee_sound_entry = self._state_data.melee_last_attack_data and self._state_data.melee_last_attack_data.swing_id==5 and "weapon" or melee_entry
+
+	local sphere_cast_radius = attack_data and attack_data.swing_id==5 and 20 or 5
+
 	if col_ray and alive(col_ray.unit) then
-		local damage, damage_effect = managers.blackmarket:equipped_melee_weapon_damage_info(charge_lerp_value)
+		local damage, damage_effect = 1, 1--managers.blackmarket:equipped_melee_weapon_damage_info(charge_lerp_value, melee_entry)
 		local damage_effect_mul = math.max(managers.player:upgrade_value("player", "melee_knockdown_mul", 1), managers.player:upgrade_value(self._equipped_unit:base():weapon_tweak_data().categories and self._equipped_unit:base():weapon_tweak_data().categories[1], "melee_knockdown_mul", 1))
-		damage = damage -- * managers.player:get_melee_dmg_multiplier()
+		--damage = damage * managers.player:get_melee_dmg_multiplier()
 		damage_effect = damage_effect * damage_effect_mul
 		col_ray.sphere_cast_radius = sphere_cast_radius
 		local hit_unit = col_ray.unit
 
 		if hit_unit:character_damage() then
 			if bayonet_melee then
-				self._unit:sound():play("fairbairn_hit_body", nil, false)
+				--self._unit:sound():play("fairbairn_hit_body", nil, false)
 			else
 				local hit_sfx = "hit_body"
 
@@ -2789,18 +3279,12 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 					hit_sfx = hit_unit:character_damage():melee_hit_sfx()
 				end
 
-				self:_play_melee_sound(melee_entry, hit_sfx, self._melee_attack_var)
+				--self:_play_melee_sound(melee_sound_entry, hit_sfx, self._melee_attack_var)
 			end
 
 			if not hit_unit:character_damage()._no_blood then
-				managers.game_play_central:play_impact_flesh({
-					col_ray = col_ray
-				})
-				managers.game_play_central:play_impact_sound_and_effects({
-					no_decal = true,
-					no_sound = true,
-					col_ray = col_ray
-				})
+				--managers.game_play_central:play_impact_flesh({ col_ray = col_ray })
+				--managers.game_play_central:play_impact_sound_and_effects({ no_decal = true, no_sound = true, col_ray = col_ray })
 			end
 
 			self._camera_unit:base():play_anim_melee_item("hit_body")
@@ -2809,10 +3293,13 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 				hit_unit:base():on_melee_hit(managers.network:session():local_peer():id())
 			end
 
-			if bayonet_melee then
+			if self._state_data.bayonet_melee
+			and self._state_data.bayonet_melee.damage_types
+			and self._state_data.bayonet_melee.damage_types[attack_data and attack_data.dmg_sides and attack_data.dmg_sides.tip and "tip"]=="piercing"
+			then
 				self._unit:sound():play("knife_hit_gen", nil, false)
 			else
-				self:_play_melee_sound(melee_entry, "hit_gen", self._melee_attack_var)
+				self:_play_melee_sound(melee_sound_entry, "hit_gen", self._melee_attack_var)
 			end
 
 			self._camera_unit:base():play_anim_melee_item("hit_gen")
@@ -2824,160 +3311,417 @@ function PlayerStandard:_do_melee_damage(t, bayonet_melee, melee_hit_ray, melee_
 			})
 		end
 
-		local custom_data = nil
-
-		if _G.IS_VR and hand_id then
-			custom_data = {
-				engine = hand_id == 1 and "right" or "left"
-			}
+		if not already_hit then
+			self._ext_camera:play_shaker("fire_weapon_rot", 2 * (self._state_data.in_steelsight and 1.5 or 1))
+			--self._ext_camera:play_shaker("fire_weapon_kick", 1 * (self._state_data.in_steelsight and 0.4 or 1), 1, 0.15)
 		end
 
+		local custom_data = nil
+		if _G.IS_VR and attack_data and attack_data.hand_id then custom_data = { engine = attack_data.hand_id==1 and "right" or "left" } end
 		managers.rumble:play("melee_hit", nil, nil, custom_data)
+
 		managers.game_play_central:physics_push(col_ray)
 
-		local character_unit, shield_knock = nil
-		local can_shield_knock = managers.player:has_category_upgrade("player", "shield_knock")
+		local action_data = { variant = "melee" }
+		action_data.damage_effect = damage_effect
+		action_data.attacker_unit = self._unit
+		action_data.col_ray = col_ray
+		action_data.name_id = melee_entry
+		action_data.charge_lerp_value = charge_lerp_value
 
-		if can_shield_knock and hit_unit:in_slot(8) and alive(hit_unit:parent()) and not hit_unit:parent():character_damage():is_immune_to_shield_knockback() then
-			shield_knock = true
-			character_unit = hit_unit:parent()
+		action_data.swing_id = attack_data and attack_data.swing_id or 1
+		action_data.damage_types = { striking = 0, slashing = 0, piercing = 0, puncturing = 0 }
+		--Utils.PrintTable(melee_tweak.stats.damage_types, 2)
+		local csc = 0
+		for side, mul in pairs(attack_data and attack_data.dmg_sides or {}) do
+			local dmg_type = (
+				self._state_data.bayonet_melee and self._state_data.bayonet_melee.damage_types[side]
+				or melee_tweak.stats.damage_types and melee_tweak.stats.damage_types[side]
+				or "striking"
+			)
+			action_data.damage_types[dmg_type] = (action_data.damage_types[dmg_type] or 0) + mul --(action_data.damage_types[dmg_type] or 0) + (action_data.damage*mul)
+			csc = csc + mul
 		end
+		if csc~=1 then action_data.damage_types.striking = action_data.damage_types.striking + (1-csc) end
+		if action_data.damage_types.puncturing>0 and action_data.damage_types.striking==0 then action_data.damage_types.striking = action_data.damage_types.puncturing end
 
-		character_unit = character_unit or hit_unit
+		action_data.wep_length = self._state_data.bayonet_melee and self._state_data.bayonet_melee.length or melee_tweak.stats.length or 0
+		action_data.wep_weight = wep_weight + (melee_tweak.stats.fist_addon and melee_td.fists.stats.weight or 0)
+		local swing_dmg = { 1, 1.2, 1.4, 1.2, 0.2 }
+		action_data.damage = (swing_dmg[action_data.swing_id] or 1) * (attack_data.hand_id==9 and 1.2 or 1) * stamina_factor
 
-		if character_unit:character_damage() and character_unit:character_damage().damage_melee then
-			local dmg_multiplier = 1
+		self:chk_shield_knock(hit_unit, col_ray, action_data.damage*action_data.damage_types.striking*(action_data.wep_weight*0.8)*10)
 
-			if not managers.enemy:is_civilian(character_unit) and not managers.groupai:state():is_enemy_special(character_unit) then
-				dmg_multiplier = dmg_multiplier * managers.player:upgrade_value("player", "non_special_melee_multiplier", 1)
-			else
-				dmg_multiplier = dmg_multiplier * managers.player:upgrade_value("player", "melee_damage_multiplier", 1)
-			end
-
-			dmg_multiplier = dmg_multiplier * managers.player:upgrade_value("player", "melee_" .. tostring(tweak_data.blackmarket.melee_weapons[melee_entry].stats.weapon_type) .. "_damage_multiplier", 1)
-
-			if managers.player:has_category_upgrade("melee", "stacking_hit_damage_multiplier") then
-				self._state_data.stacking_dmg_mul = self._state_data.stacking_dmg_mul or {}
-				self._state_data.stacking_dmg_mul.melee = self._state_data.stacking_dmg_mul.melee or {
-					nil,
-					0
-				}
-				local stack = self._state_data.stacking_dmg_mul.melee
-
-				if stack[1] and t < stack[1] then
-					dmg_multiplier = dmg_multiplier * (1 + managers.player:upgrade_value("melee", "stacking_hit_damage_multiplier", 0) * stack[2])
-				else
-					stack[2] = 0
-				end
-			end
-
-			local health_ratio = self._ext_damage:health_ratio()
-			local damage_health_ratio = managers.player:get_damage_health_ratio(health_ratio, "melee")
-
-			if damage_health_ratio > 0 then
-				local damage_ratio = damage_health_ratio
-				dmg_multiplier = dmg_multiplier * (1 + managers.player:upgrade_value("player", "melee_damage_health_ratio_multiplier", 0) * damage_ratio)
-			end
-
-			dmg_multiplier = dmg_multiplier * managers.player:temporary_upgrade_value("temporary", "berserker_damage_multiplier", 1)
-			local target_dead = character_unit:character_damage().dead and not character_unit:character_damage():dead()
-			local target_hostile = managers.enemy:is_enemy(character_unit) and not tweak_data.character[character_unit:base()._tweak_table].is_escort and character_unit:brain():is_hostile()
-			local life_leach_available = managers.player:has_category_upgrade("temporary", "melee_life_leech") and not managers.player:has_activate_temporary_upgrade("temporary", "melee_life_leech")
-
-			if target_dead and target_hostile and life_leach_available then
-				managers.player:activate_temporary_upgrade("temporary", "melee_life_leech")
-				self._unit:character_damage():restore_health(managers.player:temporary_upgrade_value("temporary", "melee_life_leech", 1))
-			end
-
-			local action_data = {
-				variant = "melee"
-			}
-
-			if _G.IS_VR and melee_entry == "weapon" and not bayonet_melee then
-				dmg_multiplier = 0.1
-			end
-
-			action_data.damage = shield_knock and 0 or damage * 8 * (1+wep_weight/100) / stamina_factor --dmg_multiplier
-			action_data.damage_effect = damage_effect
-			action_data.attacker_unit = self._unit
-			action_data.col_ray = col_ray
-
-			if shield_knock then
-				action_data.shield_knock = can_shield_knock
-			end
-
-			action_data.name_id = melee_entry
-			action_data.charge_lerp_value = charge_lerp_value
-
-			if managers.player:has_category_upgrade("melee", "stacking_hit_damage_multiplier") then
-				self._state_data.stacking_dmg_mul = self._state_data.stacking_dmg_mul or {}
-				self._state_data.stacking_dmg_mul.melee = self._state_data.stacking_dmg_mul.melee or {
-					nil,
-					0
-				}
-				local stack = self._state_data.stacking_dmg_mul.melee
-
-				if character_unit:character_damage().dead and not character_unit:character_damage():dead() then
-					stack[1] = t + managers.player:upgrade_value("melee", "stacking_hit_expire_t", 1)
-					stack[2] = math.min(stack[2] + 1, tweak_data.upgrades.max_melee_weapon_dmg_mul_stacks or 5)
-				else
-					stack[1] = nil
-					stack[2] = 0
-				end
-			end
-
-			local defense_data = character_unit:character_damage():damage_melee(action_data)
-
+		if hit_unit:character_damage() and hit_unit:character_damage().damage_melee and not already_hit then
+			local defense_data = hit_unit:character_damage():damage_melee(action_data)
 			self:_check_melee_dot_damage(col_ray, defense_data, melee_entry)
 			self:_perform_sync_melee_damage(hit_unit, col_ray, action_data.damage)
 
-			if tweak_data.blackmarket.melee_weapons[melee_entry].tase_data and character_unit:character_damage().damage_tase then
+			if melee_tweak.tase_data and hit_unit:character_damage().damage_tase then
 				local action_data = {
-					variant = tweak_data.blackmarket.melee_weapons[melee_entry].tase_data.tase_strength,
+					variant = melee_tweak.tase_data.tase_strength,
 					damage = 0,
 					attacker_unit = self._unit,
 					col_ray = col_ray
 				}
 
-				character_unit:character_damage():damage_tase(action_data)
+				hit_unit:character_damage():damage_tase(action_data)
 			end
 
-			if tweak_data.blackmarket.melee_weapons[melee_entry].fire_dot_data and character_unit:character_damage().damage_fire then
-				local action_data = {
-					variant = "fire",
-					damage = 0,
-					attacker_unit = self._unit,
-					col_ray = col_ray,
-					fire_dot_data = tweak_data.blackmarket.melee_weapons[melee_entry].fire_dot_data
-				}
-
-				character_unit:character_damage():damage_fire(action_data)
+			if self._state_data.bayonet_melee and attack_data and attack_data.dmg_sides and attack_data.dmg_sides.tip=="piercing" then
+				self._unit:sound():play(defense_data and defense_data.hit_sfx=="hit_body" and "fairbairn_hit_body" or "knife_hit_gen", nil, false)
+			else
+				self:_play_melee_sound(melee_sound_entry, defense_data and defense_data.hit_sfx or "hit_gen", self._melee_attack_var)
 			end
 
 			return defense_data
 		else
 			self:_perform_sync_melee_damage(hit_unit, col_ray, damage)
 		end
+
+		if not hit_unit:character_damage() and hit_unit:body("held_body") then
+			local hit_body = hit_unit:body("held_body")
+			local csc = hit_body and hit_body:extension() and hit_body:extension().damage and hit_body:extension().damage:damage_damage(self._unit, hit_body:center_of_mass(), hit_body:position(), hit_body:center_of_mass(), 5)
+		end
 	end
 
 	return col_ray
 end
-function PlayerStandard:_calc_melee_hit_ray(t, sphere_cast_radius)
-	local melee_entry = managers.blackmarket:equipped_melee_weapon()
-	local range = tweak_data.blackmarket.melee_weapons[melee_entry].stats.range or 175
+function PlayerStandard:_calc_melee_hit_ray(t, sphere_cast_radius, melee_entry, attack_data)
+	local melee_entry = melee_entry or managers.blackmarket:equipped_melee_weapon()
 	local wep_base = self._equipped_unit:base()
-	range = managers.blackmarket:equipped_bayonet(wep_base.name_id) and (wep_base._length*2.54)+10 or range
-	local from = self._unit:movement():m_head_pos()
-	local to = from + self._unit:movement():m_head_rot():y() * range
+	local range = (
+		(melee_entry=="weapon" and wep_base:get_bayonet()) and (wep_base._length+(wep_base._current_stats.shouldered and 5 or 30))
+		or (melee_entry=="fists" and self._arms_length)
+		or (
+			self._arms_length + (
+				melee_entry=="weapon" and (wep_base._current_stats.shouldered and 5 or 1)
+				or (attack_data and attack_data.swing_id==5 and 0)
+				or ((melee_td[melee_entry].stats.length or 1))
+			)
+		)
+	) * 2.54
 
-	return self._unit:raycast("ray", from, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+	local head_rot = self._unit:movement():m_head_rot()
+	local forward = head_rot:y()
+	local right = head_rot:x()
+	local up = head_rot:z()
+	local head_pos = self._unit:movement():m_head_pos() + Vector3(0,0,-5) + right*(attack_data and attack_data.hand_id==2 and 5 or -5)
+
+	local sphere_cast_radius = sphere_cast_radius or attack_data and attack_data.swing_id==5 and 5 or 5 --20 or 5
+	local swing_direction = attack_data and attack_data.swing_id~=1 and attack_data.swing_id~=5 and (attack_data.swing_id==4 and "down" or attack_data.angle_sign==0 and "left" or attack_data.angle_sign==1 and "right")
+	range = range - sphere_cast_radius - (swing_direction and 10 or 0)
+
+	local to = head_pos + forward * range
+	--local front_ray = self._unit:raycast("ray", head_pos, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+	local front_ray = self._unit:raycast("ray", head_pos, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+
+	--Utils.PrintTable(attack_data)
+	--log(swing_direction)
+	if swing_direction then
+		local best_hit = nil
+		local best_weight = swing_direction=="right" and math.huge or -math.huge
+
+		local rays_space = 10
+		local steps = math.floor(range / rays_space)
+		for i=1, steps do
+			local dist_forward = i * rays_space
+			local row_center = head_pos + forward * dist_forward
+			local half_length = dist_forward * (i==steps and 0.5 or 1)
+
+			local from, to = nil
+			if swing_direction=="down" then
+				from = row_center + up * half_length
+				to = row_center - up * half_length
+			elseif swing_direction=="left" then
+				from = row_center + right * half_length
+				to = row_center - right * half_length
+			else
+				from = row_center - right * half_length
+				to = row_center + right * half_length
+			end
+
+			local hit = self._unit:raycast("ray", from, to, "slot_mask", self._slotmask_bullet_impact_targets, "ray_type", "body melee")
+			if hit then
+				local to_hit = hit.position - head_pos
+				local horizontal_weight = mvector3.dot(right, to_hit)
+				local vertical_weight = mvector3.dot(up, to_hit)
+
+				if swing_direction=="down" then
+					if vertical_weight > best_weight then
+						best_weight = vertical_weight
+						best_hit = hit
+					end
+				elseif swing_direction=="left" then
+					if horizontal_weight > best_weight then
+						best_weight = horizontal_weight
+						best_hit = hit
+					end
+				else
+					if horizontal_weight < best_weight then
+						best_weight = horizontal_weight
+						best_hit = hit
+					end
+				end
+			end
+
+			--Draw:brush(Color(0.2, 0, 1, 1), 0.5):line(from, to, 1)
+		end
+
+		if front_ray and not front_ray.unit:in_slot(12, 33) then
+			if best_hit then
+				local test_ray = self._unit:raycast("ray", head_pos, best_hit.position, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", 5, "ray_type", "body melee")
+				if test_ray and test_ray.normal~=best_hit.normal then
+					--Draw:brush(Color(1, 0, 1, 0)):line(head_pos, best_hit.position, 3)
+					return test_ray
+				end
+			else
+				--Draw:brush(Color(1, 0, 1, 0)):line(head_pos, front_ray.position, 3)
+				return front_ray
+			end
+		end
+
+		if best_hit then
+			--Draw:brush(Color(1, 0, 1, 0)):line(head_pos, best_hit.position, 3)
+			return best_hit
+		end
+
+		return nil
+	elseif front_ray then
+		--Draw:brush(Color(1, 0, 1, 0)):line(head_pos, front_ray.position, 3)
+		return front_ray
+	end
+end
+function PlayerStandard:_fire_melee_raycast(attack_data, sweep_data, just_check)
+	if not attack_data then return end
+
+	local melee_entry = attack_data.melee_entry or managers.blackmarket:equipped_melee_weapon()
+	local melee_tweak = melee_td[melee_entry]
+	local wep_base = self._equipped_unit:base()
+	local range = (
+		(melee_entry=="weapon" and wep_base:get_bayonet()) and (wep_base._length+(wep_base._current_stats.shouldered and 5 or 30))
+		or (melee_entry=="fists" and self._arms_length)
+		or (
+			self._arms_length + (
+				melee_entry=="weapon" and (wep_base._current_stats.shouldered and 5 or 1)
+				or (attack_data.swing_id==5 and 0)
+				or ((melee_td[melee_entry].stats.length or 1))
+			)
+		)
+	) * 2.54
+	local is_reversed = self._ext_movement.m_reverse and not (melee_tweak.twohanded and not self._ext_movement.m_akimbo)
+	if is_reversed then range = range - 10 end
+	local sphere_cast_radius = 4
+
+	local head_rot = self._unit:movement():m_head_rot()
+	local forward = head_rot:y()
+	local right = head_rot:x()
+	local up = head_rot:z()
+	local head_pos = self._unit:movement():m_head_pos() + Vector3(0,0,-5) + right*(attack_data.hand_id==2 and 5 or -5)
+
+	local swing_direction = (
+		not just_check
+		and attack_data.swing_id~=1
+		and attack_data.swing_id~=5
+		and (attack_data.swing_id==4 and "down" or attack_data.angle_sign==0 and "left" or attack_data.angle_sign==1 and "right")
+	)
+	if swing_direction then
+		local function process_hits(rays, sweep_data)
+			for _, ray in ipairs(rays) do
+				local unit_key = ray.unit:key()
+				local already_hit = sweep_data.hit_units[unit_key]
+				sweep_data.hit_units[unit_key] = true
+
+				self:_do_melee_damage(t, nil, ray, melee_entry, attack_data, already_hit)
+				if ray.unit:in_slot(managers.slot:get_mask("world_geometry")) or ray.unit:in_slot(8) then break end
+			end
+		end
+
+		local swing_sign = (swing_direction=="left") and 1 or -1
+		local step_angle = math.min(math.deg(15 / range), 15)
+		local sweep_angle = 90
+		local total_steps = math.ceil(sweep_angle / step_angle)
+		local swing_duration = attack_data.swing_duration
+		local rotation_axis = (swing_direction=="down") and right or up
+
+		local sweep_data = sweep_data or {
+			hit_units = {},
+			ray_index = 0,
+			total_steps = total_steps,
+			step_delay = swing_duration / total_steps,
+			step_angle = step_angle,
+			swing_sign = swing_sign,
+			current_angle = -(sweep_angle*0.5) * swing_sign,
+			current_dir = forward:rotate_with(Rotation(rotation_axis, -(sweep_angle*0.5) * swing_sign)),
+		}
+		sweep_data.ray_index = sweep_data.ray_index + 1
+
+		local mechanical_step = sweep_data.step_angle * sweep_data.swing_sign
+		local current_dir = sweep_data.current_dir
+		local next_angle = sweep_data.current_angle + mechanical_step
+		local next_dir = forward:rotate_with(Rotation(rotation_axis, next_angle))
+		local total_3d_angle = mvector3.angle(current_dir, next_dir)
+
+		if total_3d_angle > (step_angle + 0.01) then
+			local fill_steps_needed = math.floor(total_3d_angle / step_angle)
+			local dynamic_rotation_axis = current_dir:cross(next_dir)
+			mvector3.normalize(dynamic_rotation_axis)
+			local dynamic_step_angle = total_3d_angle / (fill_steps_needed + 1)
+			local fill_hits = {}
+			for step = 1, fill_steps_needed do
+				local current_filler_angle = dynamic_step_angle * step
+				local filler_dir = current_dir:rotate_with(Rotation(dynamic_rotation_axis, current_filler_angle))
+
+				local filler_to = head_pos + filler_dir * range 
+				local filler_hits = World:raycast_all("ray", head_pos, filler_to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+				fill_hits[step] = filler_hits
+				--Draw:brush(Color(0.2, 0, 0, 1), 2):cylinder(head_pos, filler_to, sphere_cast_radius)
+			end
+			local fill_already_hit = {}
+			for _, filler_hits in pairs(fill_hits) do
+				if filler_hits then process_hits(filler_hits, sweep_data) end
+			end
+		end
+
+		local to = head_pos + next_dir * range
+		local ray_hits = World:raycast_all("ray", head_pos, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+		if ray_hits then process_hits(ray_hits, sweep_data) end
+		--Draw:brush(Color(0.4, 0, 1, 0), 2):cylinder(head_pos, to, sphere_cast_radius)
+
+		if sweep_data.ray_index<sweep_data.total_steps then
+			sweep_data.current_angle = next_angle
+			sweep_data.current_dir = next_dir
+
+			self:queue_fire_melee_raycast(Application:time() + sweep_data.step_delay*0.5, attack_data, sweep_data)
+		end
+	else
+		if attack_data.swing_id==1 then range = range + 10 end
+
+		local to = head_pos + forward * range
+		local front_ray = self._unit:raycast("ray", head_pos, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
+
+		if just_check then
+			return front_ray
+		else
+			self:_do_melee_damage(t, nil, front_ray, attack_data.melee_entry, attack_data)
+		end
+	end
+end
+function PlayerStandard:queue_fire_melee_raycast(expire_t, ...)
+	self._queue_fire_melee_raycast = self._queue_fire_melee_raycast or {}
+
+	table.insert(self._queue_fire_melee_raycast, {
+		expire_t = expire_t,
+		data = {
+			...
+		}
+	})
+end
+function PlayerStandard:chk_shield_knock(hit_unit, col_ray, damage)
+	if not hit_unit then return end
+	local shield_mask = managers.slot:get_mask("enemy_shield_check")
+	if not (hit_unit:inventory() and hit_unit:inventory()._shield_unit or hit_unit:in_slot(shield_mask)) then return false end
+	if hit_unit:base()
+	and hit_unit:base()._tweak_table
+	and tweak_data.character[hit_unit:base()._tweak_table].damage
+	and tweak_data.character[hit_unit:base()._tweak_table].damage.immune_to_knockback
+	then
+		return false
+	end
+
+	local hit_shield = hit_unit:in_slot(shield_mask)
+	local enemy_unit = hit_shield and hit_unit:parent() or hit_unit
+	local char_dmg_ext = alive(enemy_unit) and enemy_unit:character_damage()
+	if not char_dmg_ext or not char_dmg_ext.force_hurt then return false end
+	if char_dmg_ext.is_immune_to_shield_knockback and char_dmg_ext:is_immune_to_shield_knockback() then return false end
+	local is_swat = hit_unit:name()==Idstring("units/payday2/characters/ene_acc_shield_small/shield_small")
+	local is_phalanx = hit_unit:name()==Idstring("units/pd2_dlc_vip/characters/ene_acc_shield_phalanx/ene_acc_shield_phalanx")
+
+	local damage_min = 80
+	local damage_max = 120
+	if is_swat then
+		damage_min = 60
+		damage_max = 90
+	elseif is_phalanx then
+		damage_min = 120
+		damage_max = 180
+	end
+
+	local mov_ext = alive(enemy_unit) and enemy_unit:movement()
+	local dmg_accum = mov_ext._dmg_accum or 0
+
+	if (damage > math.random(damage_min, damage_max)) or not hit_shield then
+		local damage_info = {
+			damage = 0,
+			type = "shield_knock",
+			variant = "melee",
+			col_ray = col_ray,
+			result = { variant = "melee", type = "shield_knock" }
+		}
+
+		mov_ext._dmg_accum = nil
+		char_dmg_ext:force_hurt(damage_info)
+
+		return true
+	elseif (damage > (is_phalanx and 30 or 9)) then
+		local damage_info = {
+			damage = 0,
+			type = "light_hurt",
+			variant = "bullet",
+			col_ray = col_ray,
+			result = { variant = "bullet", type = "light_hurt" }
+		}
+
+		char_dmg_ext:force_hurt(damage_info)
+
+		return true
+	end
+
+	return false
+end
+function PlayerStandard:_interupt_action_melee(t)
+	if not self:_is_meleeing() then
+		return
+	end
+
+	self._state_data.melee_hit_ray = nil
+	self._state_data.melee_charge_wanted = nil
+	self._state_data.melee_expire_t = nil
+	--self._state_data.melee_repeat_expire_t = nil
+	self._state_data.melee_attack_allowed_t = nil
+	self._state_data.melee_damage_delay_t = nil
+	self._state_data.meleeing = nil
+
+	self._unit:sound():play("interupt_melee", nil, false)
+	self._camera_unit:anim_state_machine():set_parameter(self:get_animation("melee_charge_state"), "charge_lerp", 0)
+	self:_play_melee_sound(self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon(), "hit_air", 1)
+	--self:_play_melee_sound(self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon(), "hit_air", self._melee_attack_var)
+	self._ext_camera:play_redirect(self:get_animation("equip"))
+	self._equipped_unit:base():tweak_data_anim_stop("unequip")
+	self._equipped_unit:base():tweak_data_anim_play("equip")
+	self._camera_unit:base():unspawn_melee_item()
+
+	if self._state_data.melee_charge_shake then
+		self._ext_camera:stop_shaker(self._state_data.melee_charge_shake)
+
+		self._state_data.melee_charge_shake = nil
+	end
+
+	self._camera_unit:base().melee_instant_hit = nil
+	self._camera_unit:base().custom_melee = nil
+	self._ext_movement.m_akimbo = nil
+
+	self:_stance_entered()
+	--self._camera_unit:base():show_weapon()
+
+	self._ext_network:send("sync_melee_stop")
 end
 function PlayerStandard:_check_melee_dot_damage(col_ray, defense_data, melee_entry)
 	if not defense_data or defense_data.type == "death" then
 		return
 	end
 
-	local dot_data = tweak_data.blackmarket.melee_weapons[melee_entry].dot_data
+	local dot_data = melee_td[melee_entry].dot_data
 
 	if not dot_data then
 		return
@@ -2988,6 +3732,9 @@ function PlayerStandard:_check_melee_dot_damage(col_ray, defense_data, melee_ent
 
 	damage_class:start_dot_damage(col_ray, nil, data, melee_entry)
 end
+
+
+
 --JUMP: STAMINA DRAIN
 function PlayerStandard:_check_action_jump(t, input)
 	local new_action = nil
@@ -3031,7 +3778,7 @@ function PlayerStandard:_check_action_jump(t, input)
 	return new_action
 end
 function PlayerStandard:_start_action_jump(t, action_start_data)
-	if self._running and not self.RUN_AND_RELOAD and not self._equipped_unit:base():run_and_shoot_allowed() then
+	if self._running and not self.RUN_AND_RELOAD and not self._equipped_unit:base():run_and_shoot_allowed() and not self:_is_meleeing() then
 		self:_interupt_action_reload(t)
 		self._ext_camera:play_redirect(self:get_animation("stop_running"), self._equipped_unit:base():exit_run_speed_multiplier())
 		self._ext_network:send("set_stance", 3, false, false)
@@ -3054,8 +3801,6 @@ function PlayerStandard:_start_action_jump(t, action_start_data)
 
 	self:_perform_jump(jump_vec)
 end
-
-
 
 --WALK HEADBOB: TWEAK
 function PlayerStandard:_get_walk_headbob()
@@ -3104,7 +3849,7 @@ function PlayerStandard:_start_action_running(t)
 
 	if self:shooting() and not self._equipped_unit:base():run_and_shoot_allowed()
 	or self:_changing_weapon()
-	or self:_is_meleeing()
+	or self._state_data.melee_expire_t --self:_is_meleeing()
 	or self._use_item_expire_t
 	or self._state_data.in_air
 	or self:_is_throwing_projectile()
@@ -3133,8 +3878,8 @@ function PlayerStandard:_start_action_running(t)
 
 	if not self:_is_reloading() or not self.RUN_AND_RELOAD then
 		if not self._equipped_unit:base():run_and_shoot_allowed() then
-			if self._wall_equipped then
-				self._ext_camera:play_redirect(self:get_animation("start_running"))
+			if self._wall_equipped and not self:_is_meleeing() then
+				if not self:_is_meleeing() then self._ext_camera:play_redirect(self:get_animation("start_running")) end
 				self._ext_network:send("set_stance", 2, false, false)
 			end
 		else
@@ -3156,7 +3901,7 @@ function PlayerStandard:_end_action_running(t)
 		self._end_running_expire_t = t + 0.4 / speed_multiplier
 		local stop_running = not self._equipped_unit:base():run_and_shoot_allowed() and (not self.RUN_AND_RELOAD or not self:_is_reloading())
 
-		if stop_running and self._wall_equipped then
+		if stop_running and self._wall_equipped and not self:_is_meleeing() then
 			local wep_base = self._equipped_unit:base()
 			local eq_t, eq_tt, anim_spd = self:nqr_eq_speed()
 			self._ext_camera:play_redirect(self:get_animation("stop_running"), 1-(1-anim_spd)*(wep_base._current_stats.shouldered and 0.8 or 0.2))
@@ -3330,7 +4075,8 @@ function PlayerStandard:_get_max_walk_speed(t, force_run)
 	local apply_weapon_penalty = true
 
 	if self:_is_meleeing() then
-		apply_weapon_penalty = not tweak_data.blackmarket.melee_weapons[managers.blackmarket:equipped_melee_weapon()].stats.remove_weapon_movement_penalty
+		local melee_entry = self._camera_unit:base().melee_instant_hit and "weapon" or self._camera_unit:base().custom_melee
+		--apply_weapon_penalty = not tweak_data.blackmarket.melee_weapons[melee_entry].stats.remove_weapon_movement_penalty
 	end
 
 	if alive(self._equipped_unit) and apply_weapon_penalty then
@@ -3538,14 +4284,16 @@ function PlayerStandard:_update_movement(t, dt)
 
 	if self._running_enter_end_t and t>self._running_enter_end_t then
 		self._running_enter_end_t = nil
-		self._ext_camera:play_redirect(self:get_animation("start_running"), 0, 15/30)
+		if not self:_is_meleeing() then
+			self._ext_camera:play_redirect(self:get_animation("start_running"), 0, 15/30)
+		end
 	end
 	if not self._running_enter_end_t and self._running_exit_start_t and t>self._running_exit_start_t then
 		local eq_t, eq_tt, anim_spd = self:nqr_eq_speed()
-		if not ((self._running and not self._end_running_expire_t)) then
+		if not ((self._running and not self._end_running_expire_t)) and not self:_is_meleeing() then
 			self._ext_camera:play_redirect(self:get_animation("stop_running"), self._running_exit_mul)
 			self._ext_network:send("set_stance", 3, false, false)
-		else
+		elseif not self:_is_meleeing() then
 			self._ext_camera:play_redirect(self:get_animation("start_running"), 1, 24/30)
 		end
 		self._wall_unequip_t = t + (eq_t*0.8)
@@ -3576,7 +4324,7 @@ end
 --NEW FUNCTION: MOVEMENT UNEQUIP
 function PlayerStandard:_check_movement_equipped(t)
 	if self:_interacting()
-	or self:_is_meleeing()
+	or self._state_data.melee_expire_t
 	or managers.player:current_state()=="driving"
 	then
 		self._wall_equipped = true
@@ -3680,7 +4428,7 @@ function PlayerStandard:_play_running_enter_anim(t, mul)
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
 
-	if not self._running_enter_end_t and not (self._running and not self._end_running_expire_t) then
+	if not self._running_enter_end_t and not (self._running and not self._end_running_expire_t) and not self:_is_meleeing() then
 		self._ext_camera:play_redirect(self:get_animation("start_running"), mul)
 	end
 	self._running_exit_start_t = nil
@@ -3818,11 +4566,13 @@ function PlayerStandard:_stance_entered(unequipped)
 	local stance_id = nil
 	local stance_mod = { translation = Vector3(0, 0, 0) }
 	local stance_mod2 = { translation = Vector3(0, 0, 0), rotation = Rotation(0, 0, 0) }
+	local in_steelsight = self._state_data.in_steelsight
+	local ducking = self._state_data.ducking
 
 	if not unequipped then
 		stance_id = wep_base:get_stance_id()
 
-		if self._state_data.in_steelsight and wep_base.stance_mod then
+		if in_steelsight and wep_base.stance_mod then
 			stance_mod2 = wep_base:stance_mod() or stance_mod2
 		end
 	end
@@ -3832,11 +4582,11 @@ function PlayerStandard:_stance_entered(unequipped)
 	local stock = wep_base._current_stats.shouldered
 	local smol = wep_base:selection_index()==1 --(wep_base:is_category("pistol") or wep_base:is_category("revolver") or wep_base:is_category("machine_pistol"))
 	local sightheight_mod = (wep_factory.sightheight_mod or 0)
-	local nqr_stancemod = not self._state_data.in_steelsight and wep_tweak.stancemod or { trn = Vector3(0, 0, 0), rot = Vector3(0, 0, 0) }
+	local nqr_stancemod = not in_steelsight and wep_tweak.stancemod or { trn = Vector3(0, 0, 0), rot = Vector3(0, 0, 0) }
 
-	local trn_x = self._state_data.in_steelsight and 0 or (stock and 6 or 3)
-	local trn_y = self._state_data.in_steelsight and (stock and -2 or (smol and 10 or 6)) or (self._state_data.ducking and (stock and -2 or 1) or (stock and 0 or 4))
-	local trn_z = self._state_data.in_steelsight and 0 or (self._state_data.ducking and (stock and 0 or -1) or (stock and -1 or -2)) --self._state_data.in_steelsight and 0 or self._state_data.ducking and (stock and -2 or -3) or (stock and -3 or -4)
+	local trn_x = in_steelsight and 0 or (stock and 6 or 3)
+	local trn_y = in_steelsight and (stock and -2 or (smol and 10 or 6)) or (ducking and (stock and -2 or 1) or (stock and 0 or 4))
+	local trn_z = in_steelsight and 0 or (ducking and (stock and 0 or -1) or (stock and -1 or -2)) --self._state_data.in_steelsight and 0 or self._state_data.ducking and (stock and -2 or -3) or (stock and -3 or -4)
 	if wep_base.AKIMBO then trn_x = 0 end
 	local z_ads = stances.steelsight.shoulders.translation.z + sightheight_mod + stance_mod2.translation.z
 	local z_hip = stances.standard.shoulders.translation.z + trn_z
@@ -3844,24 +4594,24 @@ function PlayerStandard:_stance_entered(unequipped)
 
 	misc_attribs.shoulders.translation = deep_clone(stances.steelsight.shoulders.translation) + Vector3(trn_x, trn_y, trn_z) + nqr_stancemod.trn -- + nqr_pos
 	misc_attribs.shoulders.translation = Vector3(
-		misc_attribs.shoulders.translation.x + (self._state_data.in_steelsight and stance_mod2.translation.x or 0),
+		misc_attribs.shoulders.translation.x + (in_steelsight and stance_mod2.translation.x or 0),
 		misc_attribs.shoulders.translation.y + stance_mod2.translation.y,
-		self._state_data.in_steelsight and z_ads or z_hip
+		in_steelsight and z_ads or z_hip
 	)
 
-	local nqr_rot = self._state_data.in_steelsight and math.rot_to_vec(stance_mod2.rotation) or self._state_data.ducking and Vector3(0, 0, stock and -2 or -6) or Vector3(0, 0, stock and -4 or -8)
+	local nqr_rot = in_steelsight and math.rot_to_vec(stance_mod2.rotation) or ducking and Vector3(0, 0, stock and -2 or -6) or Vector3(0, 0, stock and -4 or -8)
 	if wep_base.AKIMBO then nqr_rot = Vector3(0, 0, 0) end
 	local rot = math.rot_to_vec(misc_attribs.shoulders.rotation) + nqr_rot + nqr_stancemod.rot
 	rot = math.string_to_rotation(CoreMath.vector_to_string(rot))
 	misc_attribs.shoulders.rotation = rot
 
-	if wep_base.AKIMBO then misc_attribs = self._state_data.in_steelsight and deep_clone(stances.steelsight) or deep_clone(stances.standard) end
+	if wep_base.AKIMBO then misc_attribs = in_steelsight and deep_clone(stances.steelsight) or deep_clone(stances.standard) end
 
 	local head_duration = tweak_data.player.TRANSITION_DURATION
 	local head_duration_multiplier = 1
 	local duration = head_duration + (wep_base:transition_duration() or 0)
 	local duration_multiplier = (
-		(self._state_data.in_steelsight and 1/wep_base:enter_steelsight_speed_multiplier())
+		(in_steelsight and 1/wep_base:enter_steelsight_speed_multiplier())
 		or (self._state_data.lying_t and 0.5)
 		or (self._state_data.getup_t and 0.2)
 	) or 1
@@ -3881,7 +4631,14 @@ function PlayerStandard:_stance_entered(unequipped)
 	local rot_res = Vector3(rot_a1, misc_attribs.shoulders.translation.y, rot_b1)
 	if math.abs(math.rot_to_vec(stance_mod2.rotation).z)>0 then misc_attribs.shoulders.translation = rot_res end
 
-	local overshot = math.max(0.5, ((self._state_data.ducking and 3 or 1) + (wep_base._current_stats.weight * (stock and 0.5 or 1) * (smol and 1.2 or 1) * 0.4)) - 3)
+	local overshot = math.max(0.5, ((ducking and 3 or 1) + (wep_base._current_stats.weight * (stock and 0.5 or 1) * (smol and 1.2 or 1) * 0.4)) - 3)
+	if self:_is_meleeing() then
+		local melee_entry = self._camera_unit:base().custom_melee or managers.blackmarket:equipped_melee_weapon()
+		misc_attribs.shoulders.translation = Vector3(0,-8,-1)
+		misc_attribs.shoulders.rotation = Rotation(0,5,0)
+		overshot = math.max(0.5, ((ducking and 3 or 1) + (melee_td[melee_entry].stats.weight * 0.2)) - 2)
+	end
+
 	misc_attribs.vel_overshot.yaw_pos = overshot
 	misc_attribs.vel_overshot.yaw_neg = -overshot
 	misc_attribs.vel_overshot.pitch_pos = -overshot
@@ -3894,6 +4651,8 @@ end
 
 --ADS CHECK: SECONDS SIGHT RESET, INTERUPT SHOTGUN RELOAD
 function PlayerStandard:_check_action_steelsight(t, input)
+	if self._state_data.meleeing then return end
+
 	local wep_base = self._equipped_unit:base()
 	local wep_tweak = wep_base:weapon_tweak_data()
 	local new_action = nil
@@ -4140,11 +4899,16 @@ function PlayerStandard:_check_action_interact(t, input)
 		if not self:_action_interact_forbidden() and not self._state_data.interact_redirect_t then
 			new_action, timer, interact_object = self._interaction:interact(self._unit, input.data, self._interact_hand)
 
-			--if interact_object then managers.mission._fading_debug_output:script().log(tostring(interact_object and interact_object:interaction().tweak_data), Color.white) end
 			if interact_object then log(interact_object:interaction().tweak_data) end
 
 			if new_action then
-				self:_play_interact_redirect(t, input)
+				if interact_object:interaction().tweak_data=="carry_drop" then
+					self._ext_camera:play_shaker("player_grab_bag", 0.2)
+				else
+					self._ext_camera:play_shaker("player_start_running", 0.1)
+				end
+
+				self:_play_interact_redirect(t)
 			end
 
 			if timer then
@@ -4205,7 +4969,7 @@ function PlayerStandard:_action_interact_forbidden()
 		or self:is_deploying()
 		or self._equipping_mask
 		or self:_is_throwing_projectile()
-		or self:_is_meleeing()
+		or self._state_data.melee_expire_t --self:_is_meleeing()
 		or self._running
 		or self._shooting or not self._equipped_unit:base():start_shooting_allowed()
 	)
@@ -4213,6 +4977,7 @@ end
 function PlayerStandard:_update_interaction_timers(t)
 	if self._state_data.interact_redirect_t and self._state_data.interact_redirect_t < t then
 		self._state_data.interact_redirect_t = nil
+		self._camera_unit:base().interact_redirect_t = self._state_data.interact_redirect_t
 	end
 
 	if self._interact_expire_t then
@@ -4238,7 +5003,20 @@ function PlayerStandard:_update_interaction_timers(t)
 		end
 	end
 end
-function PlayerStandard:_play_interact_redirect(t)
+function PlayerStandard:_play_interact_redirect(t, hold_melee)
+	if self._state_data.meleeing then
+		if hold_melee~=1 then
+			self:_start_action_melee(t, input, nil, self._camera_unit:base().custom_melee)
+		else
+			self._state_data.interact_redirect_t = t + 0.65
+			self._ext_camera:play_redirect(self:get_animation("melee_enter"), 0, 0.99)
+		end
+
+		return
+	elseif hold_melee==2 then
+		return
+	end
+
 	self:_interupt_action_reload(t)
 	self:_interupt_action_steelsight(t)
 	self:_interupt_action_running(t)
@@ -4246,6 +5024,7 @@ function PlayerStandard:_play_interact_redirect(t)
 	self._running_exit_start_t = nil
 
 	self._state_data.interact_redirect_t = t + 0.65
+	self._camera_unit:base().interact_redirect_t = self._state_data.interact_redirect_t
 
 	self._ext_camera:play_redirect(self:get_animation("use"))
 end
@@ -4260,7 +5039,7 @@ function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
 	self._interact_orig_timer = timer
 	local eq_t, eq_tt, anim_spd = self:nqr_eq_speed(true)
 	local final_timer = timer
-	final_timer = managers.modifiers:modify_value("PlayerStandard:OnStartInteraction", final_timer, interact_object) + (self._equip_weapon_expire_t0 and 0 or (eq_t + eq_tt))
+	final_timer = managers.modifiers:modify_value("PlayerStandard:OnStartInteraction", final_timer, interact_object) + (self:_is_meleeing() and 0 or (self._equip_weapon_expire_t0 and 0 or (eq_t + eq_tt))) --todo melee_unequip
 	self._interact_expire_t = final_timer
 	local start_timer = 0
 	self._interact_params = {
@@ -4269,7 +5048,14 @@ function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
 		tweak_data = interact_object:interaction().tweak_data
 	}
 
-	if not self._unequip_weapon_expire_t and self._movement_equipped then self:_start_action_unequip_weapon(t) end
+	if not self._unequip_weapon_expire_t and self._movement_equipped then
+		if self:_is_meleeing() then
+			self._camera_unit:base():unspawn_melee_item()
+			self._ext_camera:play_redirect(self:get_animation("equip"), 0)
+		else
+			self:_start_action_unequip_weapon(t)
+		end
+	end
 
 	managers.hud:show_progress_timer_bar(start_timer, final_timer)
 	managers.network:session():send_to_peers_synched("sync_teammate_progress", 1, true, self._interact_params.tweak_data, final_timer, false)
@@ -4301,6 +5087,10 @@ function PlayerStandard:_interupt_action_interact(t, input, complete)
 		self._unit:network():send("sync_interaction_anim", false, "")
 
 		if not self._movement_equipped then return end
+		if self:_is_meleeing() then
+			self:_start_action_melee(t, input, nil, self._camera_unit:base().custom_melee)
+			return
+		end
 		if self._unequip_weapon_expire_t then
 			self:_start_action_equip_weapon0(t)
 		else
@@ -4522,7 +5312,7 @@ function PlayerStandard:_play_distance_interact_redirect(t, variant)
 
 	if self._running then return end
 
-	self._state_data.interact_redirect_t = t + 1
+	--self._camera_unit:base().interact_redirect_t = self._state_data.interact_redirect_t
 	self._ext_camera:play_redirect(Idstring(variant))
 end
 

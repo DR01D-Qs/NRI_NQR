@@ -2,6 +2,7 @@ local mvec_1 = Vector3()
 local mvec_2 = Vector3()
 local temp_vec3 = Vector3()
 local mvec3_dir = mvector3.direction
+local blank_effect = Idstring("effects/payday2/particles/impacts/fallback_impact_pd2")
 
 CopDamage._hurt_severities = {
 	heavy = "heavy_hurt",
@@ -388,58 +389,266 @@ end
 
 
 
+function CopDamage:get_absorpsion(spot, hit_front, hit_back, armor, absorb_roll)
+	local absorb_tier, absorb_chance, crit_chance = 0, 0 ,0
+	local damage_mul = 1
+	local switch = nil
+
+	if spot==Idstring("head") then
+		absorb_tier = hit_back and armor.head[1] or (absorb_roll<armor.head[2] and armor.head[1] or armor.face[1])
+		absorb_chance = hit_back and armor.head[3] or (absorb_roll<armor.head[2] and armor.head[2] or armor.face[2]+armor.head[2])
+		damage_mul = 8
+		crit_chance = 0.8
+	elseif spot==Idstring("body_helmet")
+	or spot==Idstring("body_helmet_glass")
+	or spot==Idstring("body_helmet_plate")
+	then
+		if spot==Idstring("body_helmet_glass") then switch = "glass_breakable" end
+		absorb_tier = armor.head[1]
+		absorb_chance = 2
+		damage_mul = 5
+		crit_chance = 0.8
+	elseif spot==Idstring("body_armor_chest")
+	or spot==Idstring("body_armor_stomache")
+	or spot==Idstring("body_armor_back")
+	then
+		absorb_tier = 4
+		absorb_chance = 2
+		damage_mul = 1
+		crit_chance = 0.4
+	elseif spot==Idstring("body")
+	or spot==Idstring("body_plate")
+	then
+		if spot==Idstring("body") then switch = true
+		elseif spot==Idstring("body_plate") and self._unit:base()._tweak_table=="tank_hw" then return end
+		absorb_tier = armor.whole_body or (hit_front and armor.body or armor.back)
+		absorb_chance = armor.whole_body and 2 or 1
+		damage_mul = 1
+		crit_chance = 0.4
+	elseif spot==Idstring("rag_LeftArm")
+	or spot==Idstring("rag_RightArm")
+	or spot==Idstring("LeftArm")
+	or spot==Idstring("RightArm")
+	then
+		absorb_tier = armor.whole_body or armor.upper_arm
+		absorb_chance = armor.whole_body and 2 or (hit_back and 0.9 or 1)
+		damage_mul = 0.6
+		switch = true
+	elseif spot==Idstring("rag_LeftForeArm")
+	or spot==Idstring("rag_RightForeArm")
+	or spot==Idstring("LeftForeArm")
+	or spot==Idstring("RightForeArm")
+	then
+		absorb_tier = armor.whole_body or armor.lower_arm
+		absorb_chance = armor.whole_body and 2 or 1
+		damage_mul =  0.4
+		switch = true
+	elseif spot==Idstring("rag_LeftUpLeg")
+	or spot==Idstring("rag_RightUpLeg")
+	or spot==Idstring("LeftUpLeg")
+	or spot==Idstring("RightUpLeg")
+	then
+		absorb_tier = armor.whole_body or armor.upper_legs
+		absorb_chance = armor.whole_body and 2 or 0.8
+		damage_mul = 0.8
+		switch = true
+	elseif spot==Idstring("rag_LeftLeg")
+	or spot==Idstring("rag_RightLeg")
+	or spot==Idstring("LeftLeg")
+	or spot==Idstring("RightLeg")
+	then
+		absorb_tier = armor.whole_body or armor.lower_legs
+		absorb_chance = armor.whole_body and 2 or (hit_back and 0 or 1)
+		damage_mul = 0.6
+		switch = true
+	elseif armor.whole_body then
+		absorb_tier = armor.whole_body
+		absorb_chance = 2
+		damage_mul = 0.2
+		switch = true
+	end
+
+	return absorb_tier, absorb_chance, crit_chance, damage_mul, switch
+end
+function CopDamage:get_absorpsion_melee(spot, hit_front, hit_back, armor, absorb_roll)
+	local absorb_tier, absorb_chance, crit_chance = 0, 0 ,0
+	local damage_mul = 1
+	local switch = nil
+
+	if spot==Idstring("head") then
+		absorb_tier = hit_back and armor.head[1] or (absorb_roll<armor.head[2] and armor.head[1] or armor.face[1])
+		absorb_chance = hit_back and armor.head[3] or (absorb_roll<armor.head[2] and armor.head[2] or armor.face[2]+armor.head[2])
+		damage_mul = 2
+		crit_chance = 0.4
+	elseif spot==Idstring("body_helmet")
+	or spot==Idstring("body_helmet_glass")
+	or spot==Idstring("body_helmet_plate")
+	then
+		if spot==Idstring("body_helmet_glass") then switch = "glass_breakable" end
+		absorb_tier = armor.head[1]
+		absorb_chance = 2
+		damage_mul = 1
+		crit_chance = 0.4
+	elseif spot==Idstring("body_armor_chest")
+	or spot==Idstring("body_armor_stomache")
+	or spot==Idstring("body_armor_back")
+	then
+		absorb_tier = 4
+		absorb_chance = 2
+		damage_mul = 1
+		crit_chance = 0.2
+	elseif spot==Idstring("body")
+	or spot==Idstring("body_plate")
+	then
+		if spot==Idstring("body") then switch = true
+		elseif spot==Idstring("body_plate") and self._unit:base()._tweak_table=="tank_hw" then return end
+		absorb_tier = armor.whole_body or (hit_front and armor.body or armor.back)
+		absorb_chance = armor.whole_body and 2 or 1
+		damage_mul = 1
+		crit_chance = 0.2
+	elseif spot==Idstring("rag_LeftArm")
+	or spot==Idstring("rag_RightArm")
+	or spot==Idstring("LeftArm")
+	or spot==Idstring("RightArm")
+	then
+		absorb_tier = armor.whole_body or armor.upper_arm
+		absorb_chance = armor.whole_body and 2 or (hit_back and 0.9 or 1)
+		damage_mul = 0.2
+		switch = true
+	elseif spot==Idstring("rag_LeftForeArm")
+	or spot==Idstring("rag_RightForeArm")
+	or spot==Idstring("LeftForeArm")
+	or spot==Idstring("RightForeArm")
+	then
+		absorb_tier = armor.whole_body or armor.lower_arm
+		absorb_chance = armor.whole_body and 2 or 1
+		damage_mul =  0.2
+		switch = true
+	elseif spot==Idstring("rag_LeftUpLeg")
+	or spot==Idstring("rag_RightUpLeg")
+	or spot==Idstring("LeftUpLeg")
+	or spot==Idstring("RightUpLeg")
+	then
+		absorb_tier = armor.whole_body or armor.upper_legs
+		absorb_chance = armor.whole_body and 2 or 0.8
+		damage_mul = 0.4
+		switch = true
+	elseif spot==Idstring("rag_LeftLeg")
+	or spot==Idstring("rag_RightLeg")
+	or spot==Idstring("LeftLeg")
+	or spot==Idstring("RightLeg")
+	then
+		absorb_tier = armor.whole_body or armor.lower_legs
+		absorb_chance = armor.whole_body and 2 or (hit_back and 0 or 1)
+		damage_mul = 0.2
+		switch = true
+	elseif armor.whole_body then
+		absorb_tier = armor.whole_body
+		absorb_chance = 2
+		damage_mul = 0.1
+		switch = true
+	end
+
+	return absorb_tier, absorb_chance, crit_chance, damage_mul, switch
+end
+
 --DAMAGE MELEE: KNOCKDOWN SHENANIGANS
 function CopDamage:damage_melee(attack_data)
-	if self._dead or self._invulnerable then
-		return
-	end
-
-	if PlayerDamage.is_friendly_fire(self, attack_data.attacker_unit) then
-		return "friendly_fire"
-	end
-
-	if self:chk_immune_to_attacker(attack_data.attacker_unit) then
-		return
-	end
+	if self._dead or self._invulnerable then return end
+	if PlayerDamage.is_friendly_fire(self, attack_data.attacker_unit) then return "friendly_fire" end
+	if self:chk_immune_to_attacker(attack_data.attacker_unit) then return end
 
 	local result = nil
 	local is_civlian = CopDamage.is_civilian(self._unit:base()._tweak_table)
 	local is_gangster = CopDamage.is_gangster(self._unit:base()._tweak_table)
 	local is_cop = not is_civlian and not is_gangster
 	local head = self._head_body_name and attack_data.col_ray.body and attack_data.col_ray.body:name() == self._ids_head_body_name
-	local damage = attack_data.damage
+	local char_tweak = self._unit:base():char_tweak()
+	local dmg_types = attack_data and attack_data.damage_types or { striking = 1, slashing = 0, piercing = 0, puncturing = 0 }
+	local wep_weight = attack_data.wep_weight or 1
+	local wep_length = attack_data.wep_length or 0
+	local damage = attack_data.damage * (
+		 (dmg_types.striking * wep_weight*0.8)
+		+(dmg_types.slashing * (10 + wep_length*0.5*(1+wep_weight*0.1)))
+		+(dmg_types.piercing * (5 + wep_length*(1+wep_weight*0.1)) + dmg_types.puncturing*0.1)
+	)
+	Utils.PrintTable(dmg_types)
+	log("dmg 1", damage)
 
-	if attack_data.attacker_unit and attack_data.attacker_unit == managers.player:player_unit() then
-		if tweak_data.achievement.cavity.melee_type == attack_data.name_id and not CopDamage.is_civilian(self._unit:base()._tweak_table) then
-			managers.achievment:award(tweak_data.achievement.cavity.award)
-		end
-	end
-
-	if self._unit:movement():cool() then damage = self._HEALTH_INIT end
+	--if self._unit:movement():cool() then damage = self._HEALTH_INIT end
 
 	local damage_effect = attack_data.damage_effect
 	local damage_effect_percent = 1
-	damage = self:_apply_damage_reduction(damage)
 	damage = math.clamp(damage, self._HEALTH_INIT_PRECENT, self._HEALTH_INIT)
 	local damage_percent = math.ceil(damage / self._HEALTH_INIT_PRECENT)
 	damage = damage_percent * self._HEALTH_INIT_PRECENT
 	damage, damage_percent = self:_apply_min_health_limit(damage, damage_percent)
 
+	local absorb_table = { 300, 2000, 4000, 8000 } absorb_table[0] = 0
+	local col_ray = attack_data and attack_data.col_ray
+	local spot = col_ray and col_ray.body and col_ray.body:name()
+	mvector3.set(mvec_1, col_ray.ray)
+	mvector3.set_z(mvec_1, 0)
+	mrotation.y(self._unit:rotation(), mvec_2)
+	mvector3.set_z(mvec_2, 0)
+	local hit_front = mvector3.dot(mvec_1, mvec_2) < -0.2
+	local hit_back = mvector3.dot(mvec_1, mvec_2) > 0.2
+	local armor = char_tweak.armor
+	local absorb_roll = math.random()
+	local crit_roll = math.random()
+
+	local absorb_tier, absorb_chance, crit_chance, damage_limb_mul, switch_old = self:get_absorpsion_melee(spot, hit_front, hit_back, armor, absorb_roll)
+	local critted = crit_roll<crit_chance
+	damage = damage*damage_limb_mul
+	log("dmg 2", damage)
+
+	local switch = (
+		(
+			dmg_types.slashing>0
+			or dmg_types.piercing>0
+			or dmg_types.puncturing>0
+		)
+		or critted
+	) and Idstring("flesh") or nil
+	local hit_sfx = "hit_body"
+
 	if self._immortal then damage = math.min(damage, self._health - 1) end
+
+	local penetration_tier = 0
+	attack_data.penetration = 0 + (300+damage)*dmg_types.slashing*dmg_types.piercing*dmg_types.puncturing
+	for i, k in pairs(absorb_table) do if attack_data.penetration>k then penetration_tier = i+1 end end
+
+	if absorb_roll<absorb_chance and not slip_through then
+		if absorb_tier > penetration_tier then
+			damage = dmg_types.striking>0 and damage*0.5 or damage*0.05
+			log("dmg 3", damage)
+			switch = (
+				dmg_types.slashing>0
+				or dmg_types.piercing>0
+				or dmg_types.puncturing>0
+			) and (
+				(switch_old==true and armor.whole_body) and Idstring("concrete")
+				or switch_old=="glass_breakable" and Idstring("glass_breakable")
+				or absorb_tier>1 and Idstring("steel")
+			) or nil
+			hit_sfx = nil
+		end
+
+		if absorb_tier>2 then
+			damage = 0.01
+		end
+	end
+
+	damage = damage*(critted and 5 or 1)
+	log("dmg 4", damage)
 
 	if self._health <= damage then
 		if self:check_medic_heal() then
-			result = {
-				type = "healed",
-				variant = attack_data.variant
-			}
+			result = { type = "healed", variant = attack_data.variant, hit_sfx = hit_sfx }
 		else
 			damage_effect_percent = 1
 			attack_data.damage = self._health
-			result = {
-				type = "death",
-				variant = attack_data.variant
-			}
+			result = { type = "death", variant = attack_data.variant, hit_sfx = hit_sfx }
 
 			self:die(attack_data)
 			self:chk_killshot(attack_data.attacker_unit, "melee", false, attack_data.name_id)
@@ -450,10 +659,7 @@ function CopDamage:damage_melee(attack_data)
 		damage_effect_percent = math.ceil(damage_effect / self._HEALTH_INIT_PRECENT)
 		damage_effect_percent = self._HEALTH_GRANULARITY --math.clamp(damage_effect_percent, 1, self._HEALTH_GRANULARITY)
 		local result_type = attack_data.shield_knock and self._char_tweak.damage.shield_knocked and "shield_knock" or attack_data.variant == "counter_tased" and "counter_tased" or attack_data.variant == "taser_tased" and "taser_tased" or attack_data.variant == "counter_spooc" and "expl_hurt" or self:get_damage_type(damage_effect_percent, "melee") or "fire_hurt"
-		result = {
-			type = result_type,
-			variant = attack_data.variant
-		}
+		result = { type = result_type, variant = attack_data.variant, hit_sfx = hit_sfx }
 
 		self:_apply_damage_to_health(damage)
 	end
@@ -484,20 +690,12 @@ function CopDamage:damage_melee(attack_data)
 		if attack_data.attacker_unit == managers.player:player_unit() then
 			managers.statistics:killed(data)
 
-			if not is_civlian and managers.groupai:state():whisper_mode() and managers.blackmarket:equipped_mask().mask_id == tweak_data.achievement.cant_hear_you_scream.mask then
-				managers.achievment:award_progress(tweak_data.achievement.cant_hear_you_scream.stat)
-			end
-
 			mvector3.set(mvec_1, self._unit:position())
 			mvector3.subtract(mvec_1, attack_data.attacker_unit:position())
 			mvector3.normalize(mvec_1)
 			mvector3.set(mvec_2, self._unit:rotation():y())
 
 			local from_behind = mvector3.dot(mvec_1, mvec_2) >= 0
-
-			if is_cop and Global.game_settings.level_id == "nightclub" and attack_data.name_id and attack_data.name_id == "fists" then
-				managers.achievment:award_progress(tweak_data.achievement.final_rule.stat)
-			end
 
 			if is_civlian then
 				managers.money:civilian_killed()
@@ -508,53 +706,33 @@ function CopDamage:damage_melee(attack_data)
 		end
 	end
 
-	self:_check_melee_achievements(attack_data)
+	managers.game_play_central:play_impact_sound_and_effects({ no_decal = true, no_sound = true, col_ray = attack_data.col_ray, effect = not switch and blank_effect or nil, switch = switch })
 
-	local hit_offset_height = math.clamp(attack_data.col_ray.position.z - self._unit:movement():m_pos().z, 0, 300)
 	local variant = nil
-
-	if result.type == "shield_knock" then
-		variant = 1
-	elseif result.type == "counter_tased" then
-		variant = 2
-	elseif result.type == "expl_hurt" then
-		variant = 4
-	elseif snatch_pager then
-		variant = 3
-	elseif result.type == "taser_tased" then
-		variant = 5
-	elseif dismember_victim then
-		variant = 6
-	elseif result.type == "healed" then
-		variant = 7
-	else
-		variant = 0
+	if result.type == "shield_knock" then variant = 1
+	elseif result.type == "counter_tased" then variant = 2
+	elseif result.type == "expl_hurt" then variant = 4
+	elseif snatch_pager then variant = 3
+	elseif result.type == "taser_tased" then variant = 5
+	elseif dismember_victim then variant = 6
+	elseif result.type == "healed" then variant = 7
+	else variant = 0
 	end
-
+	local hit_offset_height = math.clamp(attack_data.col_ray.position.z - self._unit:movement():m_pos().z, 0, 300)
 	local body_index = self._unit:get_body_index(attack_data.col_ray.body:name())
-
 	self:_send_melee_attack_result(attack_data, damage_percent, damage_effect_percent, hit_offset_height, variant, body_index)
+
 	self:_on_damage_received(attack_data)
 
 	return result
 end
-
-
 
 --DAMAGE BULLET: PENETRATION SYSTEM
 function CopDamage:damage_bullet(attack_data)
 	if self._dead or self._invulnerable then return end
 	if self:chk_immune_to_attacker(attack_data.attacker_unit) then return end
 
-	mvector3.set(mvec_1, attack_data.col_ray.ray)
-	mvector3.set_z(mvec_1, 0)
-	mrotation.y(self._unit:rotation(), mvec_2)
-	mvector3.set_z(mvec_2, 0)
-	local hit_front = mvector3.dot(mvec_1, mvec_2) < -0.2
-	local hit_back = mvector3.dot(mvec_1, mvec_2) > 0.2
 	local char_tweak = self._unit:base():char_tweak()
-	local armor = char_tweak.armor
-	local spot = attack_data.col_ray.body:name()
 	local is_civilian = CopDamage.is_civilian(self._unit:base()._tweak_table)
 	local result = nil
 	local body_index = self._unit:get_body_index(attack_data.col_ray.body:name())
@@ -562,89 +740,21 @@ function CopDamage:damage_bullet(attack_data)
 	local damage = attack_data.damage
 
 	local slip_through = nil
-	local absorb_tier = 0
-	local absorb_chance = 0
 	local absorb_table = { 300, 2000, 4000, 8000 } absorb_table[0] = 0
-	local absorb_roll = math.random()
-	local crit_chance = 0
-	local crit_roll = math.random()
-	local switch = nil
 
-	if attack_data.col_ray.body then
-		if spot==Idstring("head") then
-			absorb_tier = hit_back and armor.head[1] or (absorb_roll<armor.head[2] and armor.head[1] or armor.face[1])
-			absorb_chance = hit_back and armor.head[3] or (absorb_roll<armor.head[2] and armor.head[2] or armor.face[2]+armor.head[2])
-			damage = damage * 8
-			crit_chance = 0.8
-		elseif spot==Idstring("body_helmet")
-		or spot==Idstring("body_helmet_glass")
-		or spot==Idstring("body_helmet_plate")
-		then
-			if spot==Idstring("body_helmet_glass") then switch = "glass_breakable" end
-			absorb_tier = armor.head[1]
-			absorb_chance = 2
-			damage = damage * 5
-			crit_chance = 0.8
-		elseif spot==Idstring("body_armor_chest")
-		or spot==Idstring("body_armor_stomache")
-		or spot==Idstring("body_armor_back")
-		then
-			absorb_tier = 4
-			absorb_chance = 2
-			damage = damage * 1
-			crit_chance = 0.4
-		elseif spot==Idstring("body")
-		or spot==Idstring("body_plate")
-		then
-			if spot==Idstring("body") then switch = true
-			elseif spot==Idstring("body_plate") and self._unit:base()._tweak_table=="tank_hw" then return end
-			absorb_tier = armor.whole_body or (hit_front and armor.body or armor.back)
-			absorb_chance = armor.whole_body and 2 or 1
-			damage = damage * 1
-			crit_chance = 0.4
-		elseif spot==Idstring("rag_LeftArm")
-		or spot==Idstring("rag_RightArm")
-		or spot==Idstring("LeftArm")
-		or spot==Idstring("RightArm")
-		then
-			absorb_tier = armor.whole_body or armor.upper_arm
-			absorb_chance = armor.whole_body and 2 or (hit_back and 0.9 or 1)
-			damage = damage * 0.6
-			switch = true
-		elseif spot==Idstring("rag_LeftForeArm")
-		or spot==Idstring("rag_RightForeArm")
-		or spot==Idstring("LeftForeArm")
-		or spot==Idstring("RightForeArm")
-		then
-			absorb_tier = armor.whole_body or armor.lower_arm
-			absorb_chance = armor.whole_body and 2 or 1
-			damage = damage * 0.4
-			switch = true
-		elseif spot==Idstring("rag_LeftUpLeg")
-		or spot==Idstring("rag_RightUpLeg")
-		or spot==Idstring("LeftUpLeg")
-		or spot==Idstring("RightUpLeg")
-		then
-			absorb_tier = armor.whole_body or armor.upper_legs
-			absorb_chance = armor.whole_body and 2 or 0.8
-			damage = damage * 0.8
-			switch = true
-		elseif spot==Idstring("rag_LeftLeg")
-		or spot==Idstring("rag_RightLeg")
-		or spot==Idstring("LeftLeg")
-		or spot==Idstring("RightLeg")
-		then
-			absorb_tier = armor.whole_body or armor.lower_legs
-			absorb_chance = armor.whole_body and 2 or (hit_back and 0 or 1)
-			damage = damage * 0.6
-			switch = true
-		elseif armor.whole_body then
-			absorb_tier = armor.whole_body
-			absorb_chance = 2
-			damage = damage * 0.2
-			switch = true
-		end
-	end
+	local spot = attack_data.col_ray.body:name()
+	mvector3.set(mvec_1, attack_data.col_ray.ray)
+	mvector3.set_z(mvec_1, 0)
+	mrotation.y(self._unit:rotation(), mvec_2)
+	mvector3.set_z(mvec_2, 0)
+	local hit_front = mvector3.dot(mvec_1, mvec_2) < -0.2
+	local hit_back = mvector3.dot(mvec_1, mvec_2) > 0.2
+	local armor = char_tweak.armor
+	local absorb_roll = math.random()
+	local crit_roll = math.random()
+
+	local absorb_tier, absorb_chance, crit_chance, damage_mul, switch = self:get_absorpsion(spot, hit_front, hit_back, armor, absorb_roll)
+	damage = damage*damage_mul
 
 	local target_dis = attack_data.col_ray.distance*attack_data.col_ray.distance --mvector3.distance_sq(self._unit:position(), attack_data.attacker_unit:position())
 	local pointblank_dis = 100

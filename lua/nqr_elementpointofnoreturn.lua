@@ -36,7 +36,7 @@ function ElementPointOfNoReturn:on_executed(instigator)
 
 	for i, k in pairs(self._values) do
 		if string.find(i, "time_") then
-			self._values[i] = self._values[i] * (lookup[job] or (lookup_acc[job] and lookup_acc[job][self._values._editor_name]) or 1)
+			self._values[i] = self._values[i] * (lookup[job] or (lookup_acc[job] and lookup_acc[job][self._editor_name]) or 1)
 		end
 	end
 

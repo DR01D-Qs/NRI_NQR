@@ -56,6 +56,16 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		if lookup[i] then gadget_power_desc = gadget_power_desc..managers.localization:text("bm_gadget_power_"..i)..": "..k..". "..nl end
 	end
 
+	local melee_damage_desc = ""
+	local dmg_types = part.stats and part.stats.damage_types
+	if dmg_types then
+		melee_damage_desc = melee_damage_desc .. managers.localization:text("bm_menu_damage_type_bayonet")
+		for side, dmg_type in pairs(dmg_types) do
+			melee_damage_desc = melee_damage_desc .. managers.localization:text("bm_melee_dmg_"..dmg_type)
+		end
+		melee_damage_desc = melee_damage_desc.."\n\n"
+	end
+
 	if managers.menu:is_pc_controller() and managers.localization:exists(desc_id .. "_pc") then
 		result = managers.localization:text(desc_id .. "_pc", params)
 	elseif managers.localization:exists(desc_id) then
@@ -70,6 +80,7 @@ function WeaponFactoryManager:get_part_desc_by_part_id_from_weapon(part_id, fact
 		--..(result~="" and (md_code_desc~="" or gadget_power_desc~="") and nl or "")
 		..md_code_desc
 		..gadget_power_desc
+		..melee_damage_desc
 	)
 end
 

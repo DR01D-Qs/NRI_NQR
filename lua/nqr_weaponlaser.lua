@@ -83,6 +83,7 @@ end
 function WeaponLaser:set_color(color)
 	if not color then return end
 	--color = Color(1,1,1,1)
+	--log("WeaponLaser:set_color", tostring(color))
 
 	local h, s, v = CoreMath.rgb_to_hsv(color.r, color.g, color.b)
 	local orig_v = v

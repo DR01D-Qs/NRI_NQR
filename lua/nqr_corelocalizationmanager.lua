@@ -56,6 +56,8 @@ function LocalizationManager:text(string_id, macros)
 			["bm_wp_1911_co_2_desc"] = true,
 			["bm_wp_g18c_co_1_desc"] = true,
 			["bm_wp_g18c_co_comp_2_desc"] = true,
+
+			["bm_wp_mosin_ns_bayonet_desc"] = true,
 		}
 		return_string = lookup_delet[str_id] and "" or return_string
 

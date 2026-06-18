@@ -137,9 +137,9 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		hox_2 = {1.2,1.5}, --hoxton breakout 2
 		hox_3 = {1.2,2}, --hoxton revenge
 		hvh = {0.5,1}, --cursed kill room
-		nmh = {1,1.2}, --no mercy
+		nmh = {1,1.5}, --no mercy
 		big = {1.1,2}, --the big bank
-		pent = {1.1,1.5}, --mountain master
+		pent = {0.9,1.5}, --mountain master
 		pines = {1.2,2}, --white xmas
 		gallery = {1.2,2.5}, --art gallery
 		alex_1 = {1.4,2}, --rats 1
@@ -147,9 +147,9 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		alex_3 = {2,2}, --rats 3
 		election_day_1 = {1.3,2}, --election
 		election_day_2 = {1.5,1.5}, --election day 2
-		election_day_3 = {1.5,2}, --election day 3
-		election_day_3_skip1 = {1.5,2}, --election day 3
-		election_day_3_skip2 = {1.5,2}, --election day 3
+		election_day_3 = {1.4,2}, --election day 3
+		election_day_3_skip1 = {1.4,2}, --election day 3
+		election_day_3_skip2 = {1.4,2}, --election day 3
 		bex = {1.3,2}, --san martin
 		chas = {1.2,1.5}, --dragon heist
 		escape_cafe = {0.5,1.5}, --escape cafe
@@ -170,7 +170,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		framing_frame_2 = {1,1.5}, --ff2
 		framing_frame_3 = {1.2,1.5}, --ff3
 		corp = {1.5,1.5}, --hostile takeover
-		shoutout_raid = {1.1,2.5}, --meltdown
+		shoutout_raid = {1.0,2.5}, --meltdown
 		pex = {1.3,1.5}, --policia federale
 		deep = {1.3,2}, --crude awakening
 		nightclub = {1.2,1.5}, --nightclub
@@ -178,7 +178,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		four_stores = {1.3,1}, --four stores
 		mallcrasher = {1.2,0.5}, --mallcrasher
 		arm_par = {1.3,2.5}, --transport park
-		arm_und = {0.8,2}, --transport underpass
+		arm_und = {0.7,2}, --transport underpass
 		arm_cro = {1.1,2}, --transport crossroads
 		arm_fac = {1.1,2}, --transport harbor
 		arm_hcm = {1.2,2.5}, --transport downtown
@@ -216,6 +216,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		hox_1 = {1.5, 1.2},
 		hox_2 = {1.5, 1.2},
 		wwh = {1.5, 1.2},
+		pent = {1.5, 1.2},
 	}
 	custom_force = custom_force[job] or {1, 1}
 	local force_mul = (job_mapping[job] and job_mapping[job][1] or 1)

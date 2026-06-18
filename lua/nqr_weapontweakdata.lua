@@ -1413,7 +1413,9 @@ end
 	end
 --
 
-
+local butt_ts = {
+	slap = 8,
+}
 
 --THE STATS
 ------ASSAULT RIFLE
@@ -1479,6 +1481,7 @@ end
 	self.new_m4.bolt_release = "half"
 	self.new_m4.eq_fr = {0,9,12}
 	self.new_m4.shot_anim_mul = 1.25
+	self.new_m4.butt_t = butt_ts.slap
 
 	self.amcar.caliber = "5.56x45"
 	self.amcar.weight = 27
@@ -1493,6 +1496,7 @@ end
 	--self.amcar.r_no_bullet_clbk = true
 	self.amcar.weapon_hold = self.new_m4.weapon_hold
 	self.amcar.timers = self.new_m4.timers
+	self.amcar.butt_t = self.new_m4.butt_t
 
 	self.m16.caliber = "5.56x45"
 	self.m16.weight = 35
@@ -1505,6 +1509,7 @@ end
 	--self.m16.r_no_bullet_clbk = true
 	self.m16.weapon_hold = self.new_m4.weapon_hold
 	self.m16.timers = self.new_m4.timers
+	self.m16.butt_t = self.new_m4.butt_t
 
 	self.olympic.caliber = "5.56x45"
 	self.olympic.weight = 24
@@ -1518,6 +1523,7 @@ end
 	--self.olympic.r_no_bullet_clbk = true
 	self.olympic.weapon_hold = self.new_m4.weapon_hold
 	self.olympic.timers = self.new_m4.timers
+	self.olympic.butt_t = self.new_m4.butt_t
 
 	self.victor.caliber = "5.56x45"
 	self.victor.fire_mode_data.fire_rate = 0.08
@@ -1536,6 +1542,7 @@ end
 	self.victor.sounds.fire = nil
 	self.victor.has_description = nil
 	self.victor.shot_anim_mul = 1.25
+	self.victor.butt_t = self.new_m4.butt_t
 	self.victor_crew.CLIP_AMMO_MAX = 30
 	self.victor_crew.auto.fire_rate = self.victor.fire_mode_data.fire_rate
 
@@ -1638,6 +1645,7 @@ end
 	self.ak5.timers.reload_empty = 3.2
 	self.ak5.eq_fr = {0,9,14}
 	self.ak5.shot_anim_mul = 1.25
+	self.ak5.butt_t = butt_ts.slap
 
 	self.aug.caliber = "5.56x45"
 	self.aug.weight = 36
@@ -1689,6 +1697,7 @@ end
 	self.famas.fire_mode_data.burst_cooldown = 0.1
 	self.famas.fire_mode_data.toggable = { "single", "burst", "auto" }
 	self.famas.burst = { fire_rate = 1 }
+	self.famas.butt_t = 9
 
 	self.l85a2.caliber = "5.56x45"
 	self.l85a2.weight = 39
@@ -1749,6 +1758,7 @@ end
 	self.tecci.eq_fr = self.new_m4.eq_fr
 	self.tecci.timers = self.new_m4.timers
 	self.tecci.r_no_bullet_clbk = self.new_m4.r_no_bullet_clbk
+	self.tecci.butt_t = self.new_m4.butt_t
 
 	self.komodo.caliber = "5.56x45"
 	self.komodo.weight = 31
@@ -1791,7 +1801,13 @@ end
 	self.groza.bullpup = true
 	self.groza.mag_release = "paddle"
 	self.groza.bolt_release = "none"
+	self.groza.timers.reload_not_empty = 2.0
+	self.groza.timers.reload_empty = 2.75
 	self.groza.eq_fr = {1,10,14}
+	self.groza.butt_t = 5
+	self.groza.anim_no_full = true
+	self.groza.shot_anim_hands = 2
+	self.groza.shot_anim_hands_offset = 8/30
 
 
 
@@ -1839,6 +1855,7 @@ end
 	self.fal.timers.reload_empty = 3.05
 	self.fal.eq_fr = self.ak74.eq_fr
 	self.fal.shot_anim_mul = 1.25
+	self.fal.butt_t = butt_ts.slap
 
 	self.contraband.caliber = "7.62x51"
 	self.contraband.weight = 44
@@ -1866,6 +1883,7 @@ end
 	self.scar.eq_fr = {0,10,13}
 	self.scar.shot_anim_mul = 1.3
 	self.scar.r_no_bullet_clbk = true
+	self.scar.butt_t = butt_ts.slap
 
 	self.tti.caliber = "7.62x51"
 	self.tti.weight = 38 --not_sure
@@ -1902,6 +1920,10 @@ end
 	self.qbu88.eq_fr = {1,10,14}
 	self.qbu88.has_description = nil
 	self.qbu88.shot_anim_steelsight = true
+	self.qbu88.timers = self.groza.timers
+	self.qbu88.shot_anim_hands_offset = self.groza.shot_anim_hands_offset
+	self.qbu88.shot_anim_hands = self.groza.shot_anim_hands
+	self.qbu88.butt_t = self.groza.butt_t
 
 	self.winchester1874.caliber = ".44-40"
 	self.winchester1874.weight = 43
@@ -1917,6 +1939,7 @@ end
 	self.winchester1874.shell_ejection = "effects/payday2/particles/weapons/shells/shell_9mm"
 	self.winchester1874.eq_fr = {4,18,17}
 	self.winchester1874.has_description = nil
+	self.winchester1874.butt_t = 4
 
 	self.ching.caliber = ".30-06"
 	self.ching.weight = 43
@@ -1946,6 +1969,7 @@ end
 	self.sbl.shot_anim_hands = self.winchester1874.shot_anim_hands
 	self.sbl.eq_fr = self.winchester1874.eq_fr
 	self.sbl.has_description = nil
+	self.sbl.butt_t = self.winchester1874.butt_t
 
 	self.shak12.stats.value = 1
 	self.shak12.caliber = "12.7x55"
@@ -1953,7 +1977,7 @@ end
 	self.shak12.action = "moving_barrel"
 	self.shak12.fire_mode_data.fire_rate = 0.1
 	self.shak12.timers.reload_not_empty = 2
-	self.shak12.timers.reload_empty = 2.8
+	self.shak12.timers.reload_empty = 2.75
 	self.shak12.rise_factor = 0
 	self.shak12.bullpup = true
 	self.shak12.mag_release = "paddle"
@@ -1961,6 +1985,7 @@ end
 	self.shak12.eq_fr = {0,11,13}
 	self.shak12.shot_anim_mul = 2
 	self.shak12.r_no_bullet_clbk = true
+	self.shak12.butt_t = 6
 
 	self.hcar.caliber = ".30-06"
 	self.hcar.weight = 53
@@ -1971,6 +1996,7 @@ end
 	self.hcar.r_no_bullet_clbk = true
 	self.hcar.FIRE_MODE = "single"
 	self.hcar.CAN_TOGGLE_FIREMODE = false
+	self.hcar.butt_t = butt_ts.slap
 	self.hcar_crew.usage = "is_sniper"
 
 
@@ -1990,6 +2016,7 @@ end
 	self.m249.eq_fr = {0,30,13}
 	self.m249.anim_no_semi = true
 	--self.m249.force_anim_reload_transition = true
+	self.m249.butt_t = butt_ts.slap
 
 	self.hk21.caliber = "7.62x51"
 	self.hk21.action = "roller_delayed"
@@ -2039,6 +2066,7 @@ end
 	self.m60.custom_cycle_2 = { "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_get_new_mag_in_2", "r_bolt_release" }
 	self.m60.eq_fr = {0,30,16}
 	--self.m60.force_anim_reload_transition = true
+	self.m60.butt_t = butt_ts.slap
 
 	self.par.caliber = "7.62x51"
 	self.par.weight = 125
@@ -2068,6 +2096,7 @@ end
 	self.mg42.eq_fr = {0,30,11}
 	self.mg42.anim_no_semi = true
 	self.mg42.sounds.fire_single = nil
+	self.mg42.butt_t = butt_ts.slap
 
 	self.kacchainsaw.caliber = "5.56x45"
 	self.kacchainsaw.weight = 45
@@ -2083,6 +2112,7 @@ end
 	self.kacchainsaw.custom_cycle_2 = { "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_get_new_mag_in_2", "r_bolt_release" }
 	self.kacchainsaw.eq_fr = {0,53,46}
 	--self.kacchainsaw.anim_no_semi = true
+	self.kacchainsaw.butt_t = 12
 
 
 
@@ -2129,6 +2159,7 @@ end
 	self.r93.eq_fr = {1,21,18}
 	self.r93.r_no_bullet_clbk = true
 	self.r93.has_description = nil
+	self.r93.butt_t = 9
 
 	self.mosin.caliber = "7.62x54 R"
 	self.mosin.weight = 40
@@ -2187,6 +2218,7 @@ end
 	self.scout.custom_cycle_2 = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.scout.eq_fr = {2,9,10}
 	self.scout.has_description = nil
+	self.scout.butt_t = 6
 
 	self.r700.caliber = "7.62x51"
 	self.r700.weight = 41
@@ -2229,6 +2261,7 @@ end
 	self.awp.bolt_release_ratio = { 0.5, 0.5 }
 	self.awp.eq_fr = {0,19,17}
 	self.awp.has_description = nil
+	self.awp.butt_t = 9
 
 	self.bessy.caliber = ".71 Ball"
 	self.bessy.weight = 48
@@ -2307,6 +2340,7 @@ end
 	self.r870.r_shell = 12
 	self.r870.eq_fr = {0,11,12}
 	self.r870.use_shotgun_reload = true
+	self.r870.butt_t = butt_ts.slap
 
 	self.serbu.caliber = "12 gauge"
 	self.serbu.weight = 23
@@ -2320,6 +2354,7 @@ end
 	self.serbu.r_shell = self.r870.r_shell
 	self.serbu.eq_fr = self.r870.eq_fr
 	self.serbu.use_shotgun_reload = true
+	self.serbu.butt_t = self.r870.butt_t
 
 	self.m590.caliber = "12 gauge"
 	self.m590.weight = 26+2+2 --stock and adapter
@@ -2333,6 +2368,7 @@ end
 	self.m590.r_shell = self.r870.r_shell
 	self.m590.eq_fr = self.r870.eq_fr
 	self.m590.use_shotgun_reload = true
+	self.m590.butt_t = self.r870.butt_t
 
 	self.m1897.caliber = "12 gauge"
 	self.m1897.weight = 36
@@ -2374,6 +2410,7 @@ end
 	self.supernova.force_anim_reload_transition = true
 	self.supernova.eq_fr = self.m1897.eq_fr
 	self.supernova.use_shotgun_reload = true
+	self.supernova.butt_t = 6
 
 	self.ksg.caliber = "12 gauge"
 	self.ksg.weight = 32
@@ -2446,6 +2483,7 @@ end
 	self.ultima_orig.r_redienter = 0.3
 	self.ultima.eq_fr = self.m1897.eq_fr
 	self.ultima.shot_anim_hands_offset = 4/30
+	self.ultima.butt_t = 8
 
 	self.striker.caliber = "12 gauge"
 	self.striker.weight = 42 --not_sure
@@ -2494,6 +2532,7 @@ end
 	self.basset.timers.reload_not_empty = 2.1
 	self.basset.timers.reload_empty = 2.7
 	self.basset.eq_fr = {0,12,13}
+	self.basset.butt_t = 4
 
 	self.sko12.caliber = "12 gauge"
 	self.sko12.FIRE_MODE = "single"
@@ -2505,6 +2544,7 @@ end
 	self.sko12.r_ass = 1/30
 	--self.sko12.shell_ejection = "effects/payday2/particles/weapons/shells/shell_slug"
 	self.sko12.shot_anim_hands_offset = 3/30
+	self.sko12.butt_t = 8
 
 	self.aa12.caliber = "12 gauge"
 	self.aa12.weight = 48
@@ -2558,6 +2598,7 @@ end
 	self.uzi.eq_fr = {1,14,13}
 	self.uzi.anim_no_full = true
 	self.uzi.shot_anim_hands_offset = 4/30 --31/30
+	self.uzi.butt_t = 9
 
 	self.sterling.caliber = "9x19"
 	self.sterling.weight = 27
@@ -2588,6 +2629,8 @@ end
 	self.sub2000.anim_sprint_t = 15/30
 	self.sub2000.has_description = true
 	self.sub2000.desc_id = "bm_w_folding_gun_desc"
+	self.sub2000.shot_anim_hands_offset = 2/30
+	--self.sub2000.shot_anim_hands = 1.2
 
 	self.speen.caliber = "9x19"
 	self.speen.weight = 23
@@ -2616,6 +2659,7 @@ end
 	self.vityaz.bolt_release = "none"
 	self.vityaz.shot_anim_mul = 1.25
 	self.vityaz.eq_fr = {0,10,13}
+	self.vityaz.butt_t = 8
 
 	self.m45.caliber = "9x19"
 	self.m45.weight = 34
@@ -2630,6 +2674,7 @@ end
 	self.m45.r_no_bullet_clbk = true
 	self.m45.r_ass = 1/30
 	self.m45.anim_no_semi = true
+	self.m45.butt_t = 9
 
 	self.shepheard.caliber = "9x19"
 	self.shepheard.weight = 27
@@ -2710,6 +2755,7 @@ end
 	self.p90.eq_fr = {1,12,13}
 	self.p90.r_no_bullet_clbk = true
 	self.p90.anim_no_semi = true
+	self.p90.butt_t = 9
 
 	self.mp7.caliber = "4.6x30"
 	self.mp7.weight = 18
@@ -2720,6 +2766,7 @@ end
 	self.mp7.eq_fr = {1,13,12}
 	self.mp7.shot_anim_mul = 1.75
 	self.mp7.anim_no_full = true
+	self.mp7.butt_t = 9
 
 
 
@@ -2736,6 +2783,7 @@ end
 	self.scorpion.eq_fr = {0,10,18}
 	self.scorpion.shot_anim_mul = 1.75
 	self.scorpion.anim_no_full = true
+	self.scorpion.butt_t = 9
 
 	self.mac10.caliber = ".380 ACP"
 	self.mac10.weight = 16
@@ -2754,6 +2802,7 @@ end
 	self.mac10.weapon_hold = "glock"
 	self.mac10.force_anim_reload_transition = true
 	self.mac10.shot_anim_hands_offset = 3/30
+	self.mac10.butt_t = 9
 
 	self.baka.caliber = "9x19"
 	self.baka.weight = 19
@@ -2775,6 +2824,7 @@ end
 	self.baka.anim_no_full = true
 	self.baka.force_anim_reload_transition = true
 	self.baka.shot_anim_hands_offset = 3/30
+	self.baka.butt_t = 9
 
 	self.pm9.caliber = "9x19"
 	self.pm9.weight = 26
@@ -2806,6 +2856,7 @@ end
 	self.mp9.shot_anim_mul = 1.5
 	self.mp9.r_no_bullet_clbk = true
 	self.mp9.anim_no_full = true
+	self.mp9.butt_t = 9
 
 	self.tec9.caliber = "9x19"
 	self.tec9.weight = 15
@@ -2849,7 +2900,6 @@ end
 
 	self.cobray.caliber = "9x19"
 	self.cobray.weight = 18
-	self.cobray.rise_factor = 2
 	self.cobray.action = "blowback"
 	self.cobray.open_bolt = true
 	self.cobray.mag_release = "paddle"
@@ -2860,6 +2910,7 @@ end
 	self.cobray.anim_no_full = true
 	self.cobray.bolt_speed = 1.75
 	self.cobray.shot_anim_hands_offset = 2/30
+	self.cobray.butt_t = 9
 
 
 
@@ -2875,6 +2926,7 @@ end
 	self.glock_17.anim_no_full = true
 	self.glock_17.shot_anim_hands_offset = 1/30
 	self.glock_17.shot_anim_mul = 1.5
+	self.glock_17.butt_t = 9
 
 	self.glock_18c.caliber = "9x19"
 	self.glock_18c.weight = 7
@@ -2888,6 +2940,7 @@ end
 	self.glock_18c.shot_anim_hands_offset = 1/30
 	self.glock_18c.shot_anim_mul = 1.75
 	self.glock_18c.anim_no_full = true
+	self.glock_18c.butt_t = 9
 
 	self.jowi.caliber = "9x19"
 	self.jowi.weight = 6
@@ -2897,6 +2950,7 @@ end
 	self.jowi.r_ass = 1/30
 	self.jowi.shot_anim_hands_offset = 1/30
 	self.jowi.shot_anim_mul = 1.5
+	self.jowi.butt_t = 9
 
 	self.g26.caliber = "9x19"
 	self.g26.stats.recoil = 1
@@ -2912,6 +2966,7 @@ end
 	self.g26.global_value = "pd2_clan"
 	self.g26.shot_anim_hands_offset = 1/30
 	self.g26.shot_anim_mul = 1.5
+	self.g26.butt_t = 9
 
 	self.g22c.caliber = ".40 S&W"
 	self.g22c.weight = 8
@@ -2924,6 +2979,7 @@ end
 	self.g22c.anim_no_full = true
 	self.g22c.shot_anim_hands_offset = 1/30
 	self.g22c.shot_anim_mul = 1.5
+	self.g22c.butt_t = 9
 
 	self.ppk.caliber = ".380 ACP"
 	self.ppk.fire_mode_data.fire_rate = 0.05
@@ -2936,6 +2992,7 @@ end
 	self.ppk.r_ass = 1/30
 	self.ppk.shot_anim_hands_offset = 1/30
 	self.ppk.shot_anim_mul = 1.5
+	self.ppk.butt_t = 9
 
 	self.stech.caliber = "9x18"
 	self.stech.weight = 13
@@ -2949,6 +3006,7 @@ end
 	self.stech.anim_no_full = true
 	self.stech.shot_anim_hands_offset = 1/30
 	self.stech.shot_anim_mul = 1.5
+	self.stech.butt_t = 9
 
 	self.pmm.caliber = "9x18"
 	self.pmm.weight = 8
@@ -2967,6 +3025,7 @@ end
 	self.pmm.shot_anim_hands_offset = 1/30
 	self.pmm.shot_anim_mul = 1.5
 	--self.pmm.force_anim_reload_transition = true
+	self.pmm.butt_t = 9
 
 	self.shrew.caliber = "9x19"
 	self.shrew.weight = 7
@@ -2978,6 +3037,7 @@ end
 	self.shrew.r_ass = 1/30
 	self.shrew.shot_anim_hands_offset = 1/30
 	self.shrew.shot_anim_mul = 1.5
+	self.shrew.butt_t = 9
 
 	self.c96.caliber = "9x19"
 	self.c96.weight = 13
@@ -2994,6 +3054,7 @@ end
 	self.c96.r_ass = 1/30
 	self.c96.shot_anim_hands_offset = 1/30
 	self.c96.shot_anim_mul = 1.5
+	self.c96.butt_t = 9
 
 	self.czech.caliber = "9x19"
 	self.czech.weight = 13
@@ -3009,6 +3070,7 @@ end
 	self.czech.anim_no_full = true
 	self.czech.shot_anim_hands_offset = 1/30
 	self.czech.shot_anim_mul = 1.5
+	self.czech.butt_t = 9
 
 	self.beer.caliber = "9x19"
 	self.beer.FIRE_MODE = "burst"
@@ -3030,21 +3092,23 @@ end
 	self.beer.r_ass = self.czech.r_ass
 	self.beer.shot_anim_hands_offset = 1/30
 	self.beer.shot_anim_mul = 1.5
+	self.beer.butt_t = 9
 
 	self.packrat.caliber = "9x19"
 	self.packrat.weight = 8
 	self.packrat.fire_mode_data.fire_rate = 0.06
 	self.packrat.rise_factor = 2
 	self.packrat.action = "moving_barrel"
-	self.packrat.timers.reload_not_empty = 1.39
-	self.packrat.timers.reload_empty = 2.05
+	self.packrat.timers.reload_not_empty = 1.5
+	self.packrat.timers.reload_empty = 2.2
 	self.packrat.shot_anim_hands = 1.25
 	self.packrat.eq_fr = {3,15,12}
 	self.packrat.r_ass = 1/30
 	self.packrat.weapon_hold = "glock"
-	self.packrat.force_anim_reload_transition = true
+	self.packrat.force_anim_reload_transition = 0.3
 	self.packrat.shot_anim_hands_offset = 1/30
 	self.packrat.shot_anim_mul = 1.5
+	self.packrat.butt_t = 9
 
 	self.holt.caliber = "9x19"
 	self.holt.weight = 10
@@ -3054,24 +3118,28 @@ end
 	self.holt.timers = self.packrat.timers
 	self.holt.shot_anim_hands = self.packrat.shot_anim_hands
 	self.holt.eq_fr = self.packrat.eq_fr
+	--self.holt.anim_reload_mul = 1.05
 	self.holt.r_ass = 1/30
 	self.holt.weapon_hold = "glock"
-	self.holt.force_anim_reload_transition = true
+	self.holt.force_anim_reload_transition = self.packrat.force_anim_reload_transition
 	self.holt.shot_anim_hands_offset = 1/30
 	self.holt.shot_anim_mul = 1.5
+	self.holt.butt_t = 9
 
 	self.maxim9.caliber = "9x19"
 	self.maxim9.weight = 11
 	self.maxim9.fire_mode_data.fire_rate = 0.06
 	self.maxim9.action = "roller_delayed"
 	self.maxim9.timers = self.packrat.timers
-	self.maxim9.weapon_hold = "glock"
 	self.maxim9.shot_anim_hands = self.packrat.shot_anim_hands
 	self.maxim9.eq_fr = self.packrat.eq_fr
 	self.maxim9.r_ass = 1/30
-	self.maxim9.desc_id = self.asval.desc_id
+	self.maxim9.weapon_hold = "glock"
+	self.maxim9.force_anim_reload_transition = self.packrat.force_anim_reload_transition
 	self.maxim9.shot_anim_hands_offset = 1/30
-	self.maxim9.shot_anim_mul = self.packrat.shot_anim_mul
+	self.maxim9.shot_anim_mul = 1.5
+	self.maxim9.desc_id = self.asval.desc_id
+	self.maxim9.butt_t = 9
 
 	self.pl14.caliber = "9x19"
 	self.pl14.weight = 8
@@ -3082,6 +3150,7 @@ end
 	self.pl14.r_ass = 1/30
 	self.pl14.shot_anim_hands_offset = 1/30
 	self.pl14.shot_anim_mul = 1.5
+	self.pl14.butt_t = 9
 
 	self.sparrow.caliber = "9x19"
 	self.sparrow.weight = 8
@@ -3091,6 +3160,7 @@ end
 	self.sparrow.r_ass = 1/30
 	self.sparrow.shot_anim_hands_offset = 1/30
 	self.sparrow.shot_anim_mul = 1.5
+	self.sparrow.butt_t = 9
 
 	self.legacy.caliber = "9x19"
 	self.legacy.weight = 9
@@ -3101,9 +3171,10 @@ end
 	self.legacy.eq_fr = self.packrat.eq_fr
 	self.legacy.r_ass = 1/30
 	self.legacy.weapon_hold = "glock"
-	self.legacy.force_anim_reload_transition = true
+	self.legacy.force_anim_reload_transition = self.packrat.force_anim_reload_transition
 	self.legacy.shot_anim_hands_offset = 1/30
 	self.legacy.shot_anim_mul = 1.5
+	self.legacy.butt_t = 9
 
 	self.breech.caliber = "9x19"
 	self.breech.weight = 9
@@ -3121,6 +3192,7 @@ end
 	self.breech.r_no_bullet_clbk = self.ppk.r_no_bullet_clbk
 	self.breech.shot_anim_hands_offset = 1/30
 	self.breech.shot_anim_mul = 1.25
+	self.breech.butt_t = 9
 
 	self.b92fs.caliber = "9x19"
 	self.b92fs.weight = 10
@@ -3132,6 +3204,7 @@ end
 	self.b92fs.r_ass = 1/30
 	self.b92fs.shot_anim_hands_offset = 1/30
 	self.b92fs.shot_anim_mul = 1.5
+	self.b92fs.butt_t = 9
 
 	self.usp.caliber = ".45 ACP"
 	self.usp.weight = 9
@@ -3144,6 +3217,7 @@ end
 	self.usp.r_ass = 1/30
 	self.usp.shot_anim_hands_offset = 1/30
 	self.usp.shot_anim_mul = 1.5
+	self.usp.butt_t = 9
 
 	self.p226.caliber = ".40 S&W"
 	self.p226.weight = 9
@@ -3155,6 +3229,7 @@ end
 	self.p226.r_ass = 1/30
 	self.p226.shot_anim_hands_offset = 1/30
 	self.p226.shot_anim_mul = 1.5
+	self.p226.butt_t = 9
 
 	self.hs2000.caliber = ".40 S&W" --not_sure
 	self.hs2000.weight = 9
@@ -3165,6 +3240,7 @@ end
 	self.hs2000.r_ass = 1/30
 	self.hs2000.shot_anim_hands_offset = 1/30
 	self.hs2000.shot_anim_mul = 1.75
+	self.hs2000.butt_t = 9
 
 	self.colt_1911.caliber = ".45 ACP"
 	self.colt_1911.weight = 12
@@ -3178,6 +3254,7 @@ end
 	self.colt_1911.r_ass = 1/30
 	self.colt_1911.shot_anim_hands_offset = 1/30
 	self.colt_1911.shot_anim_mul = 1.75
+	self.colt_1911.butt_t = 9
 
 	self.m1911.caliber = ".45 ACP"
 	self.m1911.weight = 12
@@ -3188,10 +3265,12 @@ end
 	self.m1911.r_ass = 1/30
 	self.m1911.shot_anim_hands_offset = 1/30
 	self.m1911.shot_anim_mul = 1.5
+	self.m1911.butt_t = 9
 
 	self.lemming.caliber = "5.7x28"
 	self.lemming.weight = 7
 	self.lemming.fire_mode_data.fire_rate = 0.07
+	self.lemming.timers.reload_not_empty = 1.4
 	self.lemming.rise_factor = 2
 	self.lemming.action = "moving_barrel"
 	self.lemming.shot_anim_hands = self.packrat.shot_anim_hands
@@ -3199,21 +3278,24 @@ end
 	self.lemming.r_ass = 1/30
 	self.lemming.has_description = nil
 	self.lemming.weapon_hold = "glock"
-	self.lemming.force_anim_reload_transition = true
+	self.lemming.force_anim_reload_transition = self.packrat.force_anim_reload_transition
 	self.lemming.shot_anim_hands_offset = 1/30
 	self.lemming.shot_anim_mul = 1.25
+	self.lemming.butt_t = 9
 
 	self.type54.caliber = "7.62x25"
 	self.type54.weight = 9
 	self.type54.fire_mode_data.fire_rate = 0.07
 	self.type54.rise_factor = 2
 	self.type54.action = "moving_barrel"
+	self.type54.shot_anim_hands = self.packrat.shot_anim_hands
 	self.type54.eq_fr = self.glock_17.eq_fr
 	self.type54.r_ass = 1/30
 	self.type54.weapon_hold = "glock"
-	self.type54.force_anim_reload_transition = true
+	self.type54.force_anim_reload_transition = self.packrat.force_anim_reload_transition
 	self.type54.shot_anim_hands_offset = 1/30
 	self.type54.shot_anim_mul = 1.5
+	self.type54.butt_t = 9
 
 	self.deagle.caliber = ".50 AE"
 	self.deagle.weight = 19
@@ -3231,6 +3313,7 @@ end
 	self.deagle.shot_anim_mul = 1
 	self.deagle.shot_anim_hands = 0.9
 	self.deagle.r_ass = 1/30
+	self.deagle.butt_t = 9
 
 	self.contender.caliber = ".45-70"
 	self.contender.weight = 17
@@ -3260,6 +3343,7 @@ end
 	self.welrod.mag_release = "paddle"
 	self.welrod.eq_fr = {1,12,12}
 	--self.msr.r_no_bullet_clbk = true
+	self.welrod.butt_t = 9
 
 
 
@@ -3278,6 +3362,7 @@ end
 	self.new_raging_bull.eq_fr = {1,14,13}
 	self.new_raging_bull.r_no_bullet_clbk = true
 	self.new_raging_bull.shot_anim_hands_offset = 1/30
+	self.new_raging_bull.butt_t = 9
 
 	self.korth.caliber = ".357 Mag"
 	self.korth.weight = 15
@@ -3300,6 +3385,7 @@ end
 	self.korth.eq_fr = self.new_raging_bull.eq_fr
 	self.korth.r_no_bullet_clbk = true
 	self.korth.shot_anim_hands_offset = 1/30
+	self.korth.butt_t = 9
 
 	self.mateba.caliber = ".357 Mag"
 	self.mateba.weight = 12
@@ -3311,6 +3397,7 @@ end
 	self.mateba.eq_fr = self.new_raging_bull.eq_fr
 	self.mateba.r_no_bullet_clbk = true
 	self.mateba.shot_anim_hands_offset = 1/30
+	self.korth.butt_t = 9
 
 	self.chinchilla.caliber = ".44 Mag"
 	self.chinchilla.weight = 14
@@ -3325,6 +3412,7 @@ end
 	self.chinchilla.eq_fr = self.new_raging_bull.eq_fr
 	self.chinchilla.r_no_bullet_clbk = true
 	self.chinchilla.shot_anim_hands_offset = 1/30
+	self.chinchilla.butt_t = 9
 
 	self.peacemaker.caliber = ".45 LC"
 	self.peacemaker.weight = 12
@@ -3333,7 +3421,6 @@ end
 	self.peacemaker.sao = true
 	self.peacemaker.bolt_release = "none"
 	self.peacemaker.bolt_release_ratio = { 0.8, 0.6 }
-	self.peacemaker.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.peacemaker.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
 	self.peacemaker.weapon_hold = "raging_bull"
 	self.peacemaker.force_anim_reload_transition = true
@@ -3347,6 +3434,7 @@ end
 	--self.peacemaker.custom_enter = 11/30
 	self.peacemaker.shot_anim_hands_offset = 1/30
 	self.peacemaker.shot_anim_hands = self.new_raging_bull.shot_anim_hands
+	self.peacemaker.butt_t = 9
 
 	self.model3.caliber = ".44 RU"
 	self.model3.weight = 13
@@ -3364,6 +3452,7 @@ end
 	self.model3.eq_fr = self.new_raging_bull.eq_fr
 	self.model3.shot_anim_hands_offset = 1/30
 	self.model3.shot_anim_hands = self.new_raging_bull.shot_anim_hands
+	self.model3.butt_t = 9
 
 	self.judge.caliber = ".410 bore"
 	self.judge.weight = 8
@@ -3379,6 +3468,7 @@ end
 	self.judge.r_no_bullet_clbk = true
 	self.judge.shot_anim_hands_offset = 1/30
 	self.judge.shot_anim_mul = 1.1
+	self.judge.butt_t = 9
 
 	self.rsh12.caliber = "12.7x55"
 	self.rsh12.weight = 22
@@ -3395,6 +3485,7 @@ end
 	self.rsh12.r_no_bullet_clbk = true
 	--self.rsh12.sounds.fire = "model70_fire"
 	self.rsh12.shot_anim_hands_offset = 1/30
+	self.rsh12.butt_t = 9
 
 
 
@@ -3533,6 +3624,7 @@ end
 	self.gre_m79.bolt_release = "none"
 	self.gre_m79.bolt_release_ratio = { 0.7, 0.5 }
 	self.gre_m79.custom_cycle = { "r_bolt_release_1", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+	self.gre_m79.butt_t = 9
 	--11 13
 
 	self.m32.weight = 53
@@ -3568,6 +3660,7 @@ end
 	self.slap.anim_unequip_swap = "start_running"
 	--self.slap.anim_sprint_t = 15/30
 	self.slap.eq_fr = {0,14,28}
+	self.slap.butt_t = 8
 
 	self.china.weight = 37
 	self.china.caliber = "40x46mm"
@@ -3624,8 +3717,9 @@ end
 	self.m134.r_no_bullet_clbk = true
 	self.m134.anim_no_semi = true
 	self.m134.has_description = true
-	self.m134.desc_id = "bm_wp_backpack_feed_desc"
+	--self.m134.desc_id = "bm_wp_backpack_feed_desc"
 	self.m134.sounds.fire_single = nil
+	self.m134.butt_t = 9
 
 	self.ray.weight = 53
 	self.ray.caliber = "M235"
@@ -3636,6 +3730,7 @@ end
 	self.ray.bolt_release = "none"
 	self.ray.bolt_release_ratio = { 0.4, 1.2 }
 	self.ray.custom_cycle = { "r_bolt_release_1", "r_reach_for_old_mag", "r_reach_for_old_mag", "r_mag_out", "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release_2" }
+	self.ray.butt_t = 6
 
 	self.rpg7.weight = 63
 	self.rpg7.caliber = "PG-7VL"
@@ -3644,6 +3739,7 @@ end
 	self.rpg7.custom_cycle_2 = { "r_keep_old_mag", "r_get_new_mag_in", "r_bolt_release" }
 	self.rpg7.timers.reload_empty = 6.6
 	self.rpg7.has_description = nil
+	self.rpg7.butt_t = 6
 
 	self.flamethrower_mk2.caliber = nil
 	self.flamethrower_mk2.feed_system = "fuel"

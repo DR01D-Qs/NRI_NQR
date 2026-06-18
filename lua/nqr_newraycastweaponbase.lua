@@ -164,6 +164,12 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 			local mod_td = tweak_data.weapon.factory.parts[part_id]
 			local part_data = parts[part_id]
 
+			if not part_data then
+				Utils.PrintTable(colors)
+				log(part_id)
+				Utils.PrintTable(parts)
+			end
+
 			if part_data and colors[mod_td.sub_type] then
 				local alpha = part_data.unit:base().GADGET_TYPE == "laser" and tweak_data.custom_colors.defaults.laser_alpha or 1
 
@@ -195,7 +201,6 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 		["x_deagle"] = "units/pd2_dlc_rota/weapons/wpn_fps_sho_rota/wpn_fps_sho_rota",
 		["rsh12"] = "units/pd2_dlc_pxp3/weapons/wpn_fps_snp_contender/wpn_fps_snp_contender",
 		["x_rsh12"] = "units/pd2_dlc_pxp3/weapons/wpn_fps_snp_contender/wpn_fps_snp_contender",
-		["x_rsh12"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["x_rage"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["x_judge"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
 		["x_2006m"] = "units/pd2_dlc_max/weapons/wpn_fps_pis_chinchilla/wpn_fps_pis_chinchilla",
@@ -248,6 +253,32 @@ function NewRaycastWeaponBase:clbk_assembly_complete(clbk, parts, blueprint)
 	end
 
 	clbk()
+end
+
+function NewRaycastWeaponBase:set_gadget_color(color)
+	if not self._enabled then
+		return
+	end
+
+	if not self._assembly_complete then
+		return
+	end
+
+	local gadgets = self._gadgets
+
+	if gadgets then
+		local gadget = nil
+
+		for i, id in ipairs(gadgets) do
+			gadget = self._parts[id]
+
+			if gadget and gadget.unit:base() and gadget.unit:base().set_color then
+				--local alpha = gadget.unit:base().GADGET_TYPE == "laser" and tweak_data.custom_colors.defaults.laser_alpha or 1
+
+				gadget.unit:base():set_color(color)
+			end
+		end
+	end
 end
 
 
@@ -353,7 +384,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 		if self._ammo_data.armor_piercing_mul ~= nil then self._armor_piercing_chance = math.clamp(self._armor_piercing_chance * self._ammo_data.armor_piercing_mul, 0, 1) end
 	end
 
-	local muzzleflashes = {
+	--[[local muzzleflashes = {
 		"effects/payday2/particles/weapons/9mm_auto",
 		"effects/payday2/particles/weapons/9mm_auto_fps",
 		"effects/payday2/particles/weapons/9mm_auto_silence",
@@ -373,8 +404,8 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 		"effects/payday2/particles/weapons/heat/flash",
 		"effects/payday2/particles/weapons/air_pressure",
 		"effects/payday2/particles/weapons/hailstorm_effect",
-	}
-	muzzleflashes = {}
+	}]]
+	local muzzleflashes = {}
 	if self._silencer then
 		self._muzzle_effect = Idstring(wep_tweak.muzzleflash_silenced or "effects/payday2/particles/weapons/9mm_auto_silence_fps")
 	elseif self._ammo_data and self._ammo_data.muzzleflash ~= nil then
@@ -1130,7 +1161,7 @@ function NewRaycastWeaponBase:_get_spread(user_unit)
 		or 1
 	) or 1.1]]
 
-	spread = self._spread * 0.1
+	local spread = self._spread * 0.1
 
 	return spread, spread --spread_x, spread_y
 end
@@ -1382,6 +1413,7 @@ end
 
 --SPAWN WEAPON: BOLT DROPPED CHECK
 function NewRaycastWeaponBase:on_enabled(...)
+	--log("NewRaycastWeaponBase:on_enabled", self._name_id, self._last_gadget_idx)
 	NewRaycastWeaponBase.super.on_enabled(self, ...)
 	self:_set_parts_enabled(true)
 	self:set_gadget_on(self._last_gadget_idx, false)
@@ -1399,6 +1431,18 @@ function NewRaycastWeaponBase:on_enabled(...)
 		end
 	end
 
+	self:_chk_charm_upd_state()
+end
+function NewRaycastWeaponBase:on_disabled(...)
+	--log("NewRaycastWeaponBase:on_disabled", self._name_id, self._last_gadget_idx)
+	if self:enabled() then
+		self._last_gadget_idx = self._gadget_on
+
+		self:gadget_off()
+	end
+
+	NewRaycastWeaponBase.super.on_disabled(self, ...)
+	self:_set_parts_enabled(false)
 	self:_chk_charm_upd_state()
 end
 
@@ -1881,7 +1925,9 @@ function NewRaycastWeaponBase:update_bolting(t, reloading)
 		end]]
 	end
 end
-function NewRaycastWeaponBase:interupt_bolting(forced)
+function NewRaycastWeaponBase:interupt_bolting(forced, premature)
+	if premature then self._is_bolting = 1 end
+
 	local wep_tweak = self:weapon_tweak_data()
 	--if (wep_tweak.action~="bolt_action" and self._is_bolting~=1) or (wep_tweak.action=="bolt_action" and not self._is_bolting) then return end
 	--managers.mission._fading_debug_output:script().log(tostring("interupt attempt, bolting: ")..tostring(self._is_bolting), Color.red)
@@ -1898,6 +1944,7 @@ function NewRaycastWeaponBase:interupt_bolting(forced)
 	self:tweak_data_anim_stop("fire")
 	self:tweak_data_anim_stop("fire_steelsight")
 	if self.chamber_state~=0 then self.chamber_state = -1 end
+	self._next_fire_allowed = self._next_fire_allowed - (self:weapon_fire_rate()*0.9)
 end
 
 --WORK FOR BOTH RELOAD TYPES
@@ -2025,6 +2072,17 @@ function NewRaycastWeaponBase:is_bipod_usable()
 	end
 
 	return true--retval
+end
+
+
+
+function NewRaycastWeaponBase:get_bayonet()
+	for _, part_id in pairs(self._blueprint) do
+		local part_tweak = tweak_data.weapon.factory.parts[part_id]
+		if part_tweak.type=="bayonet" or part_tweak.sub_type=="bayonet" then return part_tweak.stats end
+	end
+
+	return nil
 end
 
 

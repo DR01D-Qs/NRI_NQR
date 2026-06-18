@@ -134,6 +134,7 @@ tweak_data.projectiles.rocket_frag.arming_distance = 500
 tweak_data.projectiles.rocket_ray_frag.arming_distance = 500
 
 tweak_data.projectiles.rocket_ray_frag.player_damage = 2
+tweak_data.projectiles.rocket_ray_frag.range = 400
 tweak_data.projectiles.rocket_ray_frag.fire_dot_data = {
 	dot_trigger_chance = 35,
 	dot_damage = 25,

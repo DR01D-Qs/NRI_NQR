@@ -46,22 +46,25 @@ function PlayerCarry:_check_use_item(t, input)
 			or self:_is_throwing_projectile()
 			or self:_on_zipline()
 			or not self:_is_movement_equipped()
+			or self._state_data.melee_expire_t
 		)
 
 		if not action_forbidden then
-			self:_play_interact_redirect(t)
+			self:_play_interact_redirect(t, 1)
 			self._throw_redirect_t = t + 0.4
-			self._released = true
+			self._throw_released = true
 		end
 	end
 
 	if self._throw_redirect_t then
-		if (self._throw_redirect_t < t) or (self._released and input.btn_use_item_press) then
+		if (self._throw_redirect_t < t) or (self._throw_released and input.btn_use_item_press) then
+			self._ext_camera:play_shaker("player_throw_bag", (t<=self._throw_redirect_t) and 0.2 or 0.5)
 			managers.player:drop_carry(nil, t <= self._throw_redirect_t)
 			self._throw_redirect_t = nil
 			self._throw_down = nil
 			self._throw_time = nil
-			self._released = nil
+			self._throw_released = nil
+			self:_play_interact_redirect(t, 2)
 
 			new_action = true
 		end
