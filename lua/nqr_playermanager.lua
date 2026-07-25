@@ -565,7 +565,7 @@ function PlayerManager:drop_carry(zipline_unit, weak_throw)
 	local throw_distance_multiplier_upgrade_level = weak_throw and 1 or 0
 	--carry_data.multiplier = player:movement():is_above_stamina_threshold() and 1 or 0
 	local position = camera_ext:position()
-	local rotation = camera_ext:rotation()
+	local rotation = camera_ext:rotation() * Rotation(weak_throw and 0 or 90,0,0)
 	local forward = player:camera():forward()
 
 	if player then player:sound():play("Play_bag_generic_throw", nil, false) end

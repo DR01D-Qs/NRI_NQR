@@ -465,11 +465,17 @@ function CopActionShoot:_get_unit_shoot_pos(t, pos, dis, w_tweak, falloff, i_ran
 		hit_chance = math.lerp(prev_range_hit_chance, math.lerp(hit_chances[2]*0.2, hit_chances[2], focus_prog), dis_lerp)
 	end
 
-	if not table.contains(self._common_data.char_tweak.tags or {}, "sniper") then
-		hit_chances = {0.1, 0.5}
-		hit_chance = math.lerp(math.min(hit_chances[2]*0.2, (hit_chances[2]*0.2)/(dis*0.002)), math.min(hit_chances[2], hit_chances[2]/(dis*0.002)), focus_prog)
+	if self._miss_first_player_shot and (shooting_local_player or self._attention and self._attention.unit and self._attention.unit:base() and self._attention.unit:base().is_husk_player) then
+		self._miss_first_player_shot = nil
+		self._ext_movement.missed_first_shot = true
 		hit_chance = 0
 	end
+
+	--if not table.contains(self._common_data.char_tweak.tags or {}, "sniper") then
+		hit_chances = {0.1, 0.5}
+		--hit_chance = math.lerp(math.min(hit_chances[2]*0.2, (hit_chances[2]*0.2)/(dis*0.002)), math.min(hit_chances[2], hit_chances[2]/(dis*0.002)), focus_prog)
+		hit_chance = 0
+	--end
 
 	if self._common_data.is_suppressed then hit_chance = hit_chance * 0.5 end
 
@@ -485,8 +491,9 @@ function CopActionShoot:_get_unit_shoot_pos(t, pos, dis, w_tweak, falloff, i_ran
 		mrot_axis_angle(temp_rot1, enemy_vec, math.random(360))
 		mvec3_rot(error_vec, temp_rot1)
 
-		local miss_min_dis = 45
+		local miss_min_dis = self._common_data.char_tweak.miss_min_dis or 45
 		local error_vec_len = (miss_min_dis * dis*0.002 * math.random()) + (miss_min_dis*0.5 * (1-focus_prog))
+		error_vec_len = self._ext_movement.missed_first_shot and 15 or error_vec_len
 		mvec3_set_l(error_vec, error_vec_len)
 		mvec3_add(error_vec, pos)
 		mvec3_set(shoot_hist.m_last_pos, error_vec)

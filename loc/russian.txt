@@ -392,6 +392,8 @@
 	"bm_wp_model70_b_short" : "Укороченный Ствол",
 	"bm_wp_rota_b_salvo" : "Ствол Тсс!",
 	"bm_wp_1911_hicapa" : "Конверсия Crosskill Hi-Capa",
+	"bm_wp_g26_gadgetrail" : "Планка Гаджета Chimano Compact",
+	"bm_wp_maxim9_gadgetrail" : "Планка Гаджета Gecko",
 
 	"bm_wp_upg_ass_74_b_legend" : "Ствол Vlad's Rodina",
 	"bm_wp_upg_ass_74_ns_legend" : "Насадка Vlad's Rodina",

@@ -54,6 +54,7 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.open_from_inside.timer = nil
 	self.raise_balloon.interact_distance = 150
 	self.gasoline.interact_distance = 240
+	self.stash_planks_pickup.interact_distance = 150
 
 	self.copy_machine_smuggle.interact_distance = 180
 	self.big_computer_hackable.interact_distance = 140
@@ -153,6 +154,9 @@ Hooks:PostHook( InteractionTweakData, "init", "nqr_interactiontweakdata", functi
 	self.pex_set_burnable_liquid.interact_distance = 180
 	self.sand_open_slide_gate.interact_distance = 240
 	self.sand_pickup_harddrive.timer = nil
+	self.press_insert_sample.timer = 1
+	self.generator_start.interact_distance = 180
+	self.bank_open_interaction.timer = nil
 
 	self.gold_pile.interact_distance = 180
 	self.gold_pile.timer = 2

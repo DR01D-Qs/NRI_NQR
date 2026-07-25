@@ -2271,7 +2271,12 @@ function PlayerStandard:_update_reload_timers(t, dt, input)
 	if self._state_data.reload_exit_expire_t and self._state_data.reload_exit_expire_t <= t then
 		self._state_data.reload_exit_expire_t = nil
 
-		if self._state_data.in_steelsight then self._ext_camera:play_redirect(self:get_animation("idle")) end
+		if self._state_data.in_steelsight then
+			self._ext_camera:play_redirect(self:get_animation("idle"))
+			wep_base:tweak_data_anim_stop("reload")
+			wep_base:tweak_data_anim_stop("reload_not_empty")
+			wep_base:tweak_data_anim_stop("reload_exit")
+		end
 
 		if self._equipped_unit then
 			managers.statistics:reloaded()

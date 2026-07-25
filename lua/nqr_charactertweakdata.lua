@@ -15513,6 +15513,7 @@ end)
 Hooks:PostHook( CharacterTweakData, "_init_shield", "nqr_CharacterTweakData:_init_shield", function(self, presets)
 	self.shield.move_speed = presets.move_speed.very_slow
 	self.shield.damage.hurt_severity = presets.hurt_severities.only_light_hurt
+	self.shield.miss_min_dis = 60
 
 	self.shield.weapon.is_smg.melee_dmg = 10
 	self.shield.weapon.is_smg.melee_retry_delay = { 1, 2 }
@@ -15530,6 +15531,10 @@ Hooks:PostHook( CharacterTweakData, "_init_marshal_shield", "nqr_CharacterTweakD
 	self.marshal_shield_break.tmp_invulnerable_on_tweak_change = 0
 end)
 
+Hooks:PostHook( CharacterTweakData, "_init_marshal_marksman", "nqr_CharacterTweakData:_init_marshal_marksman", function(self, presets)
+	self.marshal_marksman.miss_min_dis = 30
+end)
+
 Hooks:PostHook( CharacterTweakData, "_init_phalanx_minion", "nqr_CharacterTweakData:_init_phalanx_minion", function(self, presets)
 	self.phalanx_minion.can_be_tased = nil
 	self.phalanx_minion.damage.shield_knocked = true
@@ -15537,6 +15542,11 @@ Hooks:PostHook( CharacterTweakData, "_init_phalanx_minion", "nqr_CharacterTweakD
 end)
 
 Hooks:PostHook( CharacterTweakData, "_init_taser", "nqr_CharacterTweakData:_init_taser", function(self, presets)
+end)
+
+Hooks:PostHook( CharacterTweakData, "_init_sniper", "nqr_CharacterTweakData:_init_sniper", function(self, presets)
+	self.sniper.miss_min_dis = 15
+	self.sniper.misses_first_player_shot = true
 end)
 
 Hooks:PostHook( CharacterTweakData, "_init_spooc", "nqr_CharacterTweakData:_init_spooc", function(self, presets)

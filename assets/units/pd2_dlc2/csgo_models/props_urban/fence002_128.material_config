@@ -1,0 +1,9 @@
+<materials version="3">
+    <material name="mat_fence002_128" render_template="generic:DIFFUSE_TEXTURE" version="2">
+        <diffuse_texture file="units/pd2_dlc2/csgo_models/props_urban/fence_post002_df"/>
+    </material>
+    <material version="2" render_template="generic:ALPHA_MASKED:DIFFUSE_TEXTURE:DOUBLE_SIDED:EXTERNAL_ALPHA_REF" name="mat_fence002_128_alpha">
+        <diffuse_texture file="units/pd2_dlc2/csgo_models/props_urban/fence_post002_df"/>
+        <variable value="0.04" type="scalar" name="alpha_ref"/>
+    </material>
+</materials>

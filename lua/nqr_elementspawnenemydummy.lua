@@ -76,6 +76,26 @@ local job_denys100_specific = {
 		intro_shield013 = true,
 		intro_shield016 = true,
 	},
+	bph = {
+		spawn_ambush_control_001 = true,
+		spawn_ambush_control_002 = true,
+	},
+	crojob3 = {
+		--shields
+		ai_spawn_enemy_084 = true,
+		ai_spawn_enemy_097 = true,
+		ai_spawn_enemy_110 = true,
+		ai_spawn_enemy_111 = true,
+
+		ai_spawn_enemy_099 = true,
+		ai_spawn_enemy_112 = true,
+
+		ai_spawn_enemy_098 = true,
+
+		--dozers
+		ai_spawn_enemy_040 = true,
+		ai_spawn_enemy_113 = true,
+	},
 }
 
 local haras_job_denys_specific = {
@@ -267,6 +287,94 @@ local job_denys_specific = {
 		enemy_bulldozer_green001 = true,
 		enemy_swat_green006 = true,
 		enemy_shield_green003 = true,
+	},
+	nmh = {
+		ai_spawn_enemy_002 = true,
+		ai_spawn_enemy_003 = true,
+		ai_spawn_enemy_004 = true,
+		ai_spawn_enemy_005 = true,
+		ai_spawn_enemy_006 = true,
+		ai_spawn_enemy_007 = true,
+		ai_spawn_enemy_008 = true,
+		ai_spawn_enemy_009 = true,
+
+		ai_spawn_enemy_010 = true,
+		ai_spawn_enemy_011 = true,
+		ai_spawn_enemy_012 = true,
+		ai_spawn_enemy_013 = true,
+		ai_spawn_enemy_014 = true,
+		ai_spawn_enemy_015 = true,
+		ai_spawn_enemy_016 = true,
+		ai_spawn_enemy_017 = true,
+		ai_spawn_enemy_018 = true,
+		ai_spawn_enemy_019 = true,
+
+		patrolGuard001 = true,
+		patrolGuard002 = true,
+		patrolGuard003 = true,
+		patrolGuard004 = true,
+		patrolGuard005 = true,
+		patrolGuard006 = true,
+		patrolGuard007 = true,
+		patrolGuard008 = true,
+		patrolGuard009 = true,
+	},
+	crojob3 = {
+		ai_spawn_enemy_011 = true,
+		ai_spawn_enemy_012 = true,
+		ai_spawn_enemy_013 = true,
+		ai_spawn_enemy_014 = true,
+		ai_spawn_enemy_027 = true,
+		ai_spawn_enemy_028 = true,
+		ai_spawn_enemy_070 = true,
+		ai_spawn_enemy_071 = true,
+		ai_spawn_enemy_072 = true,
+		ai_spawn_enemy_073 = true,
+		ai_spawn_enemy_074 = true,
+		ai_spawn_enemy_075 = true,
+		ai_spawn_enemy_100 = true,
+		ai_spawn_enemy_104 = true,
+		ai_spawn_enemy_105 = true,
+		ai_spawn_enemy_106 = true,
+		ai_spawn_enemy_107 = true,
+		ai_spawn_enemy_108 = true,
+		ai_spawn_enemy_109 = true,
+		ai_spawn_enemy_114 = true,
+		ai_spawn_enemy_115 = true,
+		ai_spawn_enemy_116 = true,
+		ai_spawn_enemy_117 = true,
+		ai_spawn_enemy_118 = true,
+		ai_spawn_enemy_119 = true,
+		ai_spawn_enemy_120 = true,
+
+		ai_spawn_enemy_082 = true,
+		ai_spawn_enemy_083 = true,
+
+		ai_spawn_enemy_103 = true,
+
+		ai_spawn_enemy_085 = true,
+		ai_spawn_enemy_101 = true,
+	},
+	vit = {
+		enemy_sniper_oval_office001 = true,
+		enemy_sniper_oval_office002 = true,
+
+		ai_spawn_enemy_murkywater020 = true,
+		ai_spawn_enemy_murkywater021 = true,
+		ai_spawn_enemy_murkywater022 = true,
+		ai_spawn_enemy_murkywater023 = true,
+		ai_spawn_enemy_murkywater024 = true,
+		ai_spawn_enemy_murkywater025 = true,
+		ai_spawn_enemy_murkywater026 = true,
+		ai_spawn_enemy_murkywater027 = true,
+		ai_spawn_enemy_murkywater028 = true,
+
+		ai_spawn_enemy_086 = true,
+		ai_spawn_enemy_087 = true,
+		ai_spawn_enemy_088 = true,
+		ai_spawn_enemy_089 = true,
+		ai_spawn_enemy_090 = true,
+		ai_spawn_enemy_091 = true,
 	},
 }
 --instance glace_helicopter_dozer_003

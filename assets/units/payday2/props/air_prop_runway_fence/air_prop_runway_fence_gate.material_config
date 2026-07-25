@@ -1,0 +1,42 @@
+<materials version="3">
+    <material name="mat_steel" render_template="generic:CUBE_ENVIRONMENT_MAPPING:DIFFUSE_TEXTURE:SKINNED_1WEIGHT" version="2">
+        <diffuse_texture file="units/payday2/props/air_prop_runway_fence/air_prop_runway_fence_df"/>
+        <reflection_texture type="cube" global_texture="current_global_texture"/>
+    </material>
+    <material name="mat_chainlink" render_template="generic:ALPHA_MASKED:DIFFUSE_TEXTURE:EXTERNAL_ALPHA_REF:NORMALMAP:SKINNED_1WEIGHT" version="2">
+        <diffuse_texture file="units/world/props/shared_textures/fence_tile_df"/>
+        <bump_normal_texture file="units/world/props/shared_textures/fence_tile_nm"/>
+        <variable value="0.3" type="scalar" name="alpha_ref"/>
+    </material>
+    <material name="mat_chainlink_shadow" render_template="shadow_caster_only:ALPHA_MASKED:EXTERNAL_ALPHA_REF" version="2">
+        <diffuse_texture file="units/world/props/shared_textures/fence_tile_df"/>
+        <variable value="0.408" type="scalar" name="alpha_ref"/>
+    </material>
+    <material version="2" render_template="shadow_caster_only:SKINNED_1WEIGHT" name="shadow_caster"/>
+    <material version="2" render_template="generic:DIFFUSE_TEXTURE:SKINNED_1WEIGHT" name="mtr_padlock">
+        <diffuse_texture file="units/payday2/equipment/gen_interactable_padlock/gen_interactable_padlock_df"/>
+    </material>
+    <material name="hud_brackets" render_template="effect:DIFFUSE0_TEXTURE:VIEW_ANGLE_FALLOFF_OP" version="2">
+        <diffuse_texture file="units/gui/gui_brackets_df"/>
+        <variable value="identity" type="scalar" name="intensity"/>
+        <variable value="2" type="scalar" name="falloff_exp"/>
+    </material>
+    <material name="mtr_lockpick" render_template="effect:DIFFUSE0_TEXTURE:VIEW_ANGLE_FALLOFF_OP" version="2">
+        <diffuse_texture file="units/gui/lockpick_indicator_df"/>
+        <variable value="identity" type="scalar" name="intensity"/>
+        <variable value="2" type="scalar" name="falloff_exp"/>
+    </material>
+    <material name="mtr_saw" render_template="effect:DIFFUSE0_TEXTURE:DIFFUSE0_UVANIM:VIEW_ANGLE_FALLOFF_OP" version="2">
+        <diffuse_texture file="units/gui/sawblade_indicator_df"/>
+        <variable value="identity" type="scalar" name="intensity"/>
+        <variable value="2" type="scalar" name="falloff_exp"/>
+        <variable value="3 0 0" type="vector3" name="uv0_speed"/>
+    </material>
+	
+    <material name="mat_contour" render_template="generic:ALPHA_MASKED:CONTOUR:DIFFUSE_TEXTURE:OPACITY_TEXTURE" unique="true" version="2">
+        <diffuse_texture file="units/white_df"/>
+        <variable value="0 1 0" type="vector3" name="contour_color"/>
+        <variable value="1" type="scalar" name="contour_opacity"/>
+        <opacity_texture file="units/transparent_op"/>
+    </material>
+</materials>

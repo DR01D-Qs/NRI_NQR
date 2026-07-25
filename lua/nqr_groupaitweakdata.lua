@@ -97,13 +97,13 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		welcome_to_the_jungle_2 = {1.2,2}, --big oil 2
 		cane = {0.9,2}, --santa's workshop
 		brb = {0.8,2}, --brooklyn bank
-		mus = {0.8,1.5}, --the diamond
+		mus = {0.7,1.5}, --the diamond
 		run = {1.1,1.5}, --heat street
 		bph = {0.7,1}, --hell's island
 		glace = {0.5,1.5}, --green bridge
 		pbr = {0.8,2}, --beneath the mountain
 		pbr2 = {0.6,2}, --birth of sky
-		dinner = {0.6,2}, --slaughterhouse
+		dinner = {0.6,2.5}, --slaughterhouse
 		born = {1.1,2}, --biker 1
 		chew = {0.2,1}, --biker 2
 		flat = {0.8,2}, --panic room
@@ -183,7 +183,7 @@ Hooks:PostHook(GroupAITweakData, "_init_task_data", "nqr_GroupAITweakData:_init_
 		arm_fac = {1.1,2}, --transport harbor
 		arm_hcm = {1.2,2.5}, --transport downtown
 		arm_for = {1,2}, --transport train
-		arena = {0.8,1.5}, --alesso
+		arena = {0.8,2}, --alesso
 		wwh = {0.9,1.5}, --alaskan deal
 		chca = {1.3,2}, --black cat
 		mad = {1.2,1.5}, --boiling point

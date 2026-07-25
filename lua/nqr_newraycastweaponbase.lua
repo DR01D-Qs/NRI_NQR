@@ -413,10 +413,7 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	else 
 		self._muzzle_effect = Idstring(muzzleflashes[50] or wep_tweak.muzzleflash or "effects/particles/test/muzzleflash_maingun")
 	end
-	for _, part_id in ipairs(self._blueprint) do
-		local part = tweak_data.weapon.factory.parts[part_id]
-		if part.shell_eject then self._shell_ejection_effect_table.effect = Idstring(part.shell_eject) end
-	end
+	--self._muzzle_effect = Idstring("effects/payday2/particles/weapons/shotgun/sho_muzzleflash_dragons_breath")
 	self._muzzle_effect_table = {
 		effect = self._muzzle_effect,
 		parent = self._obj_fire,
@@ -427,11 +424,20 @@ function NewRaycastWeaponBase:_update_stats_values(disallow_replenish, ammo_data
 	else
 		self._trail_effect = wep_tweak.trail_effect and Idstring(wep_tweak.trail_effect) or Idstring("") --self.TRAIL_EFFECT
 	end
+	--self._trail_effect = Idstring("effects/payday2/particles/weapons/shotgun/sho_tracer_dragons_breath")
 	self._trail_effect_table = {
 		effect = self._trail_effect,
 		position = Vector3(),
 		normal = Vector3()
 	}
+	--self._trail_effect_table = self._muzzle_effect_table
+	--self._trail_effect_table.effect = Idstring("effects/payday2/particles/weapons/shotgun/sho_tracer_dragons_breath")
+	for _, part_id in ipairs(self._blueprint) do
+		local part = tweak_data.weapon.factory.parts[part_id]
+		if part.shell_eject then self._shell_ejection_effect_table.effect = part.shell_eject end
+		if part.muzzleflash then self._muzzle_effect_table.effect = part.muzzleflash end
+		if part.bullet_trail then self._trail_effect_table.effect = part.bullet_trail end
+	end
 
 	--local base_stats = wep_tweak.stats
 	local base_stats = WeaponDescription._get_base_stats(self:get_name_id())

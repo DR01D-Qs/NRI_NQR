@@ -1096,7 +1096,7 @@ end
 			{ name = "Dragon's Breath",
 				proj_type = "sphere",
 				proj_amount = 50,
-				proj_size = 2,
+				proj_size = 1,
 				proj_weight = 1,
 				default_speed = 100,
 				default_energy = 1000,
@@ -4214,8 +4214,7 @@ function WeaponTweakData:nqr_spread(ammotype_data, barrel, name)
 	) or 1.1
 
 	local spread = (400+proj_weight)^(1/(10+(barrel))) * action_factor
-	--spread = spread * (1+(proj_amount*0.1)-0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
-	spread = spread * (1+((proj_amount^(1*0.7))-1)*0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
+	spread = spread * (1+((proj_amount^1.1)-1)*0.037) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.05 or 1.1) -1.15
 
 	--local result_spread = (300+proj_weight)^(1/(10+(barrel))) * action_factor
 	--result_spread = result_spread * (1+(proj_amount*0.2)-0.1) * (proj_type=="pointy" and 1.0 or proj_type=="rounded" and 1.2 or 1.4)

@@ -14,62 +14,69 @@ function ElementCounter:init(...)
 
 
 
-    if not self._values then return end
+	if not self._values then return end
 
-    local job = Global.level_data and Global.level_data.level_id
-    local lookup = {
-        arm_for = { logic_counter_023 = 3, },
-        nail = { all_ingredients = 2, },
-        --peta = { count_to_13 = 4,},
-        peta2 = { count_to_13 = 1, },
-        dah = { ["2_bags_secured"] = 1, ["3_bags_secured"] = 2, ["4_bags_secured"] = 4, ["6_bags_secured"] = 4, ["8_bags_secured"] = 4 },
-        hox_1 = { turret_counter_ovk = 1, turret_counter_vhard = 0 },
-        trai = { logic_counter_6_bags = 4 },
-        ranc = {
-            --fulton nrm
-            logic_counter_012 = 2,
-            logic_counter_013 = 1,
-            logic_counter_014 = 0,
-            logic_counter_015 = 0,
-            logic_counter_016 = 0,
-            logic_counter_017 = 0,
+	if self._editor_name=="ambush_palm_room" then
+		--Utils.PrintTable(self, 3)
+		for i, k in pairs(self._values.on_executed) do
+			if k.id==103235 then table.remove(self._values.on_executed, i) end
+		end
+	end
 
-            --fulton ovk
-            logic_counter_001 = 4,
-            logic_counter_007 = 3,
-            logic_counter_006 = 2,
-            logic_counter_005 = 1,
-            logic_counter_004 = 0,
-            logic_counter_003 = 0,
-            logic_counter_002 = 0,
-            logic_counter_011 = 0,
+	local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		arm_for = { logic_counter_023 = 3, },
+		nail = { all_ingredients = 2, },
+		--peta = { count_to_13 = 4,},
+		peta2 = { count_to_13 = 1, },
+		dah = { ["2_bags_secured"] = 1, ["3_bags_secured"] = 2, ["4_bags_secured"] = 4, ["6_bags_secured"] = 4, ["8_bags_secured"] = 4 },
+		hox_1 = { turret_counter_ovk = 1, turret_counter_vhard = 0 },
+		trai = { logic_counter_6_bags = 4 },
+		ranc = {
+			--fulton nrm
+			logic_counter_012 = 2,
+			logic_counter_013 = 1,
+			logic_counter_014 = 0,
+			logic_counter_015 = 0,
+			logic_counter_016 = 0,
+			logic_counter_017 = 0,
 
-            --boat nrm
-            logic_counter_018 = 2,
-            logic_counter_019 = 1,
-            logic_counter_020 = 0,
-            logic_counter_021 = 0,
-            logic_counter_022 = 0,
-            logic_counter_023 = 0,
-            logic_counter_024 = 0,
+			--fulton ovk
+			logic_counter_001 = 4,
+			logic_counter_007 = 3,
+			logic_counter_006 = 2,
+			logic_counter_005 = 1,
+			logic_counter_004 = 0,
+			logic_counter_003 = 0,
+			logic_counter_002 = 0,
+			logic_counter_011 = 0,
 
-            --boat ovk
-            logic_counter_031 = 4,
-            logic_counter_030 = 3,
-            logic_counter_029 = 2,
-            logic_counter_028 = 1,
-            logic_counter_027 = 0,
-            logic_counter_026 = 0,
-            logic_counter_025 = 0,
-            logic_counter_024 = 0,
-            logic_counter_023 = 0,
-        },
-    }
-    if Global.game_settings.difficulty=="normal" then
-        lookup.dah["4_bags_secured"] = 2
-    end
+			--boat nrm
+			logic_counter_018 = 2,
+			logic_counter_019 = 1,
+			logic_counter_020 = 0,
+			logic_counter_021 = 0,
+			logic_counter_022 = 0,
+			logic_counter_023 = 0,
+			logic_counter_024 = 0,
 
-    self._values.counter_target = (lookup[job] and lookup[job][self._editor_name]) or self._values.counter_target
+			--boat ovk
+			logic_counter_031 = 4,
+			logic_counter_030 = 3,
+			logic_counter_029 = 2,
+			logic_counter_028 = 1,
+			logic_counter_027 = 0,
+			logic_counter_026 = 0,
+			logic_counter_025 = 0,
+			logic_counter_024 = 0,
+			logic_counter_023 = 0,
+		},
+	}
+	if Global.game_settings.difficulty=="normal" then
+		lookup.dah["4_bags_secured"] = 2
+	end
+
+	self._values.counter_target = (lookup[job] and lookup[job][self._editor_name]) or self._values.counter_target
 end
 
 
@@ -81,16 +88,16 @@ function ElementCounterTrigger:init(...)
 
 
 
-    if not self._values then return end
+	if not self._values then return end
 
-    local job = Global.level_data and Global.level_data.level_id
-    local lookup = {
-        bph = { check_amount_deathwish = 15 },
-        flat = { ["10_snipers_killed"] = 7 },
-        family = { logic_counter_trigger_004 = 4, logic_counter_trigger_003 = 4, logic_counter_trigger_002 = 4, logic_counter_trigger_001 = 2 },
-    }
+	local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		bph = { check_amount_veryhard = 12, check_amount_deathwish = 15 },
+		flat = { ["10_snipers_killed"] = 7 },
+		family = { logic_counter_trigger_004 = 4, logic_counter_trigger_003 = 4, logic_counter_trigger_002 = 4, logic_counter_trigger_001 = 2 },
+	}
 
-    self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
+	self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
 end
 
 
@@ -102,12 +109,12 @@ function ElementCounterFilter:init(...)
 
 
 
-    local job = Global.level_data and Global.level_data.level_id
-    local lookup = {
-        haunted = { filter_BD_ovk = 1, filter_BD_very_hard = 1 },
-    }
+	local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		haunted = { filter_BD_ovk = 1, filter_BD_very_hard = 1 },
+	}
 
-    self._values.value = (lookup[job] and lookup[job][self._editor_name]) or self._values.value
+	self._values.value = (lookup[job] and lookup[job][self._editor_name]) or self._values.value
 end
 
 
@@ -119,21 +126,21 @@ function ElementCounterOperator:init(...)
 
 
 
-    if not self._values then return end
+	if not self._values then return end
 
-    local job = Global.level_data and Global.level_data.level_id
-    local lookup = {
-        chca = { set_bag_number_8 = 4 },
-        family = { set8 = 4, set6 = 4, set006 = 4, set3 = 2, set014 = 2 },
-        firestarter_1 = { logic_counter_operator_009 = 4, logic_counter_operator_004 = 4 },
-        crojob2 = { random_circuit_breakers_SET_5 = 2, random_circuit_breakers_SET_4 = 2, random_circuit_breakers_SET_3 = 2, random_circuit_breakers_SET_2 = 1 },
-        mus = { set_4 = 8 },
-        mex = { set12 = 4, set8 = 4, set6 = 4, set4 = 2 },
-    }
-    if Global.game_settings.difficulty=="normal" then
-        lookup.chca.set_bag_number_4 = 2
-        lookup.firestarter_1.logic_counter_operator_004 = 2
-    end
+	local job = Global.level_data and Global.level_data.level_id
+	local lookup = {
+		chca = { set_bag_number_8 = 4 },
+		family = { set8 = 4, set6 = 4, set006 = 4, set3 = 2, set014 = 2 },
+		firestarter_1 = { logic_counter_operator_009 = 4, logic_counter_operator_004 = 4 },
+		crojob2 = { random_circuit_breakers_SET_5 = 2, random_circuit_breakers_SET_4 = 2, random_circuit_breakers_SET_3 = 2, random_circuit_breakers_SET_2 = 1 },
+		mus = { set_4 = 8 },
+		mex = { set12 = 4, set8 = 4, set6 = 4, set4 = 2 },
+	}
+	if Global.game_settings.difficulty=="normal" then
+		lookup.chca.set_bag_number_4 = 2
+		lookup.firestarter_1.logic_counter_operator_004 = 2
+	end
 
-    self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
+	self._values.amount = (lookup[job] and lookup[job][self._editor_name]) or self._values.amount
 end
