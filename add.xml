@@ -521,6 +521,6 @@
 	<object path="units/pd2_dlc_vip/characters/ene_vip_1/ene_vip_1" force="true"/>
 	<object path="units/pd2_dlc_vip/characters/ene_phalanx_1/ene_phalanx_1" force="true"/>
 
-	<unit path="units/pd2_dlc_friend/weapons/wpn_third_ray_fired_rocket/wpn_third_ray_fired_rocket" force="true"/>
+	<unit path="units/pd2_dlc_friend/weapons/wpn_third_ray_fired_rocket/wpn_third_ray_fired_rocket" load="true"/>
 
 </table>
