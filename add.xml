@@ -1,9 +1,9 @@
 <table directory="assets">
-	<animation path="anims/fps/jowi/jowi_recoil_heavy" force="true"/>
+	<!--<animation path="anims/fps/jowi/jowi_recoil_heavy" force="true"/>
 	<animation path="anims/fps/ksg/ksg_reload" force="true"/>
 	<animation path="anims/fps/ksg/ksg_reload_enter" force="true"/>
 	<animation path="anims/fps/ksg/ksg_reload_exit" force="true"/>
-	<animation path="anims/fps/ksg/ksg_reload_not_empty_exit" force="true"/>
+	<animation path="anims/fps/ksg/ksg_reload_not_empty_exit" force="true"/>-->
 	<effect path="effects/particles/weapons/sniper_glint_marshal" force="true"/>
 	<object path="units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
 	<model path="units/payday2/characters/ene_acc_shield_lights/ene_acc_shield_lights" force="true"/>
@@ -278,7 +278,7 @@
 
 	<!-- <unit path="units/pd2_dlc_dinner/equipment/din_interactable_pliers/din_interactable_pliers" force="true"/> -->
 
-	<animation path="anims/fps/colt_1911/colt_1911_sprint" force="true"/>
+	<!--<animation path="anims/fps/colt_1911/colt_1911_sprint" force="true"/>
 	<animation path="anims/fps/colt_1911/colt_1911_sprint_enter" force="true"/>
 	<animation path="anims/fps/colt_1911/colt_1911_sprint_exit" force="true"/>
 	<animation path="anims/fps/deagle/deagle_sprint" force="true"/>
@@ -297,7 +297,7 @@
 	<animation path="anims/fps/type54/type54_underbarrel_sprint_enter" force="true"/>
 	<animation path="anims/fps/type54/type54_underbarrel_sprint_exit" force="true"/>
 	<animation path="anims/fps/m14/m14_sprint" force="true"/>
-	<animation path="anims/fps/m14/m14_sprint_enter" force="true"/>
+	<animation path="anims/fps/m14/m14_sprint_enter" force="true"/>-->
 
 	<model path="units/pd2_dlc_opera/weapons/wpn_fps_ass_tecci_pts/wpn_fps_ass_tecci_ns_special" force="true"/>
 
