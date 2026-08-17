@@ -38,19 +38,19 @@
 
 
 
-	"bm_menu_dodge" : "闪避",
+	"bm_menu_dodge" : "防护",
 	"bm_menu_stamina_drain" : "耐力消耗",
 
 	"bm_menu_weight" : "重量",
 	"bm_menu_length" : "长度",
-	"bm_menu_concealment" : "隐蔽值",
+	"bm_menu_concealment" : "尺寸",
 	"bm_menu_caliber" : "口径",
 	"bm_menu_a_caliber" : "口径",
 	"bm_menu_a_caliber_plural" : "口径",
 	"bm_menu_ammotype" : "弹药类型",
-	"bm_menu_ammo" : "弹药",
-	"bm_menu_ammo_plural" : "弹药",
-	"bm_menu_cartridge" : "枪弹",
+	"bm_menu_ammo" : "弹药类型",
+	"bm_menu_ammo_plural" : "弹药类型",
+	"bm_menu_cartridge" : "口径",
 	"bm_menu_barrel_length" : "枪管",
 	"bm_menu_spread" : "散布",
 	"bm_menu_recoil" : "后坐力",
